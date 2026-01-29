@@ -1,5 +1,8 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { neighborhoods, Neighborhood } from '@/lib/mockData';
+import MapLibreMap from '@/components/MapLibreMap';
 
 interface MapPageProps {
   selectedZip: string | null;
@@ -7,7 +10,22 @@ interface MapPageProps {
   onNavigate: (page: string) => void;
 }
 
-export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNavigate }) => (
+export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNavigate }) => {
+  const [visibleLayers, setVisibleLayers] = useState({
+    diseaseBurden: true,
+    careAccess: false,
+    environmentalExposure: false,
+    transit: false
+  });
+
+  const handleLayerToggle = (layer: keyof typeof visibleLayers) => {
+    setVisibleLayers(prev => ({
+      ...prev,
+      [layer]: !prev[layer]
+    }));
+  };
+
+  return (
   <div style={{ paddingTop: '80px' }}>
     <section style={{
       padding: '48px 32px 24px',
@@ -47,77 +65,19 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
       }}>
         {/* Map Container */}
         <div style={{
-          background: '#e8e4df',
           borderRadius: '12px',
           position: 'relative',
           minHeight: '500px',
           overflow: 'hidden'
         }}>
-          {/* Mock map background */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: `
-              linear-gradient(135deg, #d4cfc7 0%, #e8e4df 50%, #d4cfc7 100%)
-            `,
-            opacity: 0.8
-          }} />
-
-          {/* Grid lines for map feel */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: `
-              linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px'
-          }} />
-
-          {/* "Bronx" label */}
-          <div style={{
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '12px',
-            color: '#888',
-            letterSpacing: '1px',
-            textTransform: 'uppercase'
-          }}>
-            South Bronx, NY
-          </div>
-
-          {/* ZIP markers */}
-          {neighborhoods.map(n => (
-            <button
-              key={n.zip}
-              onClick={() => {
-                onSelectZip(n.zip);
-                onNavigate('neighborhood');
-              }}
-              style={{
-                position: 'absolute',
-                top: n.coords.top,
-                left: n.coords.left,
-                transform: 'translate(-50%, -50%)',
-                background: selectedZip === n.zip ? '#c45a3b' : '#fff',
-                color: selectedZip === n.zip ? '#fff' : '#1a1a1a',
-                border: '2px solid ' + (selectedZip === n.zip ? '#c45a3b' : '#1a1a1a'),
-                borderRadius: '20px',
-                padding: '8px 16px',
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '13px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                transition: 'all 0.2s ease',
-                zIndex: 10
-              }}
-            >
-              {n.zip}
-            </button>
-          ))}
+          <MapLibreMap
+            selectedZip={selectedZip}
+            onZipClick={(zip) => {
+              onSelectZip(zip);
+              onNavigate('neighborhood');
+            }}
+            visibleLayers={visibleLayers}
+          />
 
           {/* Layer controls */}
           <div style={{
@@ -127,7 +87,8 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
             background: '#fff',
             borderRadius: '8px',
             padding: '16px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            zIndex: 20
           }}>
             <div style={{
               fontFamily: 'system-ui, sans-serif',
@@ -138,21 +99,77 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               textTransform: 'uppercase',
               marginBottom: '12px'
             }}>Layers</div>
-            {['Disease Burden', 'Care Access', 'Environmental Exposure', 'Transit'].map((layer, i) => (
-              <label key={i} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '13px',
-                color: '#444',
-                marginBottom: '8px',
-                cursor: 'pointer'
-              }}>
-                <input type="checkbox" defaultChecked={i < 2} style={{ accentColor: '#c45a3b' }} />
-                {layer}
-              </label>
-            ))}
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '13px',
+              color: '#444',
+              marginBottom: '8px',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={visibleLayers.diseaseBurden}
+                onChange={() => handleLayerToggle('diseaseBurden')}
+                style={{ accentColor: '#c45a3b' }}
+              />
+              Disease Burden
+            </label>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '13px',
+              color: '#444',
+              marginBottom: '8px',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={visibleLayers.careAccess}
+                onChange={() => handleLayerToggle('careAccess')}
+                style={{ accentColor: '#c45a3b' }}
+              />
+              Care Access
+            </label>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '13px',
+              color: '#444',
+              marginBottom: '8px',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={visibleLayers.environmentalExposure}
+                onChange={() => handleLayerToggle('environmentalExposure')}
+                style={{ accentColor: '#c45a3b' }}
+              />
+              Environmental Exposure
+            </label>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '13px',
+              color: '#444',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={visibleLayers.transit}
+                onChange={() => handleLayerToggle('transit')}
+                style={{ accentColor: '#c45a3b' }}
+              />
+              Transit
+            </label>
           </div>
         </div>
 
@@ -205,22 +222,12 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
             />
           ))}
 
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '12px',
-            color: '#888',
-            padding: '12px',
-            background: '#f5f5f5',
-            borderRadius: '8px'
-          }}>
-            <strong>Note:</strong> Coordinates are illustrative. Production version
-            uses ZIP/tract polygons via PostGIS + GeoJSON.
-          </div>
         </div>
       </div>
     </section>
   </div>
-);
+  );
+};
 
 interface NeighborhoodCardProps {
   neighborhood: Neighborhood;

@@ -12,7 +12,8 @@ export interface Neighborhood {
   avgTravel: number;
   exposureIndex: number;
   storyCount: number;
-  coords: { top: string; left: string };
+  coords: { top: string; left: string }; // For UI positioning (deprecated, kept for backwards compat)
+  center: [number, number]; // MapLibre: [longitude, latitude]
 }
 
 export interface Story {
@@ -35,7 +36,8 @@ export const neighborhoods: Neighborhood[] = [
     avgTravel: 64,
     exposureIndex: 77,
     storyCount: 19,
-    coords: { top: '35%', left: '55%' }
+    coords: { top: '35%', left: '55%' },
+    center: [-73.918, 40.828]
   },
   {
     zip: '10457',
@@ -46,7 +48,8 @@ export const neighborhoods: Neighborhood[] = [
     avgTravel: 58,
     exposureIndex: 71,
     storyCount: 11,
-    coords: { top: '28%', left: '48%' }
+    coords: { top: '28%', left: '48%' },
+    center: [-73.901, 40.851]
   },
   {
     zip: '10459',
@@ -57,7 +60,8 @@ export const neighborhoods: Neighborhood[] = [
     avgTravel: 72,
     exposureIndex: 81,
     storyCount: 14,
-    coords: { top: '42%', left: '62%' }
+    coords: { top: '42%', left: '62%' },
+    center: [-73.891, 40.815]
   }
 ];
 

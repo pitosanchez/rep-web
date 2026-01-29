@@ -1,0 +1,74 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zip": "10456",
+        "name": "Morrisania / South Bronx",
+        "burdenIndex": 82,
+        "avgTravel": 64,
+        "exposureIndex": 77,
+        "storyCount": 19
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-73.936, 40.818],
+            [-73.9, 40.818],
+            [-73.9, 40.838],
+            [-73.936, 40.838],
+            [-73.936, 40.818]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zip": "10457",
+        "name": "Tremont",
+        "burdenIndex": 76,
+        "avgTravel": 58,
+        "exposureIndex": 71,
+        "storyCount": 11
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-73.919, 40.841],
+            [-73.883, 40.841],
+            [-73.883, 40.861],
+            [-73.919, 40.861],
+            [-73.919, 40.841]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zip": "10459",
+        "name": "Longwood / Hunts Point",
+        "burdenIndex": 84,
+        "avgTravel": 72,
+        "exposureIndex": 81,
+        "storyCount": 14
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-73.909, 40.805],
+            [-73.873, 40.805],
+            [-73.873, 40.825],
+            [-73.909, 40.825],
+            [-73.909, 40.805]
+          ]
+        ]
+      }
+    }
+  ]
+}

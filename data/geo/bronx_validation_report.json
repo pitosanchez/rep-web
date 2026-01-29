@@ -1,0 +1,273 @@
+{
+  "isValid": false,
+  "errors": [
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010100",
+      "location": "row 1"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010200",
+      "location": "row 2"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010300",
+      "location": "row 3"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010400",
+      "location": "row 4"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010500",
+      "location": "row 5"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010600",
+      "location": "row 6"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010700",
+      "location": "row 7"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010800",
+      "location": "row 8"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005010900",
+      "location": "row 9"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005011000",
+      "location": "row 10"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005012300",
+      "location": "row 11"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005012400",
+      "location": "row 12"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005012500",
+      "location": "row 13"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005012600",
+      "location": "row 14"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005012700",
+      "location": "row 15"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005012800",
+      "location": "row 16"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005012900",
+      "location": "row 17"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013000",
+      "location": "row 18"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013100",
+      "location": "row 19"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013200",
+      "location": "row 20"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013300",
+      "location": "row 21"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013400",
+      "location": "row 22"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013500",
+      "location": "row 23"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013600",
+      "location": "row 24"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013700",
+      "location": "row 25"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013800",
+      "location": "row 26"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005013900",
+      "location": "row 27"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014000",
+      "location": "row 28"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014100",
+      "location": "row 29"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014200",
+      "location": "row 30"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014300",
+      "location": "row 31"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014400",
+      "location": "row 32"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014500",
+      "location": "row 33"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014600",
+      "location": "row 34"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014700",
+      "location": "row 35"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014800",
+      "location": "row 36"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005014900",
+      "location": "row 37"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015000",
+      "location": "row 38"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015100",
+      "location": "row 39"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015200",
+      "location": "row 40"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015300",
+      "location": "row 41"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015400",
+      "location": "row 42"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015500",
+      "location": "row 43"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015600",
+      "location": "row 44"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015700",
+      "location": "row 45"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015800",
+      "location": "row 46"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005015900",
+      "location": "row 47"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005016000",
+      "location": "row 48"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005016100",
+      "location": "row 49"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005016200",
+      "location": "row 50"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005016300",
+      "location": "row 51"
+    },
+    {
+      "type": "invalid_row",
+      "message": "Invalid GEOID: 36005016400",
+      "location": "row 52"
+    }
+  ],
+  "warnings": [],
+  "summary": {
+    "total_zips": 26,
+    "total_tracts": 52,
+    "total_ntas": 2,
+    "duplicate_rows": 0,
+    "null_weights": 0
+  }
+}

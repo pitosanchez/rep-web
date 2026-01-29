@@ -15,13 +15,16 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { stringify } from 'csv-stringify/sync';
 import Logger from './utils/logger';
 import FileCache from './utils/file-cache';
 import Validator from './utils/validator';
 import { SourceDownloader } from './download_sources';
 import { ZipToTractBuilder } from './build_zip_to_tract';
-import { DEFAULT_CONFIG, OUTPUT_FILES, PHASE_CONFIG, CACHED_FILES } from './config';
-import { PipelineStatus, PipelineOutput, ZipToTractRow } from './types';
+import { SpatialJoinTractToNta } from './spatial_join_tract_to_nta';
+import { NeighborhoodClustering } from './build_neighborhood_clusters';
+import { DEFAULT_CONFIG, OUTPUT_FILES, PHASE_CONFIG, CACHED_FILES, BRONX_ZIPS } from './config';
+import { PipelineStatus, PipelineOutput, ZipToTractRow, TractToNtaMapping, NeighborhoodCluster } from './types';
 
 class PipelineMaster {
   private logger: Logger;
@@ -106,28 +109,23 @@ class PipelineMaster {
 
   /**
    * Phase 3: Spatial join (Tract → NTA)
-   * Stubbed for now
    */
+  private tractToNta: TractToNtaMapping[] = [];
+
   private async runPhase3(): Promise<void> {
     this.setPhaseStatus(3, { status: 'running' });
 
     try {
-      this.logger.section('PHASE 3: Spatial Join (Tract → NTA)');
-      this.logger.info(
-        'Loading Census TIGER tracts and NYC NTA boundaries...'
-      );
+      const spatialJoin = new SpatialJoinTractToNta();
+      this.tractToNta = await spatialJoin.run();
 
-      const tigerGeojson = this.cache.loadText(
-        CACHED_FILES.census_tiger_geojson
-      );
-      const ntaGeojson = this.cache.loadText(CACHED_FILES.nta_geojson);
-
-      this.logger.success('Loaded geospatial data');
-      this.logger.info('(Full implementation coming next)');
+      // Merge NTA assignments into ZIP-to-tract mapping
+      this.mergeNtaIntoZipToTracts();
 
       this.setPhaseStatus(3, {
         status: 'complete',
-        end_time: new Date()
+        end_time: new Date(),
+        items_processed: this.tractToNta.length
       });
     } catch (error) {
       this.setPhaseStatus(3, { status: 'error', error: String(error) });
@@ -136,22 +134,48 @@ class PipelineMaster {
   }
 
   /**
-   * Phase 4: Build neighborhood clusters
-   * Stubbed for now
+   * Merge NTA assignments from Phase 3 into ZIP-to-tract data from Phase 2
    */
+  private mergeNtaIntoZipToTracts(): void {
+    // Create a map for fast lookup
+    const tractToNtaMap = new Map<string, TractToNtaMapping>();
+    for (const mapping of this.tractToNta) {
+      tractToNtaMap.set(mapping.tract_geoid, mapping);
+    }
+
+    // Update each ZIP-to-tract row with NTA information
+    for (const row of this.zipToTracts) {
+      const mapping = tractToNtaMap.get(row.tract_geoid);
+      if (mapping) {
+        row.nta_code = mapping.nta_code;
+        row.nta_name = mapping.nta_name;
+      } else {
+        row.nta_code = 'UNASSIGNED';
+        row.nta_name = '';
+      }
+    }
+
+    this.logger.success(
+      `Merged NTA assignments: ${this.zipToTracts.filter((r) => r.nta_code !== 'UNASSIGNED').length} rows with NTA codes`
+    );
+  }
+
+  /**
+   * Phase 4: Build neighborhood clusters
+   */
+  private neighborhoodClusters: NeighborhoodCluster[] = [];
+
   private async runPhase4(): Promise<void> {
     this.setPhaseStatus(4, { status: 'running' });
 
     try {
-      this.logger.section('PHASE 4: Neighborhood Clustering');
-      this.logger.info('Grouping tracts into neighborhood clusters...');
-
-      this.logger.success('Clustering complete');
-      this.logger.info('(Full implementation coming next)');
+      const clustering = new NeighborhoodClustering();
+      this.neighborhoodClusters = await clustering.run(this.zipToTracts);
 
       this.setPhaseStatus(4, {
         status: 'complete',
-        end_time: new Date()
+        end_time: new Date(),
+        items_processed: this.neighborhoodClusters.length
       });
     } catch (error) {
       this.setPhaseStatus(4, { status: 'error', error: String(error) });
@@ -174,7 +198,8 @@ class PipelineMaster {
         this.logger.success(`Created output directory: ${DEFAULT_CONFIG.output_dir}`);
       }
 
-      // Write ZIP-to-tract JSON (intermediate output from Phase 2)
+      // 1. Write ZIP-to-tract JSON (main output)
+      this.logger.info('Writing ZIP-to-tract JSON...');
       if (this.zipToTracts.length > 0) {
         const jsonPath = path.join(
           DEFAULT_CONFIG.output_dir,
@@ -184,12 +209,78 @@ class PipelineMaster {
         this.logger.success(`Wrote: ${jsonPath} (${this.zipToTracts.length} rows)`);
       }
 
-      this.logger.success('Output files assembled');
-      this.logger.info('(CSV export and remaining phases coming next)');
+      // 2. Write ZIP-to-tract CSV
+      this.logger.info('Writing ZIP-to-tract CSV...');
+      if (this.zipToTracts.length > 0) {
+        const csvPath = path.join(
+          DEFAULT_CONFIG.output_dir,
+          OUTPUT_FILES.zip_to_tracts_csv
+        );
+        const csv = stringify(this.zipToTracts, {
+          header: true,
+          columns: [
+            'zip',
+            'county_fips',
+            'state_fips',
+            'tract_geoid',
+            'tract',
+            'weight_res',
+            'weight_tot',
+            'nta_code',
+            'nta_name'
+          ]
+        });
+        fs.writeFileSync(csvPath, csv);
+        this.logger.success(`Wrote: ${csvPath} (${this.zipToTracts.length} rows)`);
+      }
+
+      // 3. Write neighborhood clusters JSON
+      this.logger.info('Writing neighborhood clusters JSON...');
+      if (this.neighborhoodClusters.length > 0) {
+        const clustersPath = path.join(
+          DEFAULT_CONFIG.output_dir,
+          OUTPUT_FILES.neighborhood_clusters_json
+        );
+        fs.writeFileSync(
+          clustersPath,
+          JSON.stringify(this.neighborhoodClusters, null, 2)
+        );
+        this.logger.success(
+          `Wrote: ${clustersPath} (${this.neighborhoodClusters.length} clusters)`
+        );
+      }
+
+      // 4. Validate data quality
+      this.logger.info('Validating data quality...');
+      const expectedZips = new Set(BRONX_ZIPS);
+      const validationResult = this.validator.validateZipToTractOutput(
+        this.zipToTracts,
+        expectedZips
+      );
+
+      if (validationResult.isValid) {
+        this.logger.success('Data validation passed!');
+      } else {
+        this.logger.warn(`Data validation found issues`);
+      }
+
+      // 5. Write validation report
+      this.logger.info('Writing validation report...');
+      const reportPath = path.join(
+        DEFAULT_CONFIG.output_dir,
+        OUTPUT_FILES.validation_report
+      );
+      fs.writeFileSync(reportPath, JSON.stringify(validationResult, null, 2));
+      this.logger.success(
+        `Wrote: ${reportPath} (${validationResult.errors.length} errors, ${validationResult.warnings.length} warnings)`
+      );
+
+      this.logger.success('Output files assembled and validated');
 
       this.setPhaseStatus(5, {
         status: 'complete',
-        end_time: new Date()
+        end_time: new Date(),
+        items_processed: this.zipToTracts.length
       });
     } catch (error) {
       this.setPhaseStatus(5, { status: 'error', error: String(error) });

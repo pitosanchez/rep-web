@@ -14,6 +14,11 @@ interface MapLibreMapProps {
   };
 }
 
+interface GeoJSONData {
+  type: 'FeatureCollection';
+  features: any[];
+}
+
 export default function MapLibreMap({
   selectedZip,
   onZipClick,
@@ -25,10 +30,39 @@ export default function MapLibreMap({
   const [hoveredZip, setHoveredZip] = useState<string | null>(null);
   const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [geoData, setGeoData] = useState<GeoJSONData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch geographic data from API
+  useEffect(() => {
+    const fetchGeoData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/geo/bronx-zips');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch geographic data: ${response.statusText}`);
+        }
+        const result = await response.json();
+        if (result.success && result.data) {
+          setGeoData(result.data);
+        } else {
+          throw new Error('Invalid response format');
+        }
+      } catch (err) {
+        console.error('Error fetching geographic data:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGeoData();
+  }, []);
 
   // Initialize map
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !geoData) return;
 
     // Initialize map centered on South Bronx
     map.current = new maplibregl.Map({
@@ -42,138 +76,136 @@ export default function MapLibreMap({
 
     // Handle map load
     map.current.on('load', () => {
-      if (!map.current) return;
+      if (!map.current || !geoData) return;
 
-      // Add GeoJSON source
+      // Add GeoJSON source with real data
       map.current.addSource('bronx-zips', {
         type: 'geojson',
-        data: '/data/bronx-zips.geojson'
+        data: geoData
       });
 
-      // Disease Burden layer - choropleth
+      // Disease Burden layer - based on weight_tot (proxy for burden)
       map.current.addLayer({
         id: 'bronx-zips-fill',
-        type: 'fill',
+        type: 'circle',
         source: 'bronx-zips',
         paint: {
-          'fill-color': [
+          'circle-radius': [
             'interpolate',
             ['linear'],
-            ['get', 'burdenIndex'],
-            70, '#a8d5ba',  // Low burden (light green)
-            75, '#d4a574',  // Medium burden (tan)
-            80, '#c45a3b'   // High burden (terracotta)
+            ['get', 'weight_tot'],
+            0, 6,
+            1, 12
           ],
-          'fill-opacity': [
+          'circle-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'weight_tot'],
+            0, '#a8d5ba',  // Light green (low)
+            0.5, '#d4a574',  // Tan (medium)
+            1, '#c45a3b'   // Terracotta (high)
+          ],
+          'circle-opacity': [
             'case',
             ['boolean', ['feature-state', 'hover'], false],
             0.9,
             0.7
-          ]
-        }
-      });
-
-      // Care Access layer - based on travel time (lower is better)
-      map.current.addLayer({
-        id: 'bronx-care-access',
-        type: 'fill',
-        source: 'bronx-zips',
-        paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'avgTravel'],
-            55, '#4a90e2',   // Good access (blue) - lower travel time
-            65, '#7ab3f5',   // Moderate access (light blue)
-            75, '#d96666'    // Poor access (red) - higher travel time
           ],
-          'fill-opacity': [
+          'circle-stroke-color': '#1a1a1a',
+          'circle-stroke-width': [
             'case',
-            ['boolean', ['feature-state', 'hover'], false],
-            0.9,
-            0.7
-          ]
-        },
-        layout: {
-          visibility: 'none'
-        }
-      });
-
-      // Environmental Exposure layer - based on exposure index
-      map.current.addLayer({
-        id: 'bronx-exposure',
-        type: 'fill',
-        source: 'bronx-zips',
-        paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'exposureIndex'],
-            65, '#6b8f71',   // Low exposure (green)
-            75, '#d4a574',   // Moderate exposure (tan)
-            85, '#8b3a3a'    // High exposure (dark red)
-          ],
-          'fill-opacity': [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
-            0.9,
-            0.7
-          ]
-        },
-        layout: {
-          visibility: 'none'
-        }
-      });
-
-      // Transit layer - visualization based on travel time (proxy for transit access)
-      map.current.addLayer({
-        id: 'bronx-transit',
-        type: 'fill',
-        source: 'bronx-zips',
-        paint: {
-          'fill-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'avgTravel'],
-            55, '#ffd700',   // Good transit (yellow-gold)
-            65, '#ffa500',   // Moderate transit (orange)
-            75, '#ff6b6b'    // Poor transit (red)
-          ],
-          'fill-opacity': [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
-            0.9,
-            0.7
-          ]
-        },
-        layout: {
-          visibility: 'none'
-        }
-      });
-
-      // Add border layer
-      map.current.addLayer({
-        id: 'bronx-zips-border',
-        type: 'line',
-        source: 'bronx-zips',
-        paint: {
-          'line-color': '#1a1a1a',
-          'line-width': [
-            'case',
-            ['boolean', ['feature-state', 'hover'], false],
-            3,
             ['boolean', ['feature-state', 'selected'], false],
             3,
-            1.5
+            1
           ],
-          'line-opacity': 0.8
+          'circle-stroke-opacity': 0.8
+        }
+      });
+
+      // Care Access layer - based on weight_res
+      map.current.addLayer({
+        id: 'bronx-care-access',
+        type: 'circle',
+        source: 'bronx-zips',
+        paint: {
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'weight_res'],
+            0, 6,
+            1, 12
+          ],
+          'circle-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'weight_res'],
+            0, '#4a90e2',   // Blue (low)
+            0.5, '#7ab3f5',   // Light blue (medium)
+            1, '#d96666'    // Red (high)
+          ],
+          'circle-opacity': 0.7,
+          'circle-stroke-color': '#1a1a1a',
+          'circle-stroke-width': 1,
+          'circle-stroke-opacity': 0.8
+        },
+        layout: {
+          visibility: 'none'
+        }
+      });
+
+      // Environmental Exposure layer - placeholder color scheme
+      map.current.addLayer({
+        id: 'bronx-exposure',
+        type: 'circle',
+        source: 'bronx-zips',
+        paint: {
+          'circle-radius': 8,
+          'circle-color': '#6b8f71',   // Green
+          'circle-opacity': 0.7,
+          'circle-stroke-color': '#1a1a1a',
+          'circle-stroke-width': 1,
+          'circle-stroke-opacity': 0.8
+        },
+        layout: {
+          visibility: 'none'
+        }
+      });
+
+      // Transit layer - based on weight_tot
+      map.current.addLayer({
+        id: 'bronx-transit',
+        type: 'circle',
+        source: 'bronx-zips',
+        paint: {
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'weight_tot'],
+            0, 6,
+            1, 12
+          ],
+          'circle-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'weight_tot'],
+            0, '#ffd700',   // Gold (low)
+            0.5, '#ffa500',   // Orange (medium)
+            1, '#ff6b6b'    // Red (high)
+          ],
+          'circle-opacity': 0.7,
+          'circle-stroke-color': '#1a1a1a',
+          'circle-stroke-width': 1,
+          'circle-stroke-opacity': 0.8
+        },
+        layout: {
+          visibility: 'none'
         }
       });
 
       // Layer IDs for interaction
       const interactiveLayers = ['bronx-zips-fill', 'bronx-care-access', 'bronx-exposure', 'bronx-transit'];
 
-      // Handle clicks on all polygon layers
+      // Handle clicks on all layers
       interactiveLayers.forEach(layerId => {
         map.current?.on('click', layerId, (e) => {
           const features = e.features;
@@ -181,6 +213,13 @@ export default function MapLibreMap({
 
           const zip = features[0].properties?.zip;
           if (zip) {
+            // Set selected state
+            if (map.current) {
+              map.current.setFeatureState(
+                { source: 'bronx-zips', id: zip },
+                { selected: true }
+              );
+            }
             onZipClick(zip);
           }
         });
@@ -233,13 +272,13 @@ export default function MapLibreMap({
 
             // Update popup content and position
             const popupContent = `
-              <div style="font-family: system-ui; font-size: 12px; padding: 8px;">
-                <div style="font-weight: 600; margin-bottom: 4px;">${properties.zip}</div>
-                <div style="font-size: 11px; color: #666; margin-bottom: 2px;">${properties.name || ''}</div>
+              <div style="font-family: system-ui; font-size: 12px; padding: 8px; max-width: 200px;">
+                <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">${properties.zip}</div>
+                <div style="font-size: 11px; color: #666; margin-bottom: 6px;">${properties.nta_name || 'Unassigned'}</div>
                 <div style="border-top: 1px solid #e8e4df; padding-top: 6px; margin-top: 6px; font-size: 11px;">
-                  <div>Burden: <strong>${properties.burdenIndex || '—'}</strong></div>
-                  <div>Travel: <strong>${properties.avgTravel || '—'}m</strong></div>
-                  <div>Exposure: <strong>${properties.exposureIndex || '—'}</strong></div>
+                  <div>NTA Code: <strong>${properties.nta_code || '—'}</strong></div>
+                  <div>Residential Weight: <strong>${(properties.weight_res * 100).toFixed(1)}%</strong></div>
+                  <div>Total Weight: <strong>${(properties.weight_tot * 100).toFixed(1)}%</strong></div>
                 </div>
               </div>
             `;
@@ -277,7 +316,7 @@ export default function MapLibreMap({
         map.current = null;
       }
     };
-  }, [onZipClick]);
+  }, [onZipClick, geoData]);
 
   // Update selected state
   useEffect(() => {
@@ -360,10 +399,34 @@ export default function MapLibreMap({
         height: '100%',
         position: 'relative',
         borderRadius: '8px',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        background: '#f5f5f5'
       }}
     >
-      {!mapReady && (
+      {error && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            textAlign: 'center',
+            zIndex: 10,
+            background: '#fff',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}
+        >
+          <p style={{ color: '#c45a3b', fontSize: '14px', fontFamily: 'system-ui', margin: 0 }}>
+            Error loading map data
+          </p>
+          <p style={{ color: '#999', fontSize: '12px', fontFamily: 'system-ui', margin: '8px 0 0' }}>
+            {error}
+          </p>
+        </div>
+      )}
+      {(loading || !mapReady) && !error && (
         <div
           style={{
             position: 'absolute',
@@ -375,7 +438,7 @@ export default function MapLibreMap({
           }}
         >
           <p style={{ color: '#666', fontSize: '14px', fontFamily: 'system-ui' }}>
-            Loading map...
+            {loading ? 'Loading geographic data...' : 'Loading map...'}
           </p>
         </div>
       )}

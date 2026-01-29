@@ -1,0 +1,14 @@
+[
+  {
+    "nta_code": "BX35",
+    "nta_name": "Morrisania-Melrose",
+    "tract_geoids": [
+      "36005012300"
+    ],
+    "zips": [
+      "10456"
+    ],
+    "tract_count": 1,
+    "zip_count": 1
+  }
+]

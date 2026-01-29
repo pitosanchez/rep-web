@@ -1,5 +1,7 @@
-import React from 'react';
-import { neighborhoods, stories, dataPoints, Story, Neighborhood } from '@/lib/mockData';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { stories, dataPoints, Story } from '@/lib/mockData';
 
 interface NeighborhoodPageProps {
   selectedZip: string | null;
@@ -7,9 +9,64 @@ interface NeighborhoodPageProps {
   onReturn: () => void;
 }
 
+interface NeighborhoodProfile {
+  zip: string;
+  nta_code: string;
+  nta_name: string;
+  city: string;
+  state: string;
+  tractCount: number;
+  residentialWeight: number;
+  totalWeight: number;
+  tracts: string[];
+  burdenIndex: number;
+  avgTravel: number;
+  exposureIndex: number;
+}
+
 export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip, onNavigate, onReturn }) => {
-  const neighborhood = neighborhoods.find(x => x.zip === selectedZip) || neighborhoods[0];
-  const neighborhoodStories = stories.filter(s => s.zip === neighborhood.zip);
+  const [neighborhood, setNeighborhood] = useState<NeighborhoodProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch neighborhood data from API
+  useEffect(() => {
+    const fetchNeighborhood = async () => {
+      if (!selectedZip) {
+        setError('No ZIP code selected');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/geo/neighborhood-profile?zip=${selectedZip}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch neighborhood data: ${response.statusText}`);
+        }
+        const result = await response.json();
+        if (result.success && result.data) {
+          setNeighborhood(result.data);
+          setError(null);
+        } else {
+          throw new Error('Invalid response format');
+        }
+      } catch (err) {
+        console.error('Error fetching neighborhood:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+        setNeighborhood(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNeighborhood();
+  }, [selectedZip]);
+
+  // Get stories for this neighborhood from mock data (temporary)
+  const neighborhoodStories = neighborhood
+    ? stories.filter(s => s.zip === neighborhood.zip)
+    : [];
 
   // Calculate theme frequencies
   const themeCounts: Record<string, number> = {};
@@ -21,6 +78,66 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
   const topThemes = Object.entries(themeCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
+
+  // Error state
+  if (error || !neighborhood) {
+    return (
+      <div style={{ paddingTop: '80px' }}>
+        <section style={{
+          padding: '48px 32px',
+          background: '#faf7f3',
+          minHeight: '60vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            maxWidth: '600px',
+            textAlign: 'center'
+          }}>
+            <button
+              onClick={onReturn}
+              style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '13px',
+                color: '#888',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                marginBottom: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                margin: '0 auto 24px'
+              }}
+            >
+              ← Back to Map
+            </button>
+            <h2 style={{
+              fontFamily: 'Georgia, serif',
+              fontSize: '28px',
+              color: '#c45a3b',
+              marginBottom: '12px'
+            }}>
+              {loading ? 'Loading...' : 'Unable to Load Neighborhood'}
+            </h2>
+            <p style={{
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '15px',
+              color: '#666',
+              lineHeight: '1.6'
+            }}>
+              {loading
+                ? 'Fetching neighborhood data...'
+                : error
+                ? `${error}. Please try selecting another neighborhood.`
+                : 'Please select a neighborhood from the map.'}
+            </p>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div style={{ paddingTop: '80px' }}>
@@ -71,7 +188,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 fontWeight: '400',
                 marginBottom: '8px'
               }}>
-                {neighborhood.name} <span style={{ color: '#888', fontWeight: '300' }}>({neighborhood.zip})</span>
+                {neighborhood.nta_name} <span style={{ color: '#888', fontWeight: '300' }}>({neighborhood.zip})</span>
               </h1>
               <p style={{
                 fontFamily: 'system-ui, sans-serif',
@@ -111,8 +228,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
             {[
               { label: 'Burden Index', value: neighborhood.burdenIndex, suffix: '/100' },
               { label: 'Avg Travel to Nephrology', value: neighborhood.avgTravel, suffix: ' min' },
-              { label: 'Exposure Index', value: neighborhood.exposureIndex, suffix: '/100' },
-              { label: 'Story Submissions', value: neighborhood.storyCount, suffix: '' }
+              { label: 'Exposure Index', value: neighborhood.exposureIndex, suffix: '/100' }
             ].map((stat, i) => (
               <div key={i}>
                 <div style={{

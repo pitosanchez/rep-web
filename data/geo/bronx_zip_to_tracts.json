@@ -2,7 +2,7 @@
   {
     "zip": "10451",
     "county_fips": "36005",
-    "tract_geoid": "363600501010000",
+    "tract_geoid": "36005010100",
     "state_fips": "36",
     "tract": "010100",
     "weight_res": 0.85,
@@ -13,7 +13,7 @@
   {
     "zip": "10451",
     "county_fips": "36005",
-    "tract_geoid": "363600501020000",
+    "tract_geoid": "36005010200",
     "state_fips": "36",
     "tract": "010200",
     "weight_res": 0.15,
@@ -24,7 +24,7 @@
   {
     "zip": "10452",
     "county_fips": "36005",
-    "tract_geoid": "363600501030000",
+    "tract_geoid": "36005010300",
     "state_fips": "36",
     "tract": "010300",
     "weight_res": 0.72,
@@ -35,7 +35,7 @@
   {
     "zip": "10452",
     "county_fips": "36005",
-    "tract_geoid": "363600501040000",
+    "tract_geoid": "36005010400",
     "state_fips": "36",
     "tract": "010400",
     "weight_res": 0.28,
@@ -46,7 +46,7 @@
   {
     "zip": "10453",
     "county_fips": "36005",
-    "tract_geoid": "363600501050000",
+    "tract_geoid": "36005010500",
     "state_fips": "36",
     "tract": "010500",
     "weight_res": 0.65,
@@ -57,7 +57,7 @@
   {
     "zip": "10453",
     "county_fips": "36005",
-    "tract_geoid": "363600501060000",
+    "tract_geoid": "36005010600",
     "state_fips": "36",
     "tract": "010600",
     "weight_res": 0.35,
@@ -68,7 +68,7 @@
   {
     "zip": "10454",
     "county_fips": "36005",
-    "tract_geoid": "363600501070000",
+    "tract_geoid": "36005010700",
     "state_fips": "36",
     "tract": "010700",
     "weight_res": 0.9,
@@ -79,7 +79,7 @@
   {
     "zip": "10454",
     "county_fips": "36005",
-    "tract_geoid": "363600501080000",
+    "tract_geoid": "36005010800",
     "state_fips": "36",
     "tract": "010800",
     "weight_res": 0.1,
@@ -90,7 +90,7 @@
   {
     "zip": "10455",
     "county_fips": "36005",
-    "tract_geoid": "363600501090000",
+    "tract_geoid": "36005010900",
     "state_fips": "36",
     "tract": "010900",
     "weight_res": 0.55,
@@ -101,7 +101,7 @@
   {
     "zip": "10455",
     "county_fips": "36005",
-    "tract_geoid": "363600501100000",
+    "tract_geoid": "36005011000",
     "state_fips": "36",
     "tract": "011000",
     "weight_res": 0.45,
@@ -112,18 +112,18 @@
   {
     "zip": "10456",
     "county_fips": "36005",
-    "tract_geoid": "363600501230000",
+    "tract_geoid": "36005012300",
     "state_fips": "36",
     "tract": "012300",
     "weight_res": 0.42,
     "weight_tot": 0.37,
-    "nta_code": "UNASSIGNED",
-    "nta_name": ""
+    "nta_code": "BX35",
+    "nta_name": "Morrisania-Melrose"
   },
   {
     "zip": "10456",
     "county_fips": "36005",
-    "tract_geoid": "363600501240000",
+    "tract_geoid": "36005012400",
     "state_fips": "36",
     "tract": "012400",
     "weight_res": 0.58,
@@ -134,7 +134,7 @@
   {
     "zip": "10457",
     "county_fips": "36005",
-    "tract_geoid": "363600501250000",
+    "tract_geoid": "36005012500",
     "state_fips": "36",
     "tract": "012500",
     "weight_res": 0.5,
@@ -145,7 +145,7 @@
   {
     "zip": "10457",
     "county_fips": "36005",
-    "tract_geoid": "363600501260000",
+    "tract_geoid": "36005012600",
     "state_fips": "36",
     "tract": "012600",
     "weight_res": 0.5,
@@ -156,7 +156,7 @@
   {
     "zip": "10458",
     "county_fips": "36005",
-    "tract_geoid": "363600501270000",
+    "tract_geoid": "36005012700",
     "state_fips": "36",
     "tract": "012700",
     "weight_res": 0.75,
@@ -167,7 +167,7 @@
   {
     "zip": "10458",
     "county_fips": "36005",
-    "tract_geoid": "363600501280000",
+    "tract_geoid": "36005012800",
     "state_fips": "36",
     "tract": "012800",
     "weight_res": 0.25,
@@ -178,7 +178,7 @@
   {
     "zip": "10459",
     "county_fips": "36005",
-    "tract_geoid": "363600501290000",
+    "tract_geoid": "36005012900",
     "state_fips": "36",
     "tract": "012900",
     "weight_res": 0.6,
@@ -189,7 +189,7 @@
   {
     "zip": "10459",
     "county_fips": "36005",
-    "tract_geoid": "363600501300000",
+    "tract_geoid": "36005013000",
     "state_fips": "36",
     "tract": "013000",
     "weight_res": 0.4,
@@ -200,7 +200,7 @@
   {
     "zip": "10460",
     "county_fips": "36005",
-    "tract_geoid": "363600501310000",
+    "tract_geoid": "36005013100",
     "state_fips": "36",
     "tract": "013100",
     "weight_res": 0.8,
@@ -211,7 +211,7 @@
   {
     "zip": "10460",
     "county_fips": "36005",
-    "tract_geoid": "363600501320000",
+    "tract_geoid": "36005013200",
     "state_fips": "36",
     "tract": "013200",
     "weight_res": 0.2,
@@ -222,7 +222,7 @@
   {
     "zip": "10461",
     "county_fips": "36005",
-    "tract_geoid": "363600501330000",
+    "tract_geoid": "36005013300",
     "state_fips": "36",
     "tract": "013300",
     "weight_res": 0.48,
@@ -233,7 +233,7 @@
   {
     "zip": "10461",
     "county_fips": "36005",
-    "tract_geoid": "363600501340000",
+    "tract_geoid": "36005013400",
     "state_fips": "36",
     "tract": "013400",
     "weight_res": 0.52,
@@ -244,7 +244,7 @@
   {
     "zip": "10462",
     "county_fips": "36005",
-    "tract_geoid": "363600501350000",
+    "tract_geoid": "36005013500",
     "state_fips": "36",
     "tract": "013500",
     "weight_res": 0.7,
@@ -255,7 +255,7 @@
   {
     "zip": "10462",
     "county_fips": "36005",
-    "tract_geoid": "363600501360000",
+    "tract_geoid": "36005013600",
     "state_fips": "36",
     "tract": "013600",
     "weight_res": 0.3,
@@ -266,7 +266,7 @@
   {
     "zip": "10463",
     "county_fips": "36005",
-    "tract_geoid": "363600501370000",
+    "tract_geoid": "36005013700",
     "state_fips": "36",
     "tract": "013700",
     "weight_res": 0.58,
@@ -277,7 +277,7 @@
   {
     "zip": "10463",
     "county_fips": "36005",
-    "tract_geoid": "363600501380000",
+    "tract_geoid": "36005013800",
     "state_fips": "36",
     "tract": "013800",
     "weight_res": 0.42,
@@ -288,7 +288,7 @@
   {
     "zip": "10464",
     "county_fips": "36005",
-    "tract_geoid": "363600501390000",
+    "tract_geoid": "36005013900",
     "state_fips": "36",
     "tract": "013900",
     "weight_res": 0.65,
@@ -299,7 +299,7 @@
   {
     "zip": "10464",
     "county_fips": "36005",
-    "tract_geoid": "363600501400000",
+    "tract_geoid": "36005014000",
     "state_fips": "36",
     "tract": "014000",
     "weight_res": 0.35,
@@ -310,7 +310,7 @@
   {
     "zip": "10465",
     "county_fips": "36005",
-    "tract_geoid": "363600501410000",
+    "tract_geoid": "36005014100",
     "state_fips": "36",
     "tract": "014100",
     "weight_res": 0.72,
@@ -321,7 +321,7 @@
   {
     "zip": "10465",
     "county_fips": "36005",
-    "tract_geoid": "363600501420000",
+    "tract_geoid": "36005014200",
     "state_fips": "36",
     "tract": "014200",
     "weight_res": 0.28,
@@ -332,7 +332,7 @@
   {
     "zip": "10466",
     "county_fips": "36005",
-    "tract_geoid": "363600501430000",
+    "tract_geoid": "36005014300",
     "state_fips": "36",
     "tract": "014300",
     "weight_res": 0.55,
@@ -343,7 +343,7 @@
   {
     "zip": "10466",
     "county_fips": "36005",
-    "tract_geoid": "363600501440000",
+    "tract_geoid": "36005014400",
     "state_fips": "36",
     "tract": "014400",
     "weight_res": 0.45,
@@ -354,7 +354,7 @@
   {
     "zip": "10467",
     "county_fips": "36005",
-    "tract_geoid": "363600501450000",
+    "tract_geoid": "36005014500",
     "state_fips": "36",
     "tract": "014500",
     "weight_res": 0.82,
@@ -365,7 +365,7 @@
   {
     "zip": "10467",
     "county_fips": "36005",
-    "tract_geoid": "363600501460000",
+    "tract_geoid": "36005014600",
     "state_fips": "36",
     "tract": "014600",
     "weight_res": 0.18,
@@ -376,7 +376,7 @@
   {
     "zip": "10468",
     "county_fips": "36005",
-    "tract_geoid": "363600501470000",
+    "tract_geoid": "36005014700",
     "state_fips": "36",
     "tract": "014700",
     "weight_res": 0.6,
@@ -387,7 +387,7 @@
   {
     "zip": "10468",
     "county_fips": "36005",
-    "tract_geoid": "363600501480000",
+    "tract_geoid": "36005014800",
     "state_fips": "36",
     "tract": "014800",
     "weight_res": 0.4,
@@ -398,7 +398,7 @@
   {
     "zip": "10469",
     "county_fips": "36005",
-    "tract_geoid": "363600501490000",
+    "tract_geoid": "36005014900",
     "state_fips": "36",
     "tract": "014900",
     "weight_res": 0.75,
@@ -409,7 +409,7 @@
   {
     "zip": "10469",
     "county_fips": "36005",
-    "tract_geoid": "363600501500000",
+    "tract_geoid": "36005015000",
     "state_fips": "36",
     "tract": "015000",
     "weight_res": 0.25,
@@ -420,7 +420,7 @@
   {
     "zip": "10470",
     "county_fips": "36005",
-    "tract_geoid": "363600501510000",
+    "tract_geoid": "36005015100",
     "state_fips": "36",
     "tract": "015100",
     "weight_res": 0.5,
@@ -431,7 +431,7 @@
   {
     "zip": "10470",
     "county_fips": "36005",
-    "tract_geoid": "363600501520000",
+    "tract_geoid": "36005015200",
     "state_fips": "36",
     "tract": "015200",
     "weight_res": 0.5,
@@ -442,7 +442,7 @@
   {
     "zip": "10471",
     "county_fips": "36005",
-    "tract_geoid": "363600501530000",
+    "tract_geoid": "36005015300",
     "state_fips": "36",
     "tract": "015300",
     "weight_res": 0.68,
@@ -453,7 +453,7 @@
   {
     "zip": "10471",
     "county_fips": "36005",
-    "tract_geoid": "363600501540000",
+    "tract_geoid": "36005015400",
     "state_fips": "36",
     "tract": "015400",
     "weight_res": 0.32,
@@ -464,7 +464,7 @@
   {
     "zip": "10472",
     "county_fips": "36005",
-    "tract_geoid": "363600501550000",
+    "tract_geoid": "36005015500",
     "state_fips": "36",
     "tract": "015500",
     "weight_res": 0.58,
@@ -475,7 +475,7 @@
   {
     "zip": "10472",
     "county_fips": "36005",
-    "tract_geoid": "363600501560000",
+    "tract_geoid": "36005015600",
     "state_fips": "36",
     "tract": "015600",
     "weight_res": 0.42,
@@ -486,7 +486,7 @@
   {
     "zip": "10473",
     "county_fips": "36005",
-    "tract_geoid": "363600501570000",
+    "tract_geoid": "36005015700",
     "state_fips": "36",
     "tract": "015700",
     "weight_res": 0.7,
@@ -497,7 +497,7 @@
   {
     "zip": "10473",
     "county_fips": "36005",
-    "tract_geoid": "363600501580000",
+    "tract_geoid": "36005015800",
     "state_fips": "36",
     "tract": "015800",
     "weight_res": 0.3,
@@ -508,7 +508,7 @@
   {
     "zip": "10474",
     "county_fips": "36005",
-    "tract_geoid": "363600501590000",
+    "tract_geoid": "36005015900",
     "state_fips": "36",
     "tract": "015900",
     "weight_res": 0.55,
@@ -519,7 +519,7 @@
   {
     "zip": "10474",
     "county_fips": "36005",
-    "tract_geoid": "363600501600000",
+    "tract_geoid": "36005016000",
     "state_fips": "36",
     "tract": "016000",
     "weight_res": 0.45,
@@ -530,7 +530,7 @@
   {
     "zip": "10475",
     "county_fips": "36005",
-    "tract_geoid": "363600501610000",
+    "tract_geoid": "36005016100",
     "state_fips": "36",
     "tract": "016100",
     "weight_res": 0.8,
@@ -541,7 +541,7 @@
   {
     "zip": "10475",
     "county_fips": "36005",
-    "tract_geoid": "363600501620000",
+    "tract_geoid": "36005016200",
     "state_fips": "36",
     "tract": "016200",
     "weight_res": 0.2,
@@ -552,7 +552,7 @@
   {
     "zip": "10499",
     "county_fips": "36005",
-    "tract_geoid": "363600501630000",
+    "tract_geoid": "36005016300",
     "state_fips": "36",
     "tract": "016300",
     "weight_res": 0.75,
@@ -563,7 +563,7 @@
   {
     "zip": "10499",
     "county_fips": "36005",
-    "tract_geoid": "363600501640000",
+    "tract_geoid": "36005016400",
     "state_fips": "36",
     "tract": "016400",
     "weight_res": 0.25,

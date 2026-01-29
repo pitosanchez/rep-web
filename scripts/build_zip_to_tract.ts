@@ -86,27 +86,34 @@ class ZipToTractBuilder {
   }
 
   /**
-   * Create 20-digit Census GEOID from components
-   * Format: SSCCCTTTTTTAA
+   * Create 11-digit Census GEOID from components (tract level)
+   * Format: SSCCCTTTTTT
    *   SS = State FIPS (2 digits)
    *   CCC = County FIPS (3 digits)
    *   TTTTTT = Tract code (6 digits)
-   *   AA = Block Group (2 digits, unused here, set to 00)
+   *
+   * Note: HUD data may have county_fips as "36005" (5 digits: state+county)
+   * We extract just the last 3 digits as the actual county code.
    */
   private createGeoid(stateFips: string, countyFips: string, tract: string): string {
-    // Ensure proper lengths
-    const s = String(stateFips).padStart(2, '0');
-    const c = String(countyFips).padStart(3, '0');
+    // Ensure state is 2 digits
+    let s = String(stateFips).padStart(2, '0');
+    // Handle county FIPS: if it's 5 digits (SSCCC), extract last 3; otherwise use as-is
+    let c = String(countyFips);
+    if (c.length === 5) {
+      // County FIPS includes state prefix (e.g., "36005"), extract last 3 digits
+      c = c.substring(2);
+    }
+    c = c.padStart(3, '0');
 
-    // Tract might be 6 digits (012300) or just the numeric value
+    // Ensure tract is 6 digits
     let t = String(tract).padStart(6, '0');
     if (t.length > 6) {
-      // If it's already a partial GEOID, extract just the tract part
+      // If it's longer than 6 digits, extract just the last 6
       t = t.substring(t.length - 6);
     }
 
-    const bg = '00'; // Block group (not used in this pipeline)
-    return `${s}${c}${t}${bg}`;
+    return `${s}${c}${t}`;
   }
 
   /**

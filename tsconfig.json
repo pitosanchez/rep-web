@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "backend", "src/agents"]
+  "exclude": ["node_modules", "backend", "src/agents", "scripts"]
 }

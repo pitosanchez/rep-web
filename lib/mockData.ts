@@ -1,20 +1,16 @@
 /**
  * Mock data for REP wireframe
- * Replace with real data from API/database in production
+ *
+ * DEPRECATED: Neighborhood and geographic data now comes from API endpoints:
+ * - /api/geo/zip-to-tracts - All ZIP to tract mappings
+ * - /api/geo/neighborhood-clusters - Neighborhood aggregations
+ * - /api/geo/neighborhood-profile - Individual neighborhood profiles
+ * - /api/geo/bronx-zips - GeoJSON for map visualization
+ *
+ * This file is being phased out. It currently contains only:
+ * - Stories (temporary until database is built)
+ * - Generic content blocks (diffPoints, contextFactors, themes, dataPoints)
  */
-
-export interface Neighborhood {
-  zip: string;
-  name: string;
-  city: string;
-  state: string;
-  burdenIndex: number;
-  avgTravel: number;
-  exposureIndex: number;
-  storyCount: number;
-  coords: { top: string; left: string }; // For UI positioning (deprecated, kept for backwards compat)
-  center: [number, number]; // MapLibre: [longitude, latitude]
-}
 
 export interface Story {
   id: number;
@@ -26,45 +22,10 @@ export interface Story {
   date: string;
 }
 
-export const neighborhoods: Neighborhood[] = [
-  {
-    zip: '10456',
-    name: 'Morrisania / South Bronx',
-    city: 'New York',
-    state: 'NY',
-    burdenIndex: 82,
-    avgTravel: 64,
-    exposureIndex: 77,
-    storyCount: 19,
-    coords: { top: '35%', left: '55%' },
-    center: [-73.918, 40.828]
-  },
-  {
-    zip: '10457',
-    name: 'Tremont',
-    city: 'New York',
-    state: 'NY',
-    burdenIndex: 76,
-    avgTravel: 58,
-    exposureIndex: 71,
-    storyCount: 11,
-    coords: { top: '28%', left: '48%' },
-    center: [-73.901, 40.851]
-  },
-  {
-    zip: '10459',
-    name: 'Longwood / Hunts Point',
-    city: 'New York',
-    state: 'NY',
-    burdenIndex: 84,
-    avgTravel: 72,
-    exposureIndex: 81,
-    storyCount: 14,
-    coords: { top: '42%', left: '62%' },
-    center: [-73.891, 40.815]
-  }
-];
-
+/**
+ * TEMPORARY: Mock stories
+ * Replace with real stories from database when available
+ */
 export const stories: Story[] = [
   {
     id: 1,

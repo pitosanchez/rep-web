@@ -1,8 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import { neighborhoods, Neighborhood } from '@/lib/mockData';
+import React, { useState, useEffect } from 'react';
 import MapLibreMap from '@/components/MapLibreMap';
+
+interface ZipToTractRow {
+  zip: string;
+  nta_code: string;
+  nta_name: string;
+  weight_res: number;
+  weight_tot: number;
+  [key: string]: any;
+}
 
 interface MapPageProps {
   selectedZip: string | null;
@@ -17,6 +25,45 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     environmentalExposure: false,
     transit: false
   });
+  const [zipData, setZipData] = useState<ZipToTractRow[]>([]);
+  const [uniqueZips, setUniqueZips] = useState<ZipToTractRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch ZIP-to-tract data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/geo/zip-to-tracts');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch ZIP data: ${response.statusText}`);
+        }
+        const result = await response.json();
+        if (result.success && result.data) {
+          setZipData(result.data);
+
+          // Get unique ZIPs (take first occurrence of each ZIP)
+          const seen = new Set<string>();
+          const unique = result.data.filter((row: ZipToTractRow) => {
+            if (seen.has(row.zip)) return false;
+            seen.add(row.zip);
+            return true;
+          });
+          setUniqueZips(unique);
+        } else {
+          throw new Error('Invalid response format');
+        }
+      } catch (err) {
+        console.error('Error fetching ZIP data:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleLayerToggle = (layer: keyof typeof visibleLayers) => {
     setVisibleLayers(prev => ({
@@ -210,10 +257,35 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
           </div>
 
           {/* Neighborhood cards */}
-          {neighborhoods.map(n => (
+          {error && (
+            <div style={{
+              gridColumn: '1 / -1',
+              padding: '20px',
+              background: '#fff3f0',
+              borderRadius: '8px',
+              color: '#c45a3b',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '14px'
+            }}>
+              Error loading neighborhoods: {error}
+            </div>
+          )}
+          {loading && (
+            <div style={{
+              gridColumn: '1 / -1',
+              padding: '20px',
+              textAlign: 'center',
+              color: '#999',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '14px'
+            }}>
+              Loading neighborhoods...
+            </div>
+          )}
+          {!loading && uniqueZips.length > 0 && uniqueZips.map(n => (
             <NeighborhoodCard
               key={n.zip}
-              neighborhood={n}
+              data={n}
               isSelected={selectedZip === n.zip}
               onSelect={() => {
                 onSelectZip(n.zip);
@@ -230,17 +302,17 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
 };
 
 interface NeighborhoodCardProps {
-  neighborhood: Neighborhood;
+  data: ZipToTractRow;
   isSelected: boolean;
   onSelect: () => void;
 }
 
-const NeighborhoodCard: React.FC<NeighborhoodCardProps> = ({ neighborhood, isSelected, onSelect }) => (
+const NeighborhoodCard: React.FC<NeighborhoodCardProps> = ({ data, isSelected, onSelect }) => (
   <button
     onClick={onSelect}
     style={{
-      background: '#fff',
-      border: '1px solid #e8e4df',
+      background: isSelected ? '#faf7f3' : '#fff',
+      border: isSelected ? '2px solid #c45a3b' : '1px solid #e8e4df',
       borderRadius: '12px',
       padding: '20px',
       textAlign: 'left',
@@ -248,12 +320,16 @@ const NeighborhoodCard: React.FC<NeighborhoodCardProps> = ({ neighborhood, isSel
       transition: 'all 0.2s ease'
     }}
     onMouseEnter={e => {
-      e.currentTarget.style.borderColor = '#c45a3b';
-      e.currentTarget.style.boxShadow = '0 4px 12px rgba(196, 90, 59, 0.1)';
+      if (!isSelected) {
+        e.currentTarget.style.borderColor = '#c45a3b';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(196, 90, 59, 0.1)';
+      }
     }}
     onMouseLeave={e => {
-      e.currentTarget.style.borderColor = '#e8e4df';
-      e.currentTarget.style.boxShadow = 'none';
+      if (!isSelected) {
+        e.currentTarget.style.borderColor = '#e8e4df';
+        e.currentTarget.style.boxShadow = 'none';
+      }
     }}
   >
     <div style={{
@@ -266,24 +342,28 @@ const NeighborhoodCard: React.FC<NeighborhoodCardProps> = ({ neighborhood, isSel
         fontFamily: 'Georgia, serif',
         fontSize: '18px',
         color: '#1a1a1a'
-      }}>{neighborhood.name}</div>
+      }}>{data.nta_name || 'Unassigned'}</div>
       <div style={{
         fontFamily: 'system-ui, sans-serif',
         fontSize: '13px',
         fontWeight: '600',
-        color: '#c45a3b'
-      }}>{neighborhood.zip}</div>
+        color: '#c45a3b',
+        backgroundColor: '#fff3f0',
+        padding: '4px 8px',
+        borderRadius: '4px'
+      }}>{data.zip}</div>
     </div>
     <div style={{
       display: 'flex',
       gap: '16px',
       fontFamily: 'system-ui, sans-serif',
       fontSize: '13px',
-      color: '#666'
+      color: '#666',
+      marginBottom: '12px'
     }}>
-      <span>Burden: <strong style={{ color: '#1a1a1a' }}>{neighborhood.burdenIndex}</strong></span>
-      <span>Travel: <strong style={{ color: '#1a1a1a' }}>{neighborhood.avgTravel}m</strong></span>
-      <span>Stories: <strong style={{ color: '#1a1a1a' }}>{neighborhood.storyCount}</strong></span>
+      <span>NTA: <strong style={{ color: '#1a1a1a' }}>{data.nta_code || '—'}</strong></span>
+      <span>Res Weight: <strong style={{ color: '#1a1a1a' }}>{(data.weight_res * 100).toFixed(0)}%</strong></span>
+      <span>Tot Weight: <strong style={{ color: '#1a1a1a' }}>{(data.weight_tot * 100).toFixed(0)}%</strong></span>
     </div>
   </button>
 );

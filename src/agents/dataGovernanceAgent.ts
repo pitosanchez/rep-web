@@ -126,7 +126,7 @@ function checkGeographyResolution(
 function checkIndividualLevelInference(dataset: RawDataset): GovernanceDecision {
   // If the dataset contains small geographies + disease counts,
   // an adversary might re-identify individuals
-  if (dataset.resolutionLevel === "tract" && dataset.cellCounts) {
+  if (dataset.cellCounts) {
     const tooSmallGeographies = dataset.geographies.filter(g => {
       const cellCount = dataset.cellCounts[g.geoid];
       return cellCount && cellCount < GOVERNANCE_CONFIG.MINIMUM_CELL_SIZE;
@@ -182,7 +182,7 @@ export function validateDataset(dataset: RawDataset): GovernanceCheckResult {
   // Check each geography + metric pair
   for (const geography of dataset.geographies) {
     // 1. Check minimum cell size for this geography
-    for (const [metric, value] of Object.entries(dataset.metrics)) {
+    for (const metric of Object.keys(dataset.metrics)) {
       const cellCount = dataset.cellCounts[metric] || null;
       const cellSizeDecision = checkMinimumCellSize(metric, cellCount);
       decisions.push(cellSizeDecision);

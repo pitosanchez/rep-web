@@ -52,22 +52,22 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     </section>
 
     <section style={{
-      padding: '32px',
+      padding: 'clamp(16px, 5vw, 32px)',
       background: '#fff',
-      minHeight: '70vh'
+      minHeight: 'auto'
     }}>
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: '1.6fr 1fr',
-        gap: '32px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1.6fr))',
+        gap: 'clamp(16px, 4vw, 32px)'
       }}>
         {/* Map Container */}
         <div style={{
           borderRadius: '12px',
           position: 'relative',
-          minHeight: '500px',
+          minHeight: 'clamp(300px, 60vw, 500px)',
           overflow: 'hidden'
         }}>
           <MapLibreMap

@@ -21,7 +21,9 @@ export default function MapLibreMap({
 }: MapLibreMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
+  const popup = useRef<maplibregl.Popup | null>(null);
   const [hoveredZip, setHoveredZip] = useState<string | null>(null);
+  const [hoveredFeature, setHoveredFeature] = useState<any>(null);
   const [mapReady, setMapReady] = useState(false);
 
   // Initialize map
@@ -48,7 +50,7 @@ export default function MapLibreMap({
         data: '/data/bronx-zips.geojson'
       });
 
-      // Add fill layer with choropleth styling
+      // Disease Burden layer - choropleth
       map.current.addLayer({
         id: 'bronx-zips-fill',
         type: 'fill',
@@ -71,6 +73,84 @@ export default function MapLibreMap({
         }
       });
 
+      // Care Access layer - based on travel time (lower is better)
+      map.current.addLayer({
+        id: 'bronx-care-access',
+        type: 'fill',
+        source: 'bronx-zips',
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'avgTravel'],
+            55, '#4a90e2',   // Good access (blue) - lower travel time
+            65, '#7ab3f5',   // Moderate access (light blue)
+            75, '#d96666'    // Poor access (red) - higher travel time
+          ],
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            0.9,
+            0.7
+          ]
+        },
+        layout: {
+          visibility: 'none'
+        }
+      });
+
+      // Environmental Exposure layer - based on exposure index
+      map.current.addLayer({
+        id: 'bronx-exposure',
+        type: 'fill',
+        source: 'bronx-zips',
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'exposureIndex'],
+            65, '#6b8f71',   // Low exposure (green)
+            75, '#d4a574',   // Moderate exposure (tan)
+            85, '#8b3a3a'    // High exposure (dark red)
+          ],
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            0.9,
+            0.7
+          ]
+        },
+        layout: {
+          visibility: 'none'
+        }
+      });
+
+      // Transit layer - visualization based on travel time (proxy for transit access)
+      map.current.addLayer({
+        id: 'bronx-transit',
+        type: 'fill',
+        source: 'bronx-zips',
+        paint: {
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'avgTravel'],
+            55, '#ffd700',   // Good transit (yellow-gold)
+            65, '#ffa500',   // Moderate transit (orange)
+            75, '#ff6b6b'    // Poor transit (red)
+          ],
+          'fill-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false],
+            0.9,
+            0.7
+          ]
+        },
+        layout: {
+          visibility: 'none'
+        }
+      });
+
       // Add border layer
       map.current.addLayer({
         id: 'bronx-zips-border',
@@ -90,52 +170,102 @@ export default function MapLibreMap({
         }
       });
 
-      // Handle clicks on polygons
-      map.current.on('click', 'bronx-zips-fill', (e) => {
-        const features = e.features;
-        if (!features || features.length === 0) return;
+      // Layer IDs for interaction
+      const interactiveLayers = ['bronx-zips-fill', 'bronx-care-access', 'bronx-exposure', 'bronx-transit'];
 
-        const zip = features[0].properties?.zip;
-        if (zip) {
-          onZipClick(zip);
-        }
+      // Handle clicks on all polygon layers
+      interactiveLayers.forEach(layerId => {
+        map.current?.on('click', layerId, (e) => {
+          const features = e.features;
+          if (!features || features.length === 0) return;
+
+          const zip = features[0].properties?.zip;
+          if (zip) {
+            onZipClick(zip);
+          }
+        });
+
+        // Change cursor on hover
+        map.current?.on('mouseenter', layerId, () => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = 'pointer';
+          }
+        });
+
+        map.current?.on('mouseleave', layerId, () => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = '';
+          }
+        });
+
+        // Hover state tracking and popup
+        map.current?.on('mousemove', layerId, (e) => {
+          if (!map.current || !e.features || e.features.length === 0) return;
+
+          const feature = e.features[0];
+          const properties = feature.properties;
+
+          // Reset previous hover state
+          if (hoveredZip && hoveredZip !== properties?.zip) {
+            map.current.setFeatureState(
+              { source: 'bronx-zips', id: hoveredZip },
+              { hover: false }
+            );
+          }
+
+          // Set new hover state
+          const zip = properties?.zip;
+          if (zip) {
+            setHoveredZip(zip);
+            setHoveredFeature(properties);
+            map.current.setFeatureState(
+              { source: 'bronx-zips', id: zip },
+              { hover: true }
+            );
+
+            // Create popup if not exists
+            if (!popup.current) {
+              popup.current = new maplibregl.Popup({
+                closeButton: false,
+                closeOnClick: false
+              });
+            }
+
+            // Update popup content and position
+            const popupContent = `
+              <div style="font-family: system-ui; font-size: 12px; padding: 8px;">
+                <div style="font-weight: 600; margin-bottom: 4px;">${properties.zip}</div>
+                <div style="font-size: 11px; color: #666; margin-bottom: 2px;">${properties.name || ''}</div>
+                <div style="border-top: 1px solid #e8e4df; padding-top: 6px; margin-top: 6px; font-size: 11px;">
+                  <div>Burden: <strong>${properties.burdenIndex || '—'}</strong></div>
+                  <div>Travel: <strong>${properties.avgTravel || '—'}m</strong></div>
+                  <div>Exposure: <strong>${properties.exposureIndex || '—'}</strong></div>
+                </div>
+              </div>
+            `;
+
+            popup.current
+              .setLngLat(e.lngLat)
+              .setHTML(popupContent)
+              .addTo(map.current);
+          }
+        });
+
+        // Close popup on leave
+        map.current?.on('mouseleave', layerId, () => {
+          if (popup.current) {
+            popup.current.remove();
+            popup.current = null;
+          }
+        });
       });
 
-      // Change cursor on hover
-      map.current.on('mouseenter', 'bronx-zips-fill', () => {
-        if (map.current) {
-          map.current.getCanvas().style.cursor = 'pointer';
-        }
+      // Add zoom controls
+      const nav = new maplibregl.NavigationControl({
+        showCompass: false,
+        showZoom: true
       });
-
-      map.current.on('mouseleave', 'bronx-zips-fill', () => {
-        if (map.current) {
-          map.current.getCanvas().style.cursor = '';
-        }
-      });
-
-      // Hover state tracking
-      map.current.on('mousemove', 'bronx-zips-fill', (e) => {
-        if (!map.current || !e.features || e.features.length === 0) return;
-
-        // Reset previous hover state
-        if (hoveredZip) {
-          map.current.setFeatureState(
-            { source: 'bronx-zips', id: hoveredZip },
-            { hover: false }
-          );
-        }
-
-        // Set new hover state
-        const zip = e.features[0].properties?.zip;
-        if (zip) {
-          setHoveredZip(zip);
-          map.current.setFeatureState(
-            { source: 'bronx-zips', id: zip },
-            { hover: true }
-          );
-        }
-      });
+      map.current.addControl(nav, 'top-right');
 
       setMapReady(true);
     });
@@ -181,7 +311,7 @@ export default function MapLibreMap({
   useEffect(() => {
     if (!map.current || !mapReady) return;
 
-    // Disease Burden layer (already showing, just toggle)
+    // Disease Burden layer
     const burdenLayerId = 'bronx-zips-fill';
     if (map.current.getLayer(burdenLayerId)) {
       map.current.setLayoutProperty(
@@ -191,10 +321,35 @@ export default function MapLibreMap({
       );
     }
 
-    // Note: Care Access, Environmental Exposure, and Transit layers
-    // would be added as additional choropleth layers with different
-    // data-driven styling. For now, we show Disease Burden as default.
-    // These can be added in Phase 4.
+    // Care Access layer
+    const careAccessLayerId = 'bronx-care-access';
+    if (map.current.getLayer(careAccessLayerId)) {
+      map.current.setLayoutProperty(
+        careAccessLayerId,
+        'visibility',
+        visibleLayers.careAccess ? 'visible' : 'none'
+      );
+    }
+
+    // Environmental Exposure layer
+    const exposureLayerId = 'bronx-exposure';
+    if (map.current.getLayer(exposureLayerId)) {
+      map.current.setLayoutProperty(
+        exposureLayerId,
+        'visibility',
+        visibleLayers.environmentalExposure ? 'visible' : 'none'
+      );
+    }
+
+    // Transit layer
+    const transitLayerId = 'bronx-transit';
+    if (map.current.getLayer(transitLayerId)) {
+      map.current.setLayoutProperty(
+        transitLayerId,
+        'visibility',
+        visibleLayers.transit ? 'visible' : 'none'
+      );
+    }
   }, [visibleLayers, mapReady]);
 
   return (

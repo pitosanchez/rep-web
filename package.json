@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pipeline": "ts-node scripts/build_bronx_crosswalk.ts",
-    "pipeline:download": "ts-node scripts/download_sources.ts",
-    "pipeline:spatial-join": "ts-node scripts/spatial_join_tract_to_nta.ts",
-    "pipeline:cluster": "ts-node scripts/build_neighborhood_clusters.ts"
+    "pipeline": "ts-node -P tsconfig.scripts.json scripts/build_bronx_crosswalk.ts",
+    "pipeline:download": "ts-node -P tsconfig.scripts.json scripts/download_sources.ts",
+    "pipeline:spatial-join": "ts-node -P tsconfig.scripts.json scripts/spatial_join_tract_to_nta.ts",
+    "pipeline:cluster": "ts-node -P tsconfig.scripts.json scripts/build_neighborhood_clusters.ts"
   },
   "dependencies": {
     "@turf/turf": "^6.5.0",

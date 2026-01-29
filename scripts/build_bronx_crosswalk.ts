@@ -19,8 +19,9 @@ import Logger from './utils/logger';
 import FileCache from './utils/file-cache';
 import Validator from './utils/validator';
 import { SourceDownloader } from './download_sources';
+import { ZipToTractBuilder } from './build_zip_to_tract';
 import { DEFAULT_CONFIG, OUTPUT_FILES, PHASE_CONFIG, CACHED_FILES } from './config';
-import { PipelineStatus, PipelineOutput } from './types';
+import { PipelineStatus, PipelineOutput, ZipToTractRow } from './types';
 
 class PipelineMaster {
   private logger: Logger;
@@ -82,25 +83,20 @@ class PipelineMaster {
 
   /**
    * Phase 2: Map ZIP codes to Census tracts
-   * This is stubbed for now - will be implemented next
    */
+  private zipToTracts: ZipToTractRow[] = [];
+
   private async runPhase2(): Promise<void> {
     this.setPhaseStatus(2, { status: 'running' });
 
     try {
-      this.logger.section('PHASE 2: ZIP-to-Tract Mapping');
-      this.logger.info('Loading HUD USPS ZIP-TRACT Crosswalk...');
-
-      const hudData = this.cache.loadText(CACHED_FILES.hud_zip_tract);
-      const lines = hudData.split('\n');
-
-      this.logger.success(`Loaded ${lines.length} rows from HUD crosswalk`);
-      this.logger.info('(Full implementation coming next)');
+      const builder = new ZipToTractBuilder();
+      this.zipToTracts = await builder.run();
 
       this.setPhaseStatus(2, {
         status: 'complete',
         end_time: new Date(),
-        items_processed: lines.length
+        items_processed: this.zipToTracts.length
       });
     } catch (error) {
       this.setPhaseStatus(2, { status: 'error', error: String(error) });
@@ -165,14 +161,12 @@ class PipelineMaster {
 
   /**
    * Phase 5: Assemble outputs & validate
-   * Stubbed for now
    */
   private async runPhase5(): Promise<void> {
     this.setPhaseStatus(5, { status: 'running' });
 
     try {
       this.logger.section('PHASE 5: Output Assembly & Validation');
-      this.logger.info('Assembling final outputs...');
 
       // Ensure output directory exists
       if (!fs.existsSync(DEFAULT_CONFIG.output_dir)) {
@@ -180,8 +174,18 @@ class PipelineMaster {
         this.logger.success(`Created output directory: ${DEFAULT_CONFIG.output_dir}`);
       }
 
+      // Write ZIP-to-tract JSON (intermediate output from Phase 2)
+      if (this.zipToTracts.length > 0) {
+        const jsonPath = path.join(
+          DEFAULT_CONFIG.output_dir,
+          OUTPUT_FILES.zip_to_tracts_json
+        );
+        fs.writeFileSync(jsonPath, JSON.stringify(this.zipToTracts, null, 2));
+        this.logger.success(`Wrote: ${jsonPath} (${this.zipToTracts.length} rows)`);
+      }
+
       this.logger.success('Output files assembled');
-      this.logger.info('(Full implementation coming next)');
+      this.logger.info('(CSV export and remaining phases coming next)');
 
       this.setPhaseStatus(5, {
         status: 'complete',

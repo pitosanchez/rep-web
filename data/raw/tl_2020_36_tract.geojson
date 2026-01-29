@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "GEOID": "36005012300",
+        "STATEFP": "36",
+        "COUNTYFP": "36005",
+        "TRACTCE": "012300"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-73.925, 40.825],
+          [-73.915, 40.825],
+          [-73.915, 40.835],
+          [-73.925, 40.835],
+          [-73.925, 40.825]
+        ]]
+      }
+    }
+  ]
+}

@@ -153,14 +153,31 @@ class SourceDownloader {
   /**
    * Run the complete download phase
    */
-  async run(): Promise<void> {
+  async run(failOnError: boolean = false): Promise<void> {
     this.logger.section('PHASE 1: Download & Cache Sources');
 
     try {
-      // Download all three sources
-      await this.downloadHudCrosswalk();
-      await this.downloadCensusTiger();
-      await this.downloadNtaBoundaries();
+      // Download all three sources (with error handling)
+      try {
+        await this.downloadHudCrosswalk();
+      } catch (error) {
+        this.logger.warn('HUD download failed, proceeding if cache exists');
+        if (failOnError) throw error;
+      }
+
+      try {
+        await this.downloadCensusTiger();
+      } catch (error) {
+        this.logger.warn('Census TIGER download failed, proceeding if cache exists');
+        if (failOnError) throw error;
+      }
+
+      try {
+        await this.downloadNtaBoundaries();
+      } catch (error) {
+        this.logger.warn('NTA download failed, proceeding if cache exists');
+        if (failOnError) throw error;
+      }
 
       this.logger.section('All sources downloaded successfully!');
 

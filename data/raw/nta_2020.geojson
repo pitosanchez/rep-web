@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "NTA_CODE": "BX35",
+        "NTA_NAME": "Morrisania-Melrose"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-73.935, 40.820],
+          [-73.900, 40.820],
+          [-73.900, 40.840],
+          [-73.935, 40.840],
+          [-73.935, 40.820]
+        ]]
+      }
+    }
+  ]
+}

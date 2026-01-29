@@ -226,7 +226,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           fontSize: '48px',
           color: '#c45a3b',
           marginBottom: '24px'
-        }}>"</div>
+        }}>&quot;</div>
         <blockquote style={{
           fontFamily: 'Georgia, serif',
           fontSize: 'clamp(20px, 3vw, 28px)',
@@ -237,7 +237,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           marginBottom: '24px'
         }}>
           In some ZIP codes, long travel times to nephrology care are treated as
-          "noncompliance." REP shows the conditions underneath the label.
+          &quot;noncompliance.&quot; REP shows the conditions underneath the label.
         </blockquote>
         <div style={{
           fontFamily: 'system-ui, sans-serif',
@@ -437,7 +437,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
                 color: 'rgba(196, 90, 59, 0.2)',
                 lineHeight: 1,
                 marginBottom: '12px'
-              }}>"</div>
+              }}>&quot;</div>
 
               {/* Story */}
               <p style={{

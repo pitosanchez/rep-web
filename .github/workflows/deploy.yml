@@ -4,37 +4,37 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Install Vercel CLI
+        run: npm install -g vercel
 
-      # Deploy to Vercel (production on main, preview on PRs)
-      - name: Deploy to Vercel
+      - name: Pull Vercel environment
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel pull --yes --token=$VERCEL_TOKEN
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          npm install -g vercel
-          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            vercel deploy --prod --token $VERCEL_TOKEN
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            vercel deploy --prod --token=$VERCEL_TOKEN
           else
-            vercel deploy --token $VERCEL_TOKEN
+            vercel deploy --token=$VERCEL_TOKEN
           fi

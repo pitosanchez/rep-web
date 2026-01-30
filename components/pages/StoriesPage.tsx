@@ -198,7 +198,8 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 color: '#888',
                 marginTop: '8px'
               }}>
-                Don't include names, exact addresses, employer details, or anything identifying.
+                {`Don't include names, exact addresses, employer details, or anything identifying.`}
+                <br />
                 Keep it under 240 characters.
               </p>
             </div>

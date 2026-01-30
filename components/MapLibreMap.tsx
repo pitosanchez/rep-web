@@ -28,7 +28,7 @@ export default function MapLibreMap({
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
   const [hoveredZip, setHoveredZip] = useState<string | null>(null);
-  const [hoveredFeature, setHoveredFeature] = useState<any>(null);
+  const [_hoveredFeature, setHoveredFeature] = useState<any>(null);
   const [mapReady, setMapReady] = useState(false);
   const [geoData, setGeoData] = useState<GeoJSONData | null>(null);
   const [loading, setLoading] = useState(true);

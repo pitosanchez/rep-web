@@ -22,7 +22,7 @@ export const MethodsPage: React.FC = () => (
           maxWidth: '700px'
         }}>
           Everything REP shows is built on explicit, auditable decisions.
-          Here's how we work.
+          {`Here's how we work.`}
         </p>
       </div>
     </section>
@@ -127,7 +127,7 @@ export const MethodsPage: React.FC = () => (
           color: '#1a1a1a',
           marginBottom: '48px',
           textAlign: 'center'
-        }}>What REP Shows & What It Doesn't</h2>
+        }}>{`What REP Shows & What It Doesn't`}</h2>
 
         <div style={{
           display: 'grid',

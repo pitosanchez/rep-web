@@ -4,7 +4,7 @@ interface AboutPageProps {
   onNavigate: (page: string) => void;
 }
 
-export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
+export const AboutPage: React.FC<AboutPageProps> = ({ _onNavigate }) => (
   <div style={{ paddingTop: '80px' }}>
     <section style={{
       padding: '80px 32px',

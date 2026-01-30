@@ -25,7 +25,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     environmentalExposure: false,
     transit: false
   });
-  const [zipData, setZipData] = useState<ZipToTractRow[]>([]);
+  const [_zipData, setZipData] = useState<ZipToTractRow[]>([]);
   const [uniqueZips, setUniqueZips] = useState<ZipToTractRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

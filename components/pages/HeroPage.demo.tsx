@@ -106,9 +106,9 @@ export const HeroPageTestingGuide = () => (
     <div style={{ marginTop: '40px', borderTop: '2px solid #ddd', paddingTop: '20px' }}>
       <h3>Interactive Testing</h3>
       <ul>
-        <li>✓ Primary button ("Explore the Map") responds to hover</li>
-        <li>✓ Secondary button ("Share Your Experience") responds to hover</li>
-        <li>✓ "What Makes REP Different" cards lift on hover</li>
+        <li>{`✓ Primary button ("Explore the Map") responds to hover`}</li>
+        <li>{`✓ Secondary button ("Share Your Experience") responds to hover`}</li>
+        <li>{`✓ "What Makes REP Different" cards lift on hover`}</li>
         <li>✓ Featured story cards respond to hover</li>
         <li>✓ CTA buttons in banner section responsive</li>
       </ul>

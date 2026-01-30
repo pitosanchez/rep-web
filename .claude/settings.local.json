@@ -4,7 +4,12 @@
       "Bash(npm run build:*)",
       "Bash(npm run pipeline:*)",
       "Bash(lsof:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(kill:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run dev:*)"
     ]
   }
 }

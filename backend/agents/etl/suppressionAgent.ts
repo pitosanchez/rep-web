@@ -114,7 +114,7 @@ export function applySuppressionToGeography(
   // Process each metric
   for (const [metricName, value] of Object.entries(metrics)) {
     const cellCount = cellCounts[metricName] || null;
-    const { decision, value: suppressedValue } = suppressMetric(
+    const { decision, value: _suppressedValue } = suppressMetric(
       metricName,
       cellCount,
       value

@@ -408,7 +408,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => (
       fontSize: '48px',
       color: 'rgba(196, 90, 59, 0.15)',
       lineHeight: 1
-    }}>"</div>
+    }}>{`"`}</div>
 
     <div style={{
       display: 'flex',
@@ -443,7 +443,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => (
       fontStyle: 'italic',
       marginBottom: '16px'
     }}>
-      "{story.quote}"
+      {`"${story.quote}"`}
     </p>
 
     <div style={{

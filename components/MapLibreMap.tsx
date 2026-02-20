@@ -27,8 +27,7 @@ export default function MapLibreMap({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
-  const [hoveredZip, setHoveredZip] = useState<string | null>(null);
-  const [_hoveredFeature, setHoveredFeature] = useState<any>(null);
+  const hoveredZipRef = useRef<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [geoData, setGeoData] = useState<GeoJSONData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +66,7 @@ export default function MapLibreMap({
     // Initialize map centered on South Bronx
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'https://demotiles.maplibre.org/style.json',
+      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
       center: [-73.918, 40.828],
       zoom: 12,
       pitch: 0,
@@ -94,8 +93,8 @@ export default function MapLibreMap({
             'interpolate',
             ['linear'],
             ['get', 'weight_tot'],
-            0, 6,
-            1, 12
+            0, 8,
+            1, 24
           ],
           'circle-color': [
             'interpolate',
@@ -132,8 +131,8 @@ export default function MapLibreMap({
             'interpolate',
             ['linear'],
             ['get', 'weight_res'],
-            0, 6,
-            1, 12
+            0, 8,
+            1, 24
           ],
           'circle-color': [
             'interpolate',
@@ -181,8 +180,8 @@ export default function MapLibreMap({
             'interpolate',
             ['linear'],
             ['get', 'weight_tot'],
-            0, 6,
-            1, 12
+            0, 8,
+            1, 24
           ],
           'circle-color': [
             'interpolate',
@@ -245,9 +244,9 @@ export default function MapLibreMap({
           const properties = feature.properties;
 
           // Reset previous hover state
-          if (hoveredZip && hoveredZip !== properties?.zip) {
+          if (hoveredZipRef.current && hoveredZipRef.current !== properties?.zip) {
             map.current.setFeatureState(
-              { source: 'bronx-zips', id: hoveredZip },
+              { source: 'bronx-zips', id: hoveredZipRef.current },
               { hover: false }
             );
           }
@@ -255,8 +254,7 @@ export default function MapLibreMap({
           // Set new hover state
           const zip = properties?.zip;
           if (zip) {
-            setHoveredZip(zip);
-            setHoveredFeature(properties);
+            hoveredZipRef.current = zip;
             map.current.setFeatureState(
               { source: 'bronx-zips', id: zip },
               { hover: true }
@@ -279,6 +277,8 @@ export default function MapLibreMap({
                   <div>NTA Code: <strong>${properties.nta_code || '—'}</strong></div>
                   <div>Residential Weight: <strong>${(properties.weight_res * 100).toFixed(1)}%</strong></div>
                   <div>Total Weight: <strong>${(properties.weight_tot * 100).toFixed(1)}%</strong></div>
+                  <div>Exposure Index: <strong>${(properties.exposure_index * 100).toFixed(0)}%</strong></div>
+                  <div>Transit Burden: <strong>${(properties.transit_burden * 100).toFixed(0)}%</strong></div>
                 </div>
               </div>
             `;

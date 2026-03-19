@@ -85,51 +85,23 @@ REP is a **public accountability tool** that:
 ## File Structure
 
 ```
-rep-web/
-├── app/                           # Next.js App Router
-│   ├── page.tsx                   # Homepage
-│   ├── neighborhood/[geoid]/      # Neighborhood detail pages
-│   └── api/                       # API routes
-│       ├── neighborhood/          # Data endpoints
-│       ├── export/                # Export endpoint
-│       └── cron/                  # Scheduled jobs
+rep/
+├── rep-web/                       # Frontend (Next.js)
+│   ├── app/
+│   ├── components/
+│   ├── lib/
+│   └── public/
 │
-├── components/                    # React components
-│   ├── Map.tsx                    # MapLibre map wrapper
-│   ├── Narrative.tsx              # Story display
-│   ├── LayerToggle.tsx            # Map controls
-│   └── ...
+├── rep-api/                       # Backend (agents / ETL server code)
+│   ├── backend/
+│   └── src/
 │
-├── lib/                           # Utilities & types
-│   ├── permissions.ts             # Role-based access
-│   ├── geography.ts               # GEOID helpers
-│   └── ...
-│
-├── src/
-│   ├── agents/                    # Agent system
-│   │   ├── types.ts               # Shared types
-│   │   ├── dataGovernanceAgent.ts # Gatekeeper
-│   │   ├── llmNarrativeAgent.ts   # Story generation
-│   │   ├── censusAgent.ts         # Census data fetch
-│   │   └── overpassAgent.ts       # OSM POI fetch
-│   └── ...
-│
-├── backend/
-│   ├── agents/
-│   │   └── etl/                   # ETL agents (server-only)
-│   │       ├── suppressionAgent.ts
-│   │       └── burdenIndexAgent.ts
-│   └── ...
+├── rep-data/                      # Raw + processed data + pipeline scripts
+│   ├── data/
+│   ├── scripts/
+│   └── tsconfig.scripts.json
 │
 ├── docs/
-│   ├── prompt.md                  # Project brief (community + designers)
-│   └── ...
-│
-├── public/
-│   └── data/                      # GeoJSON, static assets
-│
-├── AGENT_ARCHITECTURE.md          # System design (detailed)
-├── AGENT_INTEGRATION_GUIDE.md     # How to use agents
 └── README.md                      # This file
 ```
 
@@ -245,14 +217,14 @@ For detailed architecture, read [AGENT_ARCHITECTURE.md](./AGENT_ARCHITECTURE.md)
 5. Test with governance agent
 
 **Change governance rules:**
-1. Edit `GOVERNANCE_CONFIG` in `src/agents/dataGovernanceAgent.ts`
+1. Edit `GOVERNANCE_CONFIG` in `rep-api/src/agents/dataGovernanceAgent.ts`
 2. Update tests
 3. Document the change (governance board decision)
 4. Re-run ETL pipeline
 
 **Add a new role:**
-1. Update `UserRole` type in `src/agents/types.ts`
-2. Define permissions in `src/lib/permissions.ts`
+1. Update `UserRole` type in `rep-api/src/agents/types.ts`
+2. Define permissions in `rep-api/src/lib/permissions.ts`
 3. Test filtering with new role
 4. Document access level
 
@@ -357,7 +329,7 @@ git push origin main
 
 ### For Data Questions
 - See `AGENT_ARCHITECTURE.md` for data flow explanation
-- Review `src/agents/types.ts` for data structure
+- Review `rep-api/src/agents/types.ts` for data structure
 - Check governance rules in `dataGovernanceAgent.ts`
 
 ### For Community/Ethics Questions

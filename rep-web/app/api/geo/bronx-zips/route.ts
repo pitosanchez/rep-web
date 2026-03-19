@@ -6,9 +6,35 @@
  * Used for MapLibre GL visualization.
  */
 
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import { NextResponse } from 'next/server';
 import path from 'path';
+
+const getGeoDataFilePath = (filename: string) => {
+  // Backward compatible: if running from repo root or from `rep-web/`.
+  const localCandidate = path.join(process.cwd(), 'data/geo', filename);
+  const monorepoCandidateFromRepoRoot = path.join(
+    process.cwd(),
+    'rep-data',
+    'data',
+    'geo',
+    filename
+  );
+  const monorepoCandidateFromRepWeb = path.join(
+    process.cwd(),
+    '..',
+    'rep-data',
+    'data',
+    'geo',
+    filename
+  );
+
+  if (existsSync(localCandidate)) return localCandidate;
+  if (existsSync(monorepoCandidateFromRepoRoot)) {
+    return monorepoCandidateFromRepoRoot;
+  }
+  return monorepoCandidateFromRepWeb;
+};
 
 interface ZipToTractRow {
   zip: string;
@@ -82,10 +108,7 @@ const BRONX_ZIP_COORDINATES: { [key: string]: [number, number] } = {
 
 export async function GET() {
   try {
-    const dataPath = path.join(
-      process.cwd(),
-      'data/geo/bronx_zip_to_tracts.json'
-    );
+    const dataPath = getGeoDataFilePath('bronx_zip_to_tracts.json');
 
     const fileContent = await fs.readFile(dataPath, 'utf-8');
     const zipToTracts: ZipToTractRow[] = JSON.parse(fileContent);

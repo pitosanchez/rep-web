@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../rep-web/tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "target": "ES2020",

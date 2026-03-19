@@ -11,6 +11,8 @@ interface MapLibreMapProps {
     careAccess: boolean;
     environmentalExposure: boolean;
     transit: boolean;
+    /** Area Deprivation Index — block-group polygons from /api/adi/blockgroups */
+    areaDeprivationIndex: boolean;
   };
 }
 
@@ -19,44 +21,112 @@ interface GeoJSONData {
   features: any[];
 }
 
+function addAdiBlockgroupLayers(
+  mapInstance: maplibregl.Map,
+  data: GeoJSONData,
+  visible: boolean,
+  beforeLayerId?: string
+) {
+  if (mapInstance.getSource('adi-blockgroups')) return;
+
+  mapInstance.addSource('adi-blockgroups', {
+    type: 'geojson',
+    data,
+  });
+
+  mapInstance.addLayer(
+    {
+      id: 'adi-blockgroups-fill',
+      type: 'fill',
+      source: 'adi-blockgroups',
+      paint: {
+        // ADI_NATRANK: national percentile rank (~1–100); higher = greater deprivation
+        'fill-color': [
+          'interpolate',
+          ['linear'],
+          ['to-number', ['get', 'ADI_NATRANK'], 50],
+          1, '#e8f5e9',
+          25, '#fff9c4',
+          50, '#ffcc80',
+          75, '#ef5350',
+          100, '#7b1fa2',
+        ],
+        'fill-opacity': 0.55,
+        'fill-outline-color': 'rgba(26, 26, 26, 0.35)',
+      },
+      layout: {
+        visibility: visible ? 'visible' : 'none',
+      },
+    },
+    beforeLayerId
+  );
+}
+
 export default function MapLibreMap({
   selectedZip,
   onZipClick,
   visibleLayers
 }: MapLibreMapProps) {
+  /** ADI may resolve after `geoData`; ref is read in map `load` to avoid a race. */
+  const adiGeojsonRef = useRef<GeoJSONData | null>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
   const hoveredZipRef = useRef<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [geoData, setGeoData] = useState<GeoJSONData | null>(null);
+  const [adiData, setAdiData] = useState<GeoJSONData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch geographic data from API
+  // Fetch Bronx ZIP points (required) + ADI block groups (optional overlay)
   useEffect(() => {
-    const fetchGeoData = async () => {
+    let cancelled = false;
+
+    const load = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/geo/bronx-zips');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch geographic data: ${response.statusText}`);
+        setError(null);
+        adiGeojsonRef.current = null;
+
+        const geoRes = await fetch('/api/geo/bronx-zips');
+        if (!geoRes.ok) {
+          throw new Error(`Failed to fetch geographic data: ${geoRes.statusText}`);
         }
-        const result = await response.json();
-        if (result.success && result.data) {
-          setGeoData(result.data);
+        const geoJson = await geoRes.json();
+        if (!geoJson.success || !geoJson.data) {
+          throw new Error('Invalid Bronx ZIP response');
+        }
+        if (!cancelled) {
+          setGeoData(geoJson.data);
+        }
+
+        const adiRes = await fetch('/api/adi/blockgroups');
+        if (adiRes.ok) {
+          const adiJson = await adiRes.json();
+          if (adiJson.success && adiJson.data && !cancelled) {
+            adiGeojsonRef.current = adiJson.data;
+            setAdiData(adiJson.data);
+          }
         } else {
-          throw new Error('Invalid response format');
+          console.warn('ADI block groups unavailable:', adiRes.statusText);
         }
       } catch (err) {
         console.error('Error fetching geographic data:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Unknown error');
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchGeoData();
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Initialize map
@@ -76,6 +146,15 @@ export default function MapLibreMap({
     // Handle map load
     map.current.on('load', () => {
       if (!map.current || !geoData) return;
+
+      const adi = adiGeojsonRef.current;
+      if (adi) {
+        addAdiBlockgroupLayers(
+          map.current,
+          adi,
+          visibleLayers.areaDeprivationIndex,
+        );
+      }
 
       // Add GeoJSON source with real data
       map.current.addSource('bronx-zips', {
@@ -318,6 +397,18 @@ export default function MapLibreMap({
     };
   }, [onZipClick, geoData]);
 
+  // ADI fetched after map exists — insert fill below ZIP circles
+  useEffect(() => {
+    if (!map.current || !mapReady || !adiData) return;
+    if (map.current.getSource('adi-blockgroups')) return;
+    addAdiBlockgroupLayers(
+      map.current,
+      adiData,
+      visibleLayers.areaDeprivationIndex,
+      map.current.getLayer('bronx-zips-fill') ? 'bronx-zips-fill' : undefined,
+    );
+  }, [adiData, mapReady, visibleLayers.areaDeprivationIndex]);
+
   // Update selected state
   useEffect(() => {
     if (!map.current || !mapReady) return;
@@ -387,6 +478,15 @@ export default function MapLibreMap({
         transitLayerId,
         'visibility',
         visibleLayers.transit ? 'visible' : 'none'
+      );
+    }
+
+    const adiFillId = 'adi-blockgroups-fill';
+    if (map.current.getLayer(adiFillId)) {
+      map.current.setLayoutProperty(
+        adiFillId,
+        'visibility',
+        visibleLayers.areaDeprivationIndex ? 'visible' : 'none'
       );
     }
   }, [visibleLayers, mapReady]);

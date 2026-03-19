@@ -39,6 +39,11 @@ const layerColors = {
     name: 'Transit',
     accent: '#ff6b6b',
     gradient: 'linear-gradient(to right, #ffd700, #ffa500, #ff6b6b)'
+  },
+  areaDeprivationIndex: {
+    name: 'Area Deprivation (ADI)',
+    accent: '#7b1fa2',
+    gradient: 'linear-gradient(to right, #e8f5e9, #fff9c4, #ffcc80, #ef5350, #7b1fa2)'
   }
 };
 
@@ -47,7 +52,8 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     diseaseBurden: true,
     careAccess: false,
     environmentalExposure: false,
-    transit: false
+    transit: false,
+    areaDeprivationIndex: false
   });
   const [zipData, setZipData] = useState<ZipToTractRow[]>([]);
   const [uniqueZips, setUniqueZips] = useState<ZipToTractRow[]>([]);
@@ -215,6 +221,12 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               checked={visibleLayers.transit}
               color={layerColors.transit.accent}
               onChange={() => handleLayerToggle('transit')}
+            />
+            <LayerCheckbox
+              label="Area Deprivation (ADI)"
+              checked={visibleLayers.areaDeprivationIndex}
+              color={layerColors.areaDeprivationIndex.accent}
+              onChange={() => handleLayerToggle('areaDeprivationIndex')}
             />
           </div>
 

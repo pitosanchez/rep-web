@@ -1,11 +1,7 @@
 import type { NextConfig } from "next";
-import path from "path";
 
-const nextConfig: NextConfig = {
-  turbopack: {
-    // Turbopack is sensitive to working directory; pin it to this package.
-    root: typeof __dirname !== "undefined" ? __dirname : path.resolve("."),
-  },
-};
+// Avoid overriding Turbopack root: it can break when running `npm --prefix rep-web run dev`
+// from the repo root (workspace root inference becomes incorrect).
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

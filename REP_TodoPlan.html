@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>REP – Founder Todo Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --white:#FFFFFF;
+  --off:#F8F7F4;
+  --ink:#111111;
+  --ink2:#2D2D2D;
+  --dim:#888888;
+  --rule:#E2E2E2;
+  --amber:#C47400;    --amber-bg:#FFFBEB;  --amber-bd:#FDE68A;
+  --teal:#0F766E;     --teal-bg:#F0FDFA;   --teal-bd:#99F6E4;
+  --red:#B91C1C;      --red-bg:#FFF5F5;    --red-bd:#FECACA;
+  --green:#166534;    --green-bg:#F0FDF4;  --green-bd:#BBF7D0;
+  --blue:#1D4ED8;     --blue-bg:#EFF6FF;   --blue-bd:#BFDBFE;
+  --purple:#6D28D9;   --purple-bg:#F5F3FF; --purple-bd:#DDD6FE;
+  --story:#7C2D12;    --story-bg:#FFF7ED;  --story-bd:#FED7AA;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+body{background:var(--off);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;min-height:100vh;}
+
+/* HEADER */
+.header{background:var(--ink);color:#fff;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;border-bottom:4px solid var(--amber);position:sticky;top:0;z-index:100;}
+.h-left{display:flex;align-items:center;gap:14px;}
+.h-dot{width:8px;height:8px;border-radius:50%;background:#22C55E;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.h-title{font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:3px;color:var(--amber);}
+.h-sub{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:#888;}
+.h-right{display:flex;gap:20px;align-items:center;}
+.h-date{font-family:var(--mono);font-size:11px;color:#888;}
+.progress-wrap{display:flex;align-items:center;gap:10px;}
+.progress-bar{width:160px;height:10px;background:#333;border:1px solid #555;border-radius:0;}
+.progress-fill{height:100%;background:var(--amber);transition:width .4s ease;}
+.progress-label{font-family:var(--mono);font-size:13px;color:var(--amber);}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:28px 24px;display:grid;gap:20px;}
+
+/* PHASE HEADER */
+.phase-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-left:5px solid;margin-bottom:2px;}
+.ph-num{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:3px;}
+.ph-title{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:1px;}
+.ph-badge{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:4px 10px;font-weight:700;margin-left:auto;}
+.ph-count{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:8px;}
+
+/* SECTION */
+.section{background:var(--white);border:1px solid var(--rule);overflow:hidden;}
+.section-head{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--rule);cursor:pointer;user-select:none;}
+.section-head:hover{background:var(--off);}
+.sh-icon{font-size:16px;}
+.sh-label{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+.sh-rule{flex:1;height:1px;background:var(--rule);}
+.sh-toggle{font-family:var(--mono);font-size:13px;color:var(--dim);transition:transform .2s;}
+.sh-mini{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:8px;}
+.section-body{padding:0;}
+.section-body.collapsed{display:none;}
+
+/* TODO ITEM */
+.todo-item{display:flex;align-items:flex-start;gap:16px;padding:14px 18px;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .15s;}
+.todo-item:last-child{border-bottom:none;}
+.todo-item:hover{background:var(--off);}
+.todo-item.done{background:#FAFAFA;}
+.todo-item.done .todo-text{text-decoration:line-through;color:var(--dim);}
+.todo-item.done .todo-tag{opacity:.4;}
+.todo-cb{width:20px;height:20px;border:2px solid var(--rule);border-radius:0;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--white);}
+.todo-item.done .todo-cb{border-color:var(--green);background:var(--green);}
+.check-mark{display:none;color:white;font-size:11px;font-weight:700;}
+.todo-item.done .check-mark{display:block;}
+.todo-content{flex:1;display:flex;flex-direction:column;gap:4px;}
+.todo-text{font-family:var(--sans);font-size:15px;color:var(--ink2);line-height:1.5;font-weight:500;}
+.todo-sub{font-family:var(--sans);font-size:12px;color:var(--dim);line-height:1.5;}
+.todo-meta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:4px;}
+.todo-tag{font-family:var(--mono);font-size:10px;padding:3px 8px;letter-spacing:1px;font-weight:600;white-space:nowrap;}
+.tag-design{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-bd);}
+.tag-build{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bd);}
+.tag-data{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.tag-story{background:var(--story-bg);color:var(--story);border:1px solid var(--story-bd);}
+.tag-ethics{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+.tag-infra{background:var(--teal-bg);color:var(--teal);border:1px solid var(--teal-bd);}
+.tag-research{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd);}
+.tag-critical{background:var(--story);color:#fff;border:1px solid var(--story);}
+.todo-priority{font-family:var(--mono);font-size:10px;color:var(--dim);}
+.p-high{color:var(--red);font-weight:700;}
+.p-med{color:var(--amber);font-weight:600;}
+.p-low{color:var(--dim);}
+
+/* PHASE COLORS */
+.phase-1 .phase-header{border-left-color:var(--amber);background:var(--amber-bg);}
+.phase-1 .ph-num{color:var(--amber);}
+.phase-1 .ph-title{color:var(--amber);}
+.phase-1 .ph-badge{background:var(--amber);color:#fff;}
+.phase-1 .section{border-top:3px solid var(--amber);}
+
+.phase-2 .phase-header{border-left-color:var(--blue);background:var(--blue-bg);}
+.phase-2 .ph-num{color:var(--blue);}
+.phase-2 .ph-title{color:var(--blue);}
+.phase-2 .ph-badge{background:var(--blue);color:#fff;}
+.phase-2 .section{border-top:3px solid var(--blue);}
+
+.phase-3 .phase-header{border-left-color:var(--story);background:var(--story-bg);}
+.phase-3 .ph-num{color:var(--story);}
+.phase-3 .ph-title{color:var(--story);}
+.phase-3 .ph-badge{background:var(--story);color:#fff;}
+.phase-3 .section{border-top:3px solid var(--story);}
+
+.phase-4 .phase-header{border-left-color:var(--purple);background:var(--purple-bg);}
+.phase-4 .ph-num{color:var(--purple);}
+.phase-4 .ph-title{color:var(--purple);}
+.phase-4 .ph-badge{background:var(--purple);color:#fff;}
+.phase-4 .section{border-top:3px solid var(--purple);}
+
+.phase-5 .phase-header{border-left-color:var(--teal);background:var(--teal-bg);}
+.phase-5 .ph-num{color:var(--teal);}
+.phase-5 .ph-title{color:var(--teal);}
+.phase-5 .ph-badge{background:var(--teal);color:#fff;}
+.phase-5 .section{border-top:3px solid var(--teal);}
+
+/* SECTION ACCENT OVERRIDES */
+.sec-story .section-head{background:var(--story-bg);}
+.sec-story .sh-label{color:var(--story);}
+
+/* BLOCKERS */
+.blocker-item{display:flex;gap:10px;align-items:flex-start;padding:12px 18px;border-bottom:1px solid var(--red-bd);background:var(--red-bg);}
+.blocker-item:last-child{border-bottom:none;}
+.b-icon{font-family:var(--mono);font-size:14px;color:var(--red);margin-top:1px;}
+.b-text{font-family:var(--sans);font-size:14px;color:var(--red);line-height:1.5;}
+
+/* STATS BAR */
+.stats-bar{background:var(--white);border:1px solid var(--rule);padding:16px 22px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;border-top:3px solid var(--ink);}
+.stat{display:flex;flex-direction:column;gap:3px;min-width:80px;}
+.stat-label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;}
+.stat-value{font-family:var(--mono);font-size:18px;font-weight:700;}
+.sv-amber{color:var(--amber);}
+.sv-blue{color:var(--blue);}
+.sv-green{color:var(--green);}
+.sv-story{color:var(--story);}
+.sv-purple{color:var(--purple);}
+.stat-divider{width:1px;height:36px;background:var(--rule);align-self:center;}
+
+/* LEGEND */
+.legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 22px;background:var(--white);border:1px solid var(--rule);margin-bottom:4px;}
+.legend-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-right:4px;}
+
+/* FOOTER */
+.footer{border-top:2px solid var(--ink);padding:12px 32px;display:flex;justify-content:space-between;align-items:center;background:var(--white);flex-wrap:wrap;gap:8px;margin-top:8px;}
+.foot-l{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px;}
+.foot-r{display:flex;gap:8px;}
+.ftag{font-family:var(--mono);font-size:10px;color:var(--amber);border:1px solid var(--amber-bd);padding:3px 8px;}
+
+@media print{
+  .header{position:relative;}
+  body{background:white;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="h-left">
+    <div class="h-dot"></div>
+    <span class="h-title">REP // FOUNDER TODO PLAN</span>
+    <span class="h-sub">RARE RENAL EQUITY PROJECT</span>
+  </div>
+  <div class="h-right">
+    <span class="h-date" id="today-date"></span>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="global-bar" style="width:0%"></div></div>
+      <span class="progress-label" id="global-label">0%</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-label">Total Tasks</div><div class="stat-value sv-amber" id="stat-total">—</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-label">Completed</div><div class="stat-value sv-green" id="stat-done">0</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-label">Remaining</div><div class="stat-value sv-blue" id="stat-rem">—</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-label">Current Phase</div><div class="stat-value sv-amber">01</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-label">Story System</div><div class="stat-value sv-story">Critical Path</div></div>
+    <div class="stat-divider"></div>
+    <div class="stat"><div class="stat-label">Active Blockers</div><div class="stat-value" style="color:var(--red)">3</div></div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <span class="legend-title">Tags:</span>
+    <span class="todo-tag tag-design">DESIGN</span>
+    <span class="todo-tag tag-build">BUILD</span>
+    <span class="todo-tag tag-data">DATA</span>
+    <span class="todo-tag tag-story">STORY</span>
+    <span class="todo-tag tag-ethics">ETHICS</span>
+    <span class="todo-tag tag-infra">INFRA</span>
+    <span class="todo-tag tag-research">RESEARCH</span>
+    <span class="todo-tag tag-critical">CRITICAL</span>
+    <span style="margin-left:12px;font-family:var(--mono);font-size:8px;color:var(--dim);">PRIORITY:</span>
+    <span class="todo-priority p-high">⬤ HIGH</span>
+    <span class="todo-priority p-med">⬤ MED</span>
+    <span class="todo-priority p-low">⬤ LOW</span>
+  </div>
+
+  <!-- ACTIVE BLOCKERS -->
+  <div class="section" style="border-top:3px solid var(--red);">
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="sh-icon">🧱</span>
+      <span class="sh-label" style="color:var(--red);">Active Blockers – Resolve First</span>
+      <div class="sh-rule"></div>
+      <span class="sh-toggle">▼</span>
+    </div>
+    <div class="section-body">
+      <div class="blocker-item"><span class="b-icon">!</span><span class="b-text">Real census data not yet ingested into PostgreSQL – blocks Map Explorer live data</span></div>
+      <div class="blocker-item"><span class="b-icon">!</span><span class="b-text">PostGIS extension not yet configured – blocks spatial queries and neighborhood profile data</span></div>
+      <div class="blocker-item"><span class="b-icon">!</span><span class="b-text">Story System UX requires final design decision before build can begin – blocks Phase 3 entirely</span></div>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase-1">
+    <div class="phase-header">
+      <div>
+        <div class="ph-num">PHASE 01 – NOW ACTIVE</div>
+        <div class="ph-title">BRONX PROTOTYPE</div>
+      </div>
+      <span class="ph-badge">IN PROGRESS</span>
+      <span class="ph-count" id="count-p1"></span>
+    </div>
+
+    <!-- Frontend -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🖥️</span><span class="sh-label">Frontend – Pages &amp; Navigation</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-frontend"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-frontend">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Hero Page – build and deploy</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item done" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Hero Page – complete ✅</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item done" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Map Explorer – build with mock data ✅</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item done" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Navigation – complete site navigation ✅</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Neighborhood Profile page – scaffold and layout</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Story page – scaffold layout and placeholder UI</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Methods page – build with data transparency documentation</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">About page – mission, team, ethics statement</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- Map Explorer -->
+    <div class="section" style="margin-top:8px;">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🗺️</span><span class="sh-label">Map Explorer – Live Data Integration</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-map"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-map">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Replace mock data with real Census API data on map</div><div class="todo-sub">BLOCKER: Census data not yet ingested</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-critical">CRITICAL</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add Bronx census tract boundaries to MapLibre</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add APOL1 prevalence zone overlay</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add food access score overlay from USDA data</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add transit access overlay via OpenStreetMap</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add care access overlay (dialysis, transplant centers)</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build map layer toggle UI (show/hide overlays)</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build tract click – neighborhood profile drawer</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add story pins to map (placeholder – Phase 3 full build)</div><div class="todo-meta"><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-low">⬤ LOW</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-2" style="margin-top:8px;">
+    <div class="phase-header">
+      <div>
+        <div class="ph-num">PHASE 02</div>
+        <div class="ph-title">DATA PLATFORM</div>
+      </div>
+      <span class="ph-badge">PLANNED</span>
+      <span class="ph-count" id="count-p2"></span>
+    </div>
+
+    <!-- Backend -->
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">⚙️</span><span class="sh-label">Backend API – Node.js / Express</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-backend"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-backend">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Initialize Node.js + Express project scaffold</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-infra">INFRA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Set up project folder structure (routes, controllers, middleware)</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Configure environment variables (.env) for dev and prod</div><div class="todo-meta"><span class="todo-tag tag-infra">INFRA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build GET /tracts – return census tract GeoJSON for map</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build GET /tract/:id – return single neighborhood profile data</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build GET /stories – return approved stories with geo-tags</div><div class="todo-meta"><span class="todo-tag tag-story">STORY</span><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build POST /stories – story submission endpoint with validation</div><div class="todo-meta"><span class="todo-tag tag-story">STORY</span><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Set up JWT authentication middleware</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-infra">INFRA</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Connect backend to Next.js frontend via API calls</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Deploy backend to Vercel / Railway / Render</div><div class="todo-meta"><span class="todo-tag tag-infra">INFRA</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- Database -->
+    <div class="section" style="margin-top:8px;">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🗄️</span><span class="sh-label">Database – PostgreSQL + PostGIS</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-db"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-db">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Provision PostgreSQL database (Supabase or Railway)</div><div class="todo-meta"><span class="todo-tag tag-infra">INFRA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Install and enable PostGIS extension</div><div class="todo-sub">BLOCKER: Required for spatial queries</div><div class="todo-meta"><span class="todo-tag tag-infra">INFRA</span><span class="todo-tag tag-critical">CRITICAL</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Design and create census_tracts table schema</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Design and create neighborhood_indicators table schema</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Design and create stories table schema (with geo_point, tract_id, status)</div><div class="todo-meta"><span class="todo-tag tag-story">STORY</span><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Design and create users / roles table for access control</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Create audit_logs table for governance tracking</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write and run initial seed data for Bronx tracts</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- ETL -->
+    <div class="section" style="margin-top:8px;">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🔄</span><span class="sh-label">ETL Pipeline – Python Data Ingestion</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-etl"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-etl">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write Python script to pull Bronx census tract data via Census API</div><div class="todo-sub">BLOCKER: This is needed before map can show real data</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-tag tag-critical">CRITICAL</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write Python script to pull food access data from USDA FoodEnvironment Atlas</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write Python script to pull transit stop data via OSM Overpass API</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write transform scripts – clean and normalize all data to standard schema</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write load scripts – insert transformed data into PostgreSQL</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement n&lt;11 suppression logic in ETL pipeline</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-tag tag-critical">CRITICAL</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement geographic resolution downgrade for sparse data cells</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Set up GitHub Actions to run ETL on schedule (weekly refresh)</div><div class="todo-meta"><span class="todo-tag tag-infra">INFRA</span><span class="todo-priority p-low">⬤ LOW</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- Governance -->
+    <div class="section" style="margin-top:8px;">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">⚖️</span><span class="sh-label">Governance Layer – Data Ethics</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-gov"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-gov">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build data governance agent (src/agents/) with suppression + access logic</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement n&lt;11 cell suppression at API response layer</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-tag tag-critical">CRITICAL</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement role-based access control (patient / researcher / admin)</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build audit logging middleware – log all data access events</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add uncertainty labels to all data responses (confidence score field)</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write and publish Methods page – full data transparency documentation</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-3" style="margin-top:8px;">
+    <div class="phase-header">
+      <div>
+        <div class="ph-num">PHASE 03 – ⚡ CRITICAL</div>
+        <div class="ph-title">STORY SYSTEM – SPATIAL TESTIMONY ENGINE</div>
+      </div>
+      <span class="ph-badge">CRITICAL PATH</span>
+      <span class="ph-count" id="count-p3"></span>
+    </div>
+
+    <!-- Story Design -->
+    <div class="section sec-story">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">✏️</span><span class="sh-label" style="color:var(--story)">Phase S-1 – Story System Design</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-sd"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-sd">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Make final UX decision: story submission flow (form-first vs. map-first)</div><div class="todo-sub">BLOCKER: This decision gates all story build work</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-critical">CRITICAL</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Wireframe story submission form – fields, steps, validation</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Design geo-tagging UI – how community members attach stories to neighborhoods</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Write consent flow copy – plain language, community-first language</div><div class="todo-meta"><span class="todo-tag tag-story">STORY</span><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Design moderation queue UI – admin review flow for incoming stories</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Map out full submission – moderation – publish workflow document</div><div class="todo-meta"><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Design story card component for Map Explorer pins</div><div class="todo-meta"><span class="todo-tag tag-design">DESIGN</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- Story Build -->
+    <div class="section sec-story" style="margin-top:8px;">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🔨</span><span class="sh-label" style="color:var(--story)">Phase S-2 – Story System Build</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-sb"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-sb">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build story submission form component (React)</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement multi-step consent flow in submission UI</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement geo-tagging – map click or address lookup assigns tract_id</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build story moderation queue – admin dashboard for review / approve / reject</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement threshold gate – stories only visible after ≥5 per tract</div><div class="todo-meta"><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-tag tag-critical">CRITICAL</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Connect POST /stories API – validate, sanitize, store in PostgreSQL</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build story full-view page (/stories/[id])</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build stories index page (/stories) with filter by borough/tract</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- Story Integration -->
+    <div class="section sec-story" style="margin-top:8px;">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🔗</span><span class="sh-label" style="color:var(--story)">Phase S-3 – Story / Map Integration</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-si"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-si">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Render story pins on Map Explorer (visible when threshold ≥5 met)</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Link story pins – story preview card on map click</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Link each story to its neighborhood structural indicators (food, transit, care access)</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build "Read the community story" CTA on Neighborhood Profile page</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-story">STORY</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Add submitter notification email on story approval (SendGrid)</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-tag tag-infra">INFRA</span><span class="todo-priority p-low">⬤ LOW</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase-4" style="margin-top:8px;">
+    <div class="phase-header">
+      <div>
+        <div class="ph-num">PHASE 04</div>
+        <div class="ph-title">RESEARCH ACCESS PORTAL</div>
+      </div>
+      <span class="ph-badge">PLANNED</span>
+      <span class="ph-count" id="count-p4"></span>
+    </div>
+
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🔬</span><span class="sh-label">Research &amp; Authentication Layer</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-research"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-research">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build researcher registration and access request portal</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Implement role-gated data export (authenticated researcher endpoints)</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build anonymized story export API – strip all identifying fields</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-tag tag-story">STORY</span><span class="todo-tag tag-ethics">ETHICS</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build data citation generator – auto-generate citation for REP datasets</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build API documentation for researcher and journalist access</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Onboard first 3 institutional research partners</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build embeddable map widget for journalist / media use</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-low">⬤ LOW</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase-5" style="margin-top:8px;">
+    <div class="phase-header">
+      <div>
+        <div class="ph-num">PHASE 05</div>
+        <div class="ph-title">NATIONAL EXPANSION</div>
+      </div>
+      <span class="ph-badge">FUTURE</span>
+      <span class="ph-count" id="count-p5"></span>
+    </div>
+
+    <div class="section">
+      <div class="section-head" onclick="toggleSection(this)">
+        <span class="sh-icon">🌍</span><span class="sh-label">National Scale &amp; Partnerships</span>
+        <div class="sh-rule"></div><span class="sh-mini" id="mini-nat"></span><span class="sh-toggle">▼</span>
+      </div>
+      <div class="section-body" id="grp-nat">
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Expand ETL pipeline to 10 major metro areas (NYC, LA, Chicago, Houston, Philadelphia)</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-high">⬤ HIGH</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Expand to all 50 metro markets with highest APOL1 prevalence</div><div class="todo-meta"><span class="todo-tag tag-data">DATA</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build community partner onboarding toolkit</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Develop policy toolkit – downloadable evidence packets for legislators</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-priority p-med">⬤ MED</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Build funder/donor impact dashboard</div><div class="todo-meta"><span class="todo-tag tag-build">BUILD</span><span class="todo-priority p-low">⬤ LOW</span></div></div></div>
+        <div class="todo-item" onclick="toggleTodo(this)"><div class="todo-cb"><span class="check-mark">✓</span></div><div class="todo-content"><div class="todo-text">Formalize media partnerships (news orgs, health journalism outlets)</div><div class="todo-meta"><span class="todo-tag tag-research">RESEARCH</span><span class="todo-priority p-low">⬤ LOW</span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <span class="foot-l">REP // RARE RENAL EQUITY PROJECT // FOUNDER TODO PLAN // BRONX, NEW YORK</span>
+  <div class="foot-r">
+    <span class="ftag">PHASE 1 ACTIVE</span>
+    <span class="ftag">STORY SYSTEM ⚡</span>
+    <span class="ftag">GEOGRAPHY IS JUSTICE</span>
+  </div>
+</div>
+
+<script>
+// ┏━ DATE ━┓
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+
+// ┏━ TOGGLE SECTION ━┓
+function toggleSection(head) {
+  const body = head.nextElementSibling;
+  const arrow = head.querySelector('.sh-toggle');
+  const collapsed = body.classList.toggle('collapsed');
+  arrow.style.transform = collapsed ? 'rotate(-90deg)' : '';
+}
+
+// ┏━ TOGGLE TODO ━┓
+function toggleTodo(item) {
+  item.classList.toggle('done');
+  updateStats();
+}
+
+// ┏━ STATS ━┓
+const groups = [
+  {id:'grp-frontend', mini:'mini-frontend'},
+  {id:'grp-map', mini:'mini-map'},
+  {id:'grp-backend', mini:'mini-backend'},
+  {id:'grp-db', mini:'mini-db'},
+  {id:'grp-etl', mini:'mini-etl'},
+  {id:'grp-gov', mini:'mini-gov'},
+  {id:'grp-sd', mini:'mini-sd'},
+  {id:'grp-sb', mini:'mini-sb'},
+  {id:'grp-si', mini:'mini-si'},
+  {id:'grp-research', mini:'mini-research'},
+  {id:'grp-nat', mini:'mini-nat'},
+];
+
+const phases = [
+  {ids:['grp-frontend','grp-map'], count:'count-p1'},
+  {ids:['grp-backend','grp-db','grp-etl','grp-gov'], count:'count-p2'},
+  {ids:['grp-sd','grp-sb','grp-si'], count:'count-p3'},
+  {ids:['grp-research'], count:'count-p4'},
+  {ids:['grp-nat'], count:'count-p5'},
+];
+
+function getItems(groupId) {
+  const el = document.getElementById(groupId);
+  return el ? el.querySelectorAll('.todo-item') : [];
+}
+
+function updateStats() {
+  let total = 0, done = 0;
+
+  groups.forEach(g => {
+    const items = getItems(g.id);
+    const groupDone = [...items].filter(i => i.classList.contains('done')).length;
+    total += items.length;
+    done += groupDone;
+    const mini = document.getElementById(g.mini);
+    if (mini) mini.textContent = groupDone + '/' + items.length;
+  });
+
+  phases.forEach(p => {
+    let pt = 0, pd = 0;
+    p.ids.forEach(id => {
+      const items = getItems(id);
+      pt += items.length;
+      pd += [...items].filter(i => i.classList.contains('done')).length;
+    });
+    const el = document.getElementById(p.count);
+    if (el) el.textContent = pd + ' / ' + pt + ' tasks';
+  });
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-rem').textContent = total - done;
+
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  document.getElementById('global-bar').style.width = pct + '%';
+  document.getElementById('global-label').textContent = pct + '%';
+}
+
+updateStats();
+</script>
+</body>
+</html>

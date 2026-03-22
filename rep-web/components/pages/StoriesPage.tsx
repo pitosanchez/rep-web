@@ -325,7 +325,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                             lineHeight: '1.7',
                             margin: 0
                           }}>
-                            "{story.pullQuotes[0]}"
+                            &ldquo;{story.pullQuotes[0]}&rdquo;
                           </p>
                         </div>
                       )}
@@ -387,7 +387,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                           lineHeight: '1.7',
                           margin: 0
                         }}>
-                          "{story.reflection.wishes}"
+                          &ldquo;{story.reflection.wishes}&rdquo;
                         </p>
                       </div>
 

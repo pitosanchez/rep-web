@@ -9,7 +9,7 @@ interface ZipToTractRow {
   nta_name: string;
   weight_res: number;
   weight_tot: number;
-  [key: string]: any;
+  [key: string]: string | number | boolean | unknown;
 }
 
 interface MapPageProps {
@@ -55,7 +55,6 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     transit: false,
     areaDeprivationIndex: false
   });
-  const [zipData, setZipData] = useState<ZipToTractRow[]>([]);
   const [uniqueZips, setUniqueZips] = useState<ZipToTractRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,8 +70,6 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
         }
         const result = await response.json();
         if (result.success && result.data) {
-          setZipData(result.data);
-
           // Get unique ZIPs (take first occurrence of each ZIP)
           const seen = new Set<string>();
           const unique = result.data.filter((row: ZipToTractRow) => {
@@ -105,7 +102,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
   // Get the currently active layer for legend display
   const getActiveLayers = () => {
     return Object.entries(visibleLayers)
-      .filter(([_, isVisible]) => isVisible)
+      .filter(([, isVisible]) => isVisible)
       .map(([layerId]) => layerId as keyof typeof visibleLayers);
   };
 

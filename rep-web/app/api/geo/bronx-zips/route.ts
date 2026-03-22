@@ -42,6 +42,7 @@ interface ZipToTractRow {
   nta_name: string;
   weight_res: number;
   weight_tot: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -56,7 +57,8 @@ interface GeoJSONFeature {
     weight_tot: number;
     exposure_index?: number;   // Environmental exposure (0-1 scale)
     transit_burden?: number;   // Transit burden (0-1 scale)
-    [key: string]: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
   };
   geometry: {
     type: 'Point';

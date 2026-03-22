@@ -184,7 +184,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
               }}>Neighborhood Profile</div>
               <h1 style={{
                 fontFamily: 'Georgia, serif',
-                fontSize: '42px',
+                fontSize: 'clamp(24px, 5vw, 42px)',
                 fontWeight: '400',
                 marginBottom: '8px'
               }}>
@@ -218,13 +218,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
           </div>
 
           {/* Quick stats bar */}
-          <div style={{
-            display: 'flex',
-            gap: '48px',
-            marginTop: '32px',
-            paddingTop: '24px',
-            borderTop: '1px solid rgba(255,255,255,0.1)'
-          }}>
+          <div className="stats-bar">
             {[
               { label: 'Burden Index', value: neighborhood.burdenIndex, suffix: '/100' },
               { label: 'Avg Travel to Nephrology', value: neighborhood.avgTravel, suffix: ' min' },
@@ -258,11 +252,9 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
       }}>
         <div style={{
           maxWidth: '1200px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '24px'
+          margin: '0 auto'
         }}>
+        <div className="grid-3col">
           {dataPoints.map((section, i) => (
             <div key={i} style={{
               background: '#faf7f3',
@@ -302,6 +294,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
               }}>{section.note}</p>
             </div>
           ))}
+        </div>
         </div>
       </section>
 
@@ -353,11 +346,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
           </div>
 
           {/* Story cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-            gap: '24px'
-          }}>
+          <div className="grid-stories">
             {neighborhoodStories.map(story => (
               <StoryCard key={story.id} story={story} />
             ))}

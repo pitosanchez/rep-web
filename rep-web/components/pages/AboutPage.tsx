@@ -6,8 +6,7 @@ interface AboutPageProps {
 
 export const AboutPage: React.FC<AboutPageProps> = () => (
   <div style={{ paddingTop: '80px' }}>
-    <section style={{
-      padding: '80px 32px',
+    <section className="section-pad-md" style={{
       background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
       color: '#fff'
     }}>
@@ -20,11 +19,7 @@ export const AboutPage: React.FC<AboutPageProps> = () => (
           color: '#c45a3b',
           marginBottom: '16px'
         }}>About REP</div>
-        <h1 style={{
-          fontFamily: 'Georgia, serif',
-          fontSize: '48px',
-          fontWeight: '400',
-          lineHeight: '1.15',
+        <h1 className="heading-xl" style={{
           marginBottom: '24px'
         }}>
           Disease does not happen<br />in a vacuum.
@@ -48,11 +43,7 @@ export const AboutPage: React.FC<AboutPageProps> = () => (
       background: '#fff'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '64px'
-        }}>
+        <div className="grid-2col">
           <div>
             <h2 style={{
               fontFamily: 'Georgia, serif',
@@ -153,11 +144,7 @@ export const AboutPage: React.FC<AboutPageProps> = () => (
           marginBottom: '32px',
           textAlign: 'center'
         }}>REP Is Designed to Be</h2>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '32px'
-        }}>
+        <div className="grid-2col">
           {[
             { title: 'IRB-Safe', desc: 'Meets privacy standards. All data governance auditable.' },
             { title: 'Funder-Safe', desc: 'Clear ethics, reproducible methods, citable data.' },

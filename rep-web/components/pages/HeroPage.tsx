@@ -68,7 +68,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           {/* Main Headline */}
           <h1 style={{
             fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(42px, 6vw, 64px)',
+            fontSize: 'clamp(32px, 6vw, 64px)',
             fontWeight: '400',
             color: '#1a1a1a',
             lineHeight: '1.1',
@@ -151,8 +151,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
     </section>
 
     {/* What Makes REP Different */}
-    <section style={{
-      padding: '100px 32px',
+    <section className="section-pad-lg" style={{
       background: '#fff'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -213,8 +212,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
     </section>
 
     {/* Pull Quote Section */}
-    <section style={{
-      padding: '80px 32px',
+    <section className="section-pad-md" style={{
       background: '#1a1a1a',
       position: 'relative'
     }}>
@@ -259,12 +257,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
       background: '#fff'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1.5fr',
-          gap: '64px',
-          alignItems: 'center'
-        }}>
+        <div className="grid-hero">
           <div>
             <h2 style={{
               fontFamily: 'Georgia, serif',

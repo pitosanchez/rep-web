@@ -125,7 +125,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         <h1 style={{
           fontFamily: 'Georgia, serif',
-          fontSize: '36px',
+          fontSize: 'clamp(24px, 5vw, 36px)',
           fontWeight: '400',
           color: '#1a1a1a',
           marginBottom: '12px'
@@ -147,24 +147,11 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     <section style={{
       padding: '0',
       background: '#fff',
-      minHeight: '100vh'
+      minHeight: 'auto'
     }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 360px',
-        gap: '0',
-        maxHeight: 'calc(100vh - 160px)',
-        minHeight: '500px'
-      }}>
+      <div className="map-layout">
         {/* Map Column */}
-        <div style={{
-          position: 'relative',
-          borderRadius: '0',
-          overflow: 'hidden',
-          background: '#f5f5f5',
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
+        <div className="map-canvas">
           <MapLibreMap
             selectedZip={selectedZip}
             onZipClick={(zip) => {
@@ -176,13 +163,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
         </div>
 
         {/* Sidebar Panel */}
-        <div style={{
-          background: '#fff',
-          borderLeft: '1px solid #e8e4df',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }}>
+        <div className="map-sidebar">
           {/* Section A: Data Layers */}
           <div style={{
             padding: '20px 16px',

@@ -25,3 +25,254 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ──────────────────────────────────────────────────
+   RESPONSIVE UTILITY CLASSES FOR MOBILE/TABLET/DESKTOP
+   ────────────────────────────────────────────────── */
+
+/* Section Padding */
+.section-pad-lg {
+  padding: 100px 32px;
+}
+.section-pad-md {
+  padding: 80px 32px;
+}
+
+@media (max-width: 768px) {
+  .section-pad-lg {
+    padding: 56px 20px;
+  }
+  .section-pad-md {
+    padding: 40px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-pad-lg {
+    padding: 40px 16px;
+  }
+  .section-pad-md {
+    padding: 32px 16px;
+  }
+}
+
+/* Two-Column Grid (stacks to 1 col on tablet) */
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+}
+
+@media (max-width: 768px) {
+  .grid-2col {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+/* Hero Asymmetric Grid (1fr 1.5fr) */
+.grid-hero {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 64px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .grid-hero {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+/* Three-Column Grid */
+.grid-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .grid-3col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .grid-3col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Story Cards Grid */
+.grid-stories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+@media (max-width: 600px) {
+  .grid-stories {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Map Layout: stacks on mobile */
+.map-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 0;
+  max-height: calc(100vh - 160px);
+  min-height: 500px;
+}
+
+@media (max-width: 768px) {
+  .map-layout {
+    grid-template-columns: 1fr;
+    max-height: none;
+    min-height: auto;
+  }
+}
+
+/* Map canvas: full height on desktop, responsive on mobile */
+.map-canvas {
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .map-canvas {
+    height: 55vw;
+    min-height: 280px;
+    max-height: 420px;
+  }
+}
+
+/* Map sidebar: scrollable panel below map on mobile */
+.map-sidebar {
+  background: #fff;
+  border-left: 1px solid #e8e4df;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .map-sidebar {
+    border-left: none;
+    border-top: 1px solid #e8e4df;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+}
+
+/* Form Two-Column Row */
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 560px) {
+  .form-row-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Stats Flex Bar */
+.stats-bar {
+  display: flex;
+  gap: 48px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+@media (max-width: 600px) {
+  .stats-bar {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+}
+
+/* Page Heading XL */
+.heading-xl {
+  font-family: Georgia, serif;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+/* Navigation Inner Container */
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .nav-inner {
+    padding: 12px 20px;
+  }
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .nav-links {
+    display: none;
+  }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: rgba(250, 247, 243, 0.98);
+    padding: 16px 0 24px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    z-index: 99;
+    align-items: flex-start;
+    padding-left: 20px;
+  }
+}
+
+/* Hamburger Button */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+@media (max-width: 640px) {
+  .hamburger-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+.hamburger-btn span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}

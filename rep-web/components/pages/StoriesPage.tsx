@@ -59,11 +59,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
           </p>
 
           {/* Stories Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '32px'
-          }}>
+          <div className="grid-stories">
             {stories.map((story) => (
               <article
                 key={story.id}
@@ -223,9 +219,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                         padding: '24px',
                         marginBottom: '40px'
                       }}>
-                        <div style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(2, 1fr)',
+                        <div className="grid-2col" style={{
                           gap: '20px',
                           marginBottom: '20px'
                         }}>
@@ -481,14 +475,9 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
             background: '#fff',
             border: '1px solid #e8e4df',
             borderRadius: '12px',
-            padding: '40px'
+            padding: 'clamp(20px, 5vw, 40px)'
           }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '24px',
-              marginBottom: '24px'
-            }}>
+            <div className="form-row-2col">
               <div>
                 <label style={{
                   display: 'block',

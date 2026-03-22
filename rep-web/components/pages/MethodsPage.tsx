@@ -2,16 +2,11 @@ import React from 'react';
 
 export const MethodsPage: React.FC = () => (
   <div style={{ paddingTop: '80px' }}>
-    <section style={{
-      padding: '80px 32px',
+    <section className="section-pad-md" style={{
       background: '#faf7f3'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <h1 style={{
-          fontFamily: 'Georgia, serif',
-          fontSize: '48px',
-          fontWeight: '400',
-          color: '#1a1a1a',
+        <h1 className="heading-xl" style={{
           marginBottom: '24px'
         }}>Methods & Transparency</h1>
         <p style={{
@@ -27,16 +22,11 @@ export const MethodsPage: React.FC = () => (
       </div>
     </section>
 
-    <section style={{
-      padding: '80px 32px',
+    <section className="section-pad-md" style={{
       background: '#fff'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '64px'
-        }}>
+        <div className="grid-2col">
           {/* Data Sources */}
           <div>
             <h2 style={{
@@ -115,8 +105,7 @@ export const MethodsPage: React.FC = () => (
     </section>
 
     {/* What REP Can & Cannot Say */}
-    <section style={{
-      padding: '80px 32px',
+    <section className="section-pad-md" style={{
       background: '#f9f9f9'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
@@ -202,8 +191,7 @@ export const MethodsPage: React.FC = () => (
     </section>
 
     {/* Governance */}
-    <section style={{
-      padding: '80px 32px',
+    <section className="section-pad-md" style={{
       background: '#fff'
     }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>

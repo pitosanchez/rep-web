@@ -144,8 +144,14 @@ export default function MapLibreMap({
     });
 
     // Handle map load
-    map.current.on('load', () => {
+    const onMapLoad = () => {
       if (!map.current || !geoData) return;
+
+      // Add GeoJSON source with real data
+      map.current.addSource('bronx-zips', {
+        type: 'geojson',
+        data: geoData
+      });
 
       const adi = adiGeojsonRef.current;
       if (adi) {
@@ -155,12 +161,6 @@ export default function MapLibreMap({
           visibleLayers.areaDeprivationIndex,
         );
       }
-
-      // Add GeoJSON source with real data
-      map.current.addSource('bronx-zips', {
-        type: 'geojson',
-        data: geoData
-      });
 
       // Disease Burden layer - based on weight_tot (proxy for burden)
       map.current.addLayer({
@@ -386,7 +386,9 @@ export default function MapLibreMap({
       map.current.addControl(nav, 'top-right');
 
       setMapReady(true);
-    });
+    };
+
+    map.current.on('load', onMapLoad);
 
     return () => {
       // Cleanup on unmount
@@ -401,12 +403,24 @@ export default function MapLibreMap({
   useEffect(() => {
     if (!map.current || !mapReady || !adiData) return;
     if (map.current.getSource('adi-blockgroups')) return;
-    addAdiBlockgroupLayers(
-      map.current,
-      adiData,
-      visibleLayers.areaDeprivationIndex,
-      map.current.getLayer('bronx-zips-fill') ? 'bronx-zips-fill' : undefined,
-    );
+
+    // Wait for style to be fully loaded before adding ADI source
+    const addAdiWhenReady = () => {
+      if (!map.current || !map.current.isStyleLoaded()) {
+        // Style not ready yet, wait and retry
+        map.current?.once('style.load', addAdiWhenReady);
+        return;
+      }
+
+      addAdiBlockgroupLayers(
+        map.current,
+        adiData,
+        visibleLayers.areaDeprivationIndex,
+        map.current.getLayer('bronx-zips-fill') ? 'bronx-zips-fill' : undefined,
+      );
+    };
+
+    addAdiWhenReady();
   }, [adiData, mapReady, visibleLayers.areaDeprivationIndex]);
 
   // Update selected state

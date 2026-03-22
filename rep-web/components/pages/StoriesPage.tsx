@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { themes } from '@/lib/mockData';
 import { stories } from '@/lib/stories';
 
@@ -9,6 +9,18 @@ interface StoriesPageProps {
 export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
   const [selectedThemes, setSelectedThemes] = useState<string[]>(['Travel burden', 'Delayed referrals']);
   const [expandedStory, setExpandedStory] = useState<string | null>(null);
+
+  // Auto-scroll to expanded story
+  useEffect(() => {
+    if (expandedStory) {
+      setTimeout(() => {
+        const element = document.getElementById('expanded-story');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [expandedStory]);
 
   const toggleTheme = (theme: string) => {
     setSelectedThemes(prev =>
@@ -115,15 +127,30 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 }}>
                   {story.profile.summary}
                 </p>
-                <p style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '12px',
-                  color: '#999',
-                  marginTop: '16px',
-                  fontStyle: 'italic'
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginTop: '16px'
                 }}>
-                  Click to read full story
-                </p>
+                  <p style={{
+                    fontFamily: 'system-ui, sans-serif',
+                    fontSize: '12px',
+                    color: story.accentColor,
+                    fontWeight: '500',
+                    margin: 0
+                  }}>
+                    Click to read full story
+                  </p>
+                  <span style={{
+                    fontSize: '14px',
+                    transition: 'transform 0.3s ease',
+                    transform: expandedStory === story.id ? 'rotate(180deg)' : 'rotate(0deg)',
+                    display: 'inline-block'
+                  }}>
+                    ↓
+                  </span>
+                </div>
               </article>
             ))}
           </div>
@@ -134,8 +161,10 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
       {expandedStory && (
         <section style={{
           padding: '48px 32px',
-          background: '#f9f7f4'
-        }}>
+          background: '#f9f7f4',
+          borderTop: '2px solid #e8e4df',
+          scrollMarginTop: '100px'
+        }} id="expanded-story">
           <div style={{ maxWidth: '720px', margin: '0 auto' }}>
             {stories.find(s => s.id === expandedStory) && (
               <article>

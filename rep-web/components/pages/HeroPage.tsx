@@ -13,7 +13,8 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
       <section style={{
         minHeight: '100vh',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-start',
         position: 'relative',
         overflow: 'hidden',
         background: '#1a1a1a'
@@ -26,38 +27,37 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed',
-          opacity: 0.7,
+          opacity: 1,
           zIndex: 0
         }} />
 
-        {/* Dark overlay for text readability */}
+        {/* Lighter overlay - only on bottom left for text readability */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(135deg, rgba(26, 26, 26, 0.7) 0%, rgba(26, 26, 26, 0.5) 50%, rgba(26, 26, 26, 0.7) 100%)',
+          background: 'linear-gradient(to top right, rgba(26, 26, 26, 0.5) 0%, rgba(26, 26, 26, 0.2) 40%, transparent 80%)',
           zIndex: 1
         }} />
 
-        {/* Content */}
+        {/* Content - positioned at bottom left */}
         <div style={{
           maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '0 32px',
+          padding: '80px 32px',
           position: 'relative',
           zIndex: 2,
           width: '100%'
         }}>
-          <div style={{ maxWidth: '900px' }}>
+          <div style={{ maxWidth: '700px' }}>
             {/* Eyebrow with new branding */}
             <div style={{
               fontFamily: 'system-ui, sans-serif',
-              fontSize: '13px',
+              fontSize: '12px',
               fontWeight: '700',
-              letterSpacing: '3px',
+              letterSpacing: '2px',
               textTransform: 'uppercase',
               color: '#fff',
-              marginBottom: '32px',
-              opacity: 0.9
+              marginBottom: '16px',
+              opacity: 0.95
             }}>
               Where We Live
             </div>
@@ -65,12 +65,12 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             {/* Main Headline */}
             <h1 style={{
               fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(42px, 7vw, 72px)',
+              fontSize: 'clamp(32px, 5vw, 52px)',
               fontWeight: '400',
               color: '#fff',
-              lineHeight: '1.1',
-              marginBottom: '32px',
-              letterSpacing: '-1px'
+              lineHeight: '1.2',
+              marginBottom: '20px',
+              letterSpacing: '-0.5px'
             }}>
               Where You Live Shapes
               <br />
@@ -80,11 +80,11 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             {/* Subheading */}
             <p style={{
               fontFamily: 'system-ui, sans-serif',
-              fontSize: 'clamp(16px, 2vw, 21px)',
-              color: '#f0f0f0',
-              lineHeight: '1.7',
-              marginBottom: '48px',
-              maxWidth: '700px',
+              fontSize: 'clamp(14px, 1.5vw, 17px)',
+              color: '#f5f5f5',
+              lineHeight: '1.6',
+              marginBottom: '32px',
+              maxWidth: '600px',
               fontWeight: '300'
             }}>
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
@@ -150,43 +150,6 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               </button>
             </div>
 
-            {/* Scroll indicator */}
-            <div style={{
-              marginTop: '80px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '12px',
-              opacity: 0.7,
-              animation: 'pulse 2s infinite'
-            }}>
-              <div style={{
-                fontSize: '12px',
-                fontFamily: 'system-ui, sans-serif',
-                color: '#fff',
-                letterSpacing: '1px',
-                textTransform: 'uppercase'
-              }}>
-                Scroll to explore
-              </div>
-              <div style={{
-                width: '24px',
-                height: '40px',
-                border: '2px solid #fff',
-                borderRadius: '12px',
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                padding: '8px 0'
-              }}>
-                <div style={{
-                  width: '2px',
-                  height: '8px',
-                  background: '#fff',
-                  borderRadius: '1px'
-                }} />
-              </div>
-            </div>
           </div>
         </div>
       </section>

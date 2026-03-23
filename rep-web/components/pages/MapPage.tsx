@@ -53,7 +53,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     careAccess: false,
     environmentalExposure: false,
     transit: false,
-    areaDeprivationIndex: false
+    areaDeprivationIndex: true
   });
   const [uniqueZips, setUniqueZips] = useState<ZipToTractRow[]>([]);
   const [loading, setLoading] = useState(true);

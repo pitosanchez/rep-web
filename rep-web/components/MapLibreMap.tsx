@@ -148,14 +148,7 @@ export default function MapLibreMap({
         data: geoData
       });
 
-      const adi = adiGeojsonRef.current;
-      if (adi) {
-        addAdiBlockgroupLayers(
-          map.current,
-          adi,
-          visibleLayers.areaDeprivationIndex,
-        );
-      }
+      // ADI layers are added by separate useEffect when ready and style is loaded
 
       // Disease Burden layer - based on weight_tot (proxy for burden)
       map.current.addLayer({

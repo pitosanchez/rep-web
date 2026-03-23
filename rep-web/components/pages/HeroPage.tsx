@@ -42,12 +42,12 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
         {/* Content - positioned at bottom left */}
         <div style={{
           maxWidth: '1200px',
-          padding: '70px 32px 10px calc(32px + 100px)',
+          padding: '70px 32px 100px calc(32px + 100px)',
           position: 'relative',
           zIndex: 2,
           width: '100%'
         }}>
-          <div style={{ maxWidth: '700px' }}>
+          <div style={{ maxWidth: '700px', display: 'flex', flexDirection: 'column', gap: '0' }}>
             {/* Site name - bigger and bolder */}
             <div style={{
               fontFamily: 'Georgia, serif',
@@ -94,12 +94,16 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
             </p>
 
-            {/* CTAs */}
+            {/* CTAs - positioned at bottom */}
             <div style={{
               display: 'flex',
               gap: '20px',
               flexWrap: 'wrap',
-              alignItems: 'center'
+              alignItems: 'center',
+              position: 'absolute',
+              bottom: '10px',
+              left: 'calc(32px + 100px)',
+              zIndex: 10
             }}>
               <button
                 onClick={() => onNavigate('map')}

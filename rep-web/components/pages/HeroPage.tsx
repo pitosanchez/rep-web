@@ -42,7 +42,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
         {/* Content - positioned at bottom left */}
         <div style={{
           maxWidth: '1200px',
-          padding: '70px 32px 80px calc(32px - 50px)',
+          padding: '70px 32px 80px calc(32px + 100px)',
           position: 'relative',
           zIndex: 2,
           width: '100%'

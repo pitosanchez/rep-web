@@ -18,7 +18,6 @@ interface MapLibreMapProps {
 
 function addAdiBlockgroupLayers(
   mapInstance: maplibregl.Map,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any,
   visible: boolean,
   beforeLayerId?: string
@@ -64,16 +63,13 @@ export default function MapLibreMap({
   visibleLayers
 }: MapLibreMapProps) {
   /** ADI may resolve after `geoData`; ref is read in map `load` to avoid a race. */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const adiGeojsonRef = useRef<any | null>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
   const hoveredZipRef = useRef<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [geoData, setGeoData] = useState<any | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [adiData, setAdiData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

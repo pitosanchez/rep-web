@@ -45,7 +45,6 @@ interface ZipToTractRow {
   tract_geoid: string;
   weight_res: number;
   weight_tot: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 

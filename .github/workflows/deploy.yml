@@ -24,11 +24,9 @@ jobs:
       - name: Build Next.js
         run: npm run build --prefix rep-web
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
-      - name: Deploy to Vercel (prebuilt)
+      - name: Deploy to Vercel 
         working-directory: rep-web
+      
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

@@ -42,22 +42,21 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
         {/* Content - positioned at bottom left */}
         <div style={{
           maxWidth: '1200px',
-          padding: '80px 32px',
+          padding: '70px 32px 80px calc(32px - 50px)',
           position: 'relative',
           zIndex: 2,
           width: '100%'
         }}>
           <div style={{ maxWidth: '700px' }}>
-            {/* Eyebrow with new branding */}
+            {/* Site name - bigger and bolder */}
             <div style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '12px',
+              fontFamily: 'Georgia, serif',
+              fontSize: 'clamp(28px, 5vw, 48px)',
               fontWeight: '700',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
+              letterSpacing: '-1px',
               color: '#fff',
-              marginBottom: '16px',
-              opacity: 0.95
+              marginBottom: '20px',
+              opacity: 1
             }}>
               Where We Live
             </div>
@@ -77,15 +76,20 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               <span style={{ fontStyle: 'italic' }}>Kidney Disease</span>
             </h1>
 
-            {/* Subheading */}
+            {/* Subheading - more visible with background */}
             <p style={{
               fontFamily: 'system-ui, sans-serif',
-              fontSize: 'clamp(14px, 1.5vw, 17px)',
-              color: '#f5f5f5',
-              lineHeight: '1.6',
+              fontSize: 'clamp(15px, 2vw, 18px)',
+              color: '#fff',
+              lineHeight: '1.7',
               marginBottom: '32px',
-              maxWidth: '600px',
-              fontWeight: '300'
+              maxWidth: '650px',
+              fontWeight: '400',
+              background: 'rgba(0, 0, 0, 0.3)',
+              padding: '20px 24px',
+              borderRadius: '6px',
+              backdropFilter: 'blur(8px)',
+              opacity: 1
             }}>
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
             </p>

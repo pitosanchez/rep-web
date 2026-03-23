@@ -13,9 +13,9 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
 
   const navItems = [
     { id: 'home', label: 'Home' },
-    { id: 'map', label: 'Map Explorer' },
-    { id: 'stories', label: 'Stories' },
     { id: 'about', label: 'About' },
+    { id: 'stories', label: 'Stories' },
+    { id: 'map', label: 'Map Explorer' },
     { id: 'methods', label: 'Methods' }
   ];
 

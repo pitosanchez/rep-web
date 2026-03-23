@@ -1,175 +1,251 @@
 import React from 'react';
 
 interface AboutPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate?: (page: string) => void;
 }
 
-export const AboutPage: React.FC<AboutPageProps> = () => (
+export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
   <div style={{ paddingTop: '80px' }}>
-    <section className="section-pad-md" style={{
+    {/* Hero Section */}
+    <section style={{
       background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-      color: '#fff'
+      color: '#fff',
+      padding: '80px 32px'
     }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         <div style={{
           fontFamily: 'system-ui, sans-serif',
-          fontSize: '12px',
+          fontSize: '13px',
+          fontWeight: '700',
           letterSpacing: '2px',
           textTransform: 'uppercase',
           color: '#c45a3b',
-          marginBottom: '16px'
-        }}>About REP</div>
-        <h1 className="heading-xl" style={{
           marginBottom: '24px'
         }}>
-          Disease does not happen<br />in a vacuum.
+          About Where We Live
+        </div>
+        <h1 style={{
+          fontFamily: 'Georgia, serif',
+          fontSize: 'clamp(36px, 6vw, 56px)',
+          fontWeight: '400',
+          marginBottom: '32px',
+          lineHeight: '1.2'
+        }}>
+          Storytelling as Medicine
         </h1>
         <p style={{
           fontFamily: 'system-ui, sans-serif',
           fontSize: '18px',
-          color: '#aaa',
-          lineHeight: '1.7'
+          color: '#d0d0d0',
+          lineHeight: '1.8',
+          maxWidth: '700px'
         }}>
-          Decades of research show that APOL1-mediated kidney disease and FSGS are
-          shaped not only by biology, but by environment and policy — housing, transit,
-          exposure, access to specialty care, and the decisions that distribute those
-          resources unequally.
+          Stories are the engine that keep human beings moving forward. They inform us, they inspire us, and at times, they make us uncomfortable—forcing us to confront truths we might otherwise avoid.
         </p>
       </div>
     </section>
 
+    {/* Main Content */}
     <section style={{
       padding: '80px 32px',
       background: '#fff'
     }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <div className="grid-2col">
-          <div>
-            <h2 style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: '28px',
-              fontWeight: '400',
-              color: '#1a1a1a',
-              marginBottom: '24px'
-            }}>Our Commitment</h2>
-            <div style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '16px',
-              color: '#666',
-              lineHeight: '1.8',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px'
-            }}>
-              <p>
-                <strong>No individual-level data.</strong> We never show disease dots on individuals.
-                This protects privacy and prevents surveillance.
-              </p>
-              <p>
-                <strong>Aggregation first.</strong> All data is aggregated to census tracts or higher.
-                Small-number suppression is automatic (n &lt; 11).
-              </p>
-              <p>
-                <strong>Stories tied to place, not identity.</strong> Patient voices appear as patterns
-                by neighborhood, not as individual profiles.
-              </p>
-              <p>
-                <strong>Threshold before display.</strong> Stories only appear when patterns emerge
-                (minimum 5 submissions per neighborhood/theme).
-              </p>
-              <p>
-                <strong>Clear limits.</strong> Every page explains what the data can and cannot show.
-              </p>
-            </div>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+        {/* Essay Content */}
+        <div style={{
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '17px',
+          lineHeight: '1.9',
+          color: '#333'
+        }}>
+          <p style={{ marginBottom: '24px' }}>
+            Stories are the thread that holds together the fabric of the American experience. They are how we come to understand who we are, where we come from, and what we are responsible for.
+          </p>
+
+          <p style={{ marginBottom: '24px' }}>
+            We learn through stories. From <em>Down These Mean Streets</em> by Piri Thomas, to <em>To Kill a Mockingbird</em> and the moral clarity of Atticus Finch, to the work of Toni Morrison, who forced us to sit with the legacy of slavery, identity, and healing. Even in comedy, someone like Richard Pryor used storytelling to challenge norms and expose reality when others could not. Stories do something data alone cannot—they make us feel, and in doing so, they make us care.
+          </p>
+
+          <p style={{
+            marginBottom: '32px',
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            fontStyle: 'italic',
+            color: '#666',
+            borderLeft: '4px solid #c45a3b',
+            paddingLeft: '24px'
+          }}>
+            This project is built on that belief.
+          </p>
+
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '28px',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            marginBottom: '20px',
+            marginTop: '48px'
+          }}>
+            Stories in Healthcare
+          </h2>
+
+          <p style={{ marginBottom: '24px' }}>
+            In healthcare, data is essential—but it is often incomplete. Numbers can tell us what is happening, but rarely why. They can show patterns, but they cannot explain lived experience. Patient stories fill that gap. They provide context—cultural, emotional, environmental—that clinical data alone cannot capture. Research increasingly shows that storytelling improves understanding, builds trust, and leads to more patient-centered care. It helps researchers and clinicians align their work with what actually matters in people's lives.
+          </p>
+
+          <p style={{ marginBottom: '32px' }}>
+            For communities affected by kidney disease—particularly those living with FSGS and APOL1-mediated kidney disease—this gap is even more pronounced.
+          </p>
+
+          <div style={{
+            background: '#faf7f3',
+            padding: '32px',
+            borderRadius: '8px',
+            marginBottom: '32px',
+            borderLeft: '4px solid #c45a3b'
+          }}>
+            <p style={{ marginBottom: '16px', fontWeight: '600', color: '#1a1a1a' }}>
+              What does it mean to manage a chronic disease while living in a neighborhood with limited access to healthy food?
+            </p>
+            <p style={{ marginBottom: '16px', fontWeight: '600', color: '#1a1a1a' }}>
+              What does it mean to navigate treatment while dealing with financial instability or housing insecurity?
+            </p>
+            <p style={{ fontWeight: '600', color: '#1a1a1a' }}>
+              What does structural racism do—not just to access to care—but to the body itself?
+            </p>
+            <p style={{ marginTop: '16px', color: '#666', fontStyle: 'italic' }}>
+              These are not abstract questions. They are lived realities.
+            </p>
           </div>
 
-          <div>
-            <h2 style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: '28px',
-              fontWeight: '400',
-              color: '#1a1a1a',
-              marginBottom: '24px'
-            }}>Who This Is For</h2>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px'
-            }}>
-              {[
-                { title: 'Patients & Families', desc: 'Context: you\u2019re not alone, and it\u2019s not your fault.' },
-                { title: 'Community Advocates', desc: 'Evidence to cite, not just testimony to share.' },
-                { title: 'Researchers', desc: 'Neighborhood-level patterns to investigate.' },
-                { title: 'Journalists', desc: 'A story that writes itself with place, data, and voice.' },
-                { title: 'Funders & Policymakers', desc: 'Structural visibility on where investment is needed.' }
-              ].map((item, i) => (
-                <div key={i} style={{
-                  padding: '16px',
-                  background: '#faf7f3',
-                  borderRadius: '8px',
-                  borderLeft: '4px solid #c45a3b'
-                }}>
-                  <div style={{
-                    fontFamily: 'Georgia, serif',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    color: '#1a1a1a',
-                    marginBottom: '4px'
-                  }}>{item.title}</div>
-                  <div style={{
-                    fontFamily: 'system-ui, sans-serif',
-                    fontSize: '14px',
-                    color: '#666'
-                  }}>{item.desc}</div>
-                </div>
-              ))}
-            </div>
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '28px',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            marginBottom: '20px',
+            marginTop: '48px'
+          }}>
+            Our Mission
+          </h2>
+
+          <p style={{ marginBottom: '24px' }}>
+            The Rare Renal Equity Project exists to connect these realities to the data. We are not just mapping disease—we are mapping experience. By pairing datasets with real stories from patients and families, we begin to see something different. The numbers stop being distant. They become human.
+          </p>
+
+          <p style={{ marginBottom: '24px' }}>
+            You are no longer looking at a rate, a percentage, or a cluster on a map. You are seeing a person. A family. A set of choices shaped by constraints. A life.
+          </p>
+
+          <p style={{
+            marginBottom: '32px',
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            color: '#c45a3b',
+            fontWeight: '600'
+          }}>
+            And that shift matters.
+          </p>
+
+          <p style={{ marginBottom: '24px' }}>
+            Because when we see the human story behind the data, it changes how we respond. Stories make information more memorable, more actionable, and more likely to influence behavior and decision-making. They create connection. They create urgency. They create accountability.
+          </p>
+
+          <p style={{ marginBottom: '32px', fontWeight: '600', color: '#1a1a1a' }}>
+            Our goal is not just to tell stories, but to make them count.
+          </p>
+
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '28px',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            marginBottom: '20px',
+            marginTop: '48px'
+          }}>
+            Integrating Stories into Systems
+          </h2>
+
+          <p style={{ marginBottom: '24px' }}>
+            We believe these stories can be studied, measured, and integrated into how research is done, how care is delivered, and how policy is shaped. This is about putting a human imprint on systems that have historically operated without one. It is about ensuring that when decisions are made—about funding, about research priorities, about care delivery—the voices of those most affected are not an afterthought, but a starting point.
+          </p>
+
+          <div style={{
+            background: '#1a1a1a',
+            color: '#fff',
+            padding: '40px',
+            borderRadius: '8px',
+            marginTop: '48px',
+            fontFamily: 'Georgia, serif',
+            fontSize: '22px',
+            fontWeight: '400',
+            lineHeight: '1.8',
+            textAlign: 'center'
+          }}>
+            <p style={{ marginBottom: '16px' }}>This is storytelling as medicine.</p>
+            <p style={{ marginBottom: '16px' }}>This is storytelling as data.</p>
+            <p>This is storytelling as accountability.</p>
           </div>
         </div>
       </div>
     </section>
 
+    {/* CTA Section */}
     <section style={{
       padding: '80px 32px',
-      background: '#f9f9f9',
-      borderTop: '1px solid #e8e4df',
-      borderBottom: '1px solid #e8e4df'
+      background: '#faf7f3',
+      borderTop: '1px solid #e8e4df'
     }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      <div style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        textAlign: 'center'
+      }}>
         <h2 style={{
           fontFamily: 'Georgia, serif',
-          fontSize: '28px',
+          fontSize: 'clamp(28px, 5vw, 44px)',
           fontWeight: '400',
           color: '#1a1a1a',
-          marginBottom: '32px',
-          textAlign: 'center'
-        }}>REP Is Designed to Be</h2>
-        <div className="grid-2col">
-          {[
-            { title: 'IRB-Safe', desc: 'Meets privacy standards. All data governance auditable.' },
-            { title: 'Funder-Safe', desc: 'Clear ethics, reproducible methods, citable data.' },
-            { title: 'Community-Centered', desc: 'Built with residents, not just for them.' },
-            { title: 'Publishable', desc: 'Designed for peer review and scientific rigor.' }
-          ].map((item, i) => (
-            <div key={i} style={{
-              padding: '24px',
-              background: '#fff',
-              borderRadius: '8px'
-            }}>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '20px',
-                color: '#1a1a1a',
-                marginBottom: '8px'
-              }}>{item.title}</h3>
-              <p style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '14px',
-                color: '#666'
-              }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
+          marginBottom: '24px'
+        }}>
+          Read stories from the Bronx
+        </h2>
+
+        <p style={{
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '17px',
+          color: '#666',
+          marginBottom: '40px',
+          lineHeight: '1.7'
+        }}>
+          See how patients and families navigate kidney disease while facing structural barriers to care, resources, and health.
+        </p>
+
+        {onNavigate && (
+          <button
+            onClick={() => onNavigate('stories')}
+            style={{
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '16px',
+              fontWeight: '600',
+              padding: '18px 48px',
+              background: '#c45a3b',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#a84830';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#c45a3b';
+            }}
+          >
+            Explore Stories
+          </button>
+        )}
       </div>
     </section>
   </div>

@@ -1,10 +1,10 @@
 import REPWireframe from '@/components/REPWireframe';
 
 export const metadata = {
-  title: 'REP — Rare Renal Equity Project',
-  description: 'Mapping how where you live shapes kidney disease outcomes. A public accountability platform connecting genetics, neighborhood conditions, and patient stories.',
+  title: 'Where We Live — REP',
+  description: 'Mapping how structural inequality shapes kidney disease outcomes. Connecting genetics, geography, and patient stories in the Bronx.',
   openGraph: {
-    title: 'REP — Rare Renal Equity Project',
+    title: 'Where We Live — REP',
     description: 'Where You Live Shapes Kidney Disease',
     type: 'website',
   },

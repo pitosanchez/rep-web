@@ -42,7 +42,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
         {/* Content - positioned at bottom left */}
         <div style={{
           maxWidth: '1200px',
-          padding: '70px 32px 80px calc(32px + 100px)',
+          padding: '70px 32px 10px calc(32px + 100px)',
           position: 'relative',
           zIndex: 2,
           width: '100%'
@@ -76,7 +76,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               <span style={{ fontStyle: 'italic' }}>Kidney Disease</span>
             </h1>
 
-            {/* Subheading - more visible with background */}
+            {/* Subheading - more visible with subtle background */}
             <p style={{
               fontFamily: 'system-ui, sans-serif',
               fontSize: 'clamp(15px, 2vw, 18px)',
@@ -85,10 +85,10 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               marginBottom: '32px',
               maxWidth: '650px',
               fontWeight: '400',
-              background: 'rgba(0, 0, 0, 0.3)',
+              background: 'rgba(0, 0, 0, 0.15)',
               padding: '20px 24px',
               borderRadius: '6px',
-              backdropFilter: 'blur(8px)',
+              backdropFilter: 'blur(6px)',
               opacity: 1
             }}>
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.

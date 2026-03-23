@@ -390,7 +390,6 @@ export default function MapLibreMap({
   // ADI fetched after map exists — insert fill below ZIP circles
   useEffect(() => {
     if (!map.current || !mapReady || !adiData) return;
-    if (map.current.getSource('adi-blockgroups')) return;
 
     // Wait for style to be fully loaded before adding ADI source
     const addAdiWhenReady = () => {
@@ -400,16 +399,34 @@ export default function MapLibreMap({
         return;
       }
 
-      addAdiBlockgroupLayers(
-        map.current,
-        adiData,
-        visibleLayers.areaDeprivationIndex,
-        map.current.getLayer('bronx-zips-fill') ? 'bronx-zips-fill' : undefined,
-      );
+      // Only add layer if source doesn't exist yet
+      if (!map.current.getSource('adi-blockgroups')) {
+        const beforeLayer = map.current.getLayer('bronx-zips-fill') ? 'bronx-zips-fill' : undefined;
+        addAdiBlockgroupLayers(
+          map.current,
+          adiData,
+          visibleLayers.areaDeprivationIndex,
+          beforeLayer,
+        );
+      }
     };
 
     addAdiWhenReady();
-  }, [adiData, mapReady, visibleLayers.areaDeprivationIndex]);
+  }, [adiData, mapReady]);
+
+  // Handle ADI visibility separately
+  useEffect(() => {
+    if (!map.current || !mapReady) return;
+
+    const adiFillId = 'adi-blockgroups-fill';
+    if (map.current.getLayer(adiFillId)) {
+      map.current.setLayoutProperty(
+        adiFillId,
+        'visibility',
+        visibleLayers.areaDeprivationIndex ? 'visible' : 'none'
+      );
+    }
+  }, [visibleLayers.areaDeprivationIndex, mapReady]);
 
   // Update selected state
   useEffect(() => {

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { stories, dataPoints, Story } from '@/lib/mockData';
+import { stories as patientStories, PatientStory } from '@/lib/stories';
+import { getNeighborhoodForZip } from '@/lib/storyZipMapping';
 
 interface NeighborhoodPageProps {
   selectedZip: string | null;
@@ -63,14 +65,24 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
     fetchNeighborhood();
   }, [selectedZip]);
 
-  // Get stories for this neighborhood from mock data (temporary)
-  const neighborhoodStories = neighborhood
+  // Get stories for this neighborhood
+  const neighborhoodStories: PatientStory[] = [];
+  if (neighborhood) {
+    const neighborhood_name = getNeighborhoodForZip(neighborhood.zip);
+    const matchingStories = patientStories.filter(s =>
+      s.neighborhood.toLowerCase() === neighborhood_name.toLowerCase()
+    );
+    neighborhoodStories.push(...matchingStories);
+  }
+
+  // Also include simple mock stories for the ZIP
+  const mockStoriesForZip = neighborhood
     ? stories.filter(s => s.zip === neighborhood.zip)
     : [];
 
-  // Calculate theme frequencies
+  // Calculate theme frequencies from mock stories
   const themeCounts: Record<string, number> = {};
-  neighborhoodStories.forEach(s => {
+  mockStoriesForZip.forEach(s => {
     s.themes.forEach(t => {
       themeCounts[t] = (themeCounts[t] || 0) + 1;
     });
@@ -324,7 +336,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 fontSize: '15px',
                 color: '#666'
               }}>
-                {neighborhoodStories.length} submissions from this neighborhood
+                {neighborhoodStories.length + mockStoriesForZip.length} submission{(neighborhoodStories.length + mockStoriesForZip.length) !== 1 ? 's' : ''} from this neighborhood
               </p>
             </div>
 
@@ -347,9 +359,16 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
 
           {/* Story cards */}
           <div className="grid-stories">
+            {/* Patient stories (detailed) */}
             {neighborhoodStories.map(story => (
-              <StoryCard key={story.id} story={story} />
+              <PatientStoryCard key={story.id} story={story} />
             ))}
+            {/* Mock stories (simple) */}
+            {mockStoriesForZip.length > 0 && neighborhoodStories.length === 0 &&
+              mockStoriesForZip.map(story => (
+                <StoryCard key={story.id} story={story} />
+              ))
+            }
           </div>
 
           {/* Ethics note */}
@@ -461,6 +480,123 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => (
         fontSize: '12px',
         color: '#aaa'
       }}>{story.date}</span>
+    </div>
+  </div>
+);
+
+interface PatientStoryCardProps {
+  story: PatientStory;
+}
+
+const PatientStoryCard: React.FC<PatientStoryCardProps> = ({ story }) => (
+  <div style={{
+    background: '#fff',
+    border: '1px solid #e8e4df',
+    borderRadius: '12px',
+    padding: '28px',
+    position: 'relative'
+  }}>
+    <div style={{
+      position: 'absolute',
+      top: '28px',
+      right: '28px',
+      fontFamily: 'Georgia, serif',
+      fontSize: '48px',
+      color: 'rgba(196, 90, 59, 0.15)',
+      lineHeight: 1
+    }}>{`"`}</div>
+
+    {/* Name and diagnosis */}
+    <div style={{
+      marginBottom: '16px'
+    }}>
+      <div style={{
+        fontFamily: 'Georgia, serif',
+        fontSize: '20px',
+        fontWeight: '600',
+        color: story.accentColor,
+        marginBottom: '4px'
+      }}>{story.name}</div>
+      <div style={{
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '13px',
+        color: '#666',
+        marginBottom: '8px'
+      }}>
+        <strong>{story.profile.age}</strong> • {story.profile.ethnicity}
+      </div>
+      <div style={{
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '12px',
+        fontWeight: '500',
+        padding: '4px 10px',
+        background: '#f5f5f5',
+        borderRadius: '4px',
+        color: '#666',
+        display: 'inline-block'
+      }}>{story.diagnosisShort}</div>
+    </div>
+
+    {/* Summary */}
+    <p style={{
+      fontFamily: 'Georgia, serif',
+      fontSize: '16px',
+      color: '#1a1a1a',
+      lineHeight: '1.6',
+      marginBottom: '16px'
+    }}>
+      {story.profile.summary}
+    </p>
+
+    {/* Pull quote */}
+    {story.pullQuotes.length > 0 && (
+      <p style={{
+        fontFamily: 'Georgia, serif',
+        fontSize: '15px',
+        color: '#444',
+        lineHeight: '1.6',
+        fontStyle: 'italic',
+        marginBottom: '16px',
+        borderLeft: '3px solid #c45a3b',
+        paddingLeft: '16px'
+      }}>
+        {`"${story.pullQuotes[0]}"`}
+      </p>
+    )}
+
+    {/* Location context */}
+    <p style={{
+      fontFamily: 'system-ui, sans-serif',
+      fontSize: '13px',
+      color: '#666',
+      lineHeight: '1.5',
+      marginBottom: '16px'
+    }}>
+      <strong style={{ color: '#1a1a1a' }}>Geographic context:</strong> {story.geographyContext[0]}
+    </p>
+
+    {/* Footer */}
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingTop: '16px',
+      borderTop: '1px solid #f0f0f0'
+    }}>
+      <div style={{
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '12px',
+        color: '#888'
+      }}>
+        {story.location}
+      </div>
+      <div style={{
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '12px',
+        color: '#aaa'
+      }}>
+        Patient story
+      </div>
     </div>
   </div>
 );

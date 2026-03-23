@@ -7,27 +7,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: rep-web/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci --prefix rep-web
-
-      - name: Build Next.js
-        run: npm run build --prefix rep-web
-
-      - name: Deploy to Vercel 
+      - name: Deploy to Vercel
         working-directory: rep-web
-      
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}

@@ -48,14 +48,14 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           zIndex: 1
         }} />
 
-        {/* Content - positioned at center */}
+        {/* Content - positioned at center, offset 50px right */}
         <div style={{
           maxWidth: isMobile ? '100%' : '550px',
           padding: isMobile
             ? '24px 16px 60px 16px'
             : '50px 64px 50px 32px',
           position: 'absolute',
-          left: '50%',
+          left: 'calc(50% + 50px)',
           top: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 2,

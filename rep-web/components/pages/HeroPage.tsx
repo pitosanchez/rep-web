@@ -23,7 +23,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'flex-end',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-end',
         position: 'relative',
         overflow: 'hidden',
         background: '#1a1a1a'
@@ -48,21 +48,19 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           zIndex: 1
         }} />
 
-        {/* Content - positioned at bottom right */}
+        {/* Content - positioned for balance around girl's middle */}
         <div style={{
-          maxWidth: '1200px',
+          maxWidth: isMobile ? '100%' : '550px',
           padding: isMobile
             ? '24px 16px 60px 16px'
-            : '48px 32px 80px auto',
-          marginLeft: isMobile ? '0' : 'auto',
-          marginRight: isMobile ? '0' : '0',
+            : '48px 64px 80px 32px',
           position: 'relative',
           zIndex: 2,
           width: isMobile ? '100%' : 'auto',
           boxSizing: 'border-box'
         }}>
           <div style={{
-            maxWidth: isMobile ? '100%' : '600px',
+            maxWidth: '100%',
             display: 'flex',
             flexDirection: 'column',
             gap: '0'

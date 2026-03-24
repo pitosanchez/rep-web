@@ -34,7 +34,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           inset: 0,
           backgroundImage: 'url(/my-playground.webp)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center center',
           backgroundAttachment: isMobile ? 'scroll' : 'fixed',
           opacity: 1,
           zIndex: 0
@@ -65,48 +65,51 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             flexDirection: 'column',
             gap: '0'
           }}>
-            {/* Site name - bigger and bolder */}
+            {/* Site name - bigger and bolder FOCAL TITLE */}
             <div style={{
               fontFamily: 'Georgia, serif',
-              fontSize: isMobile ? 'clamp(24px, 7vw, 36px)' : 'clamp(28px, 5vw, 48px)',
+              fontSize: isMobile ? 'clamp(32px, 9vw, 52px)' : 'clamp(48px, 8vw, 64px)',
               fontWeight: '700',
-              letterSpacing: '-1px',
+              letterSpacing: '-2px',
               color: '#fff',
-              marginBottom: '16px',
-              opacity: 1
+              marginBottom: '8px',
+              opacity: 1,
+              lineHeight: '1'
             }}>
               Where We Live
             </div>
 
-            {/* Main Headline */}
-            <h1 style={{
+            {/* Subtitle - "can shape Kidney Disease" */}
+            <p style={{
               fontFamily: 'Georgia, serif',
-              fontSize: isMobile ? 'clamp(28px, 6vw, 40px)' : 'clamp(32px, 5vw, 52px)',
+              fontSize: isMobile ? 'clamp(20px, 5vw, 28px)' : 'clamp(24px, 4vw, 36px)',
               fontWeight: '400',
               color: '#fff',
               lineHeight: '1.2',
-              marginBottom: '16px',
-              letterSpacing: '-0.5px'
+              marginBottom: isMobile ? '40px' : '32px',
+              letterSpacing: '-0.5px',
+              fontStyle: 'italic'
             }}>
-              Where You Live Shapes
-              <br />
-              <span style={{ fontStyle: 'italic' }}>Kidney Disease</span>
-            </h1>
+              can shape Kidney Disease
+            </p>
 
-            {/* Subheading - more visible with subtle background */}
+            {/* Subheading - Glass Morphism */}
             <p style={{
               fontFamily: 'system-ui, sans-serif',
               fontSize: isMobile ? 'clamp(13px, 3.5vw, 16px)' : 'clamp(15px, 2vw, 18px)',
               color: '#fff',
-              lineHeight: '1.6',
+              lineHeight: '1.7',
               marginBottom: isMobile ? '50px' : '32px',
-              maxWidth: isMobile ? '100%' : '650px',
+              maxWidth: isMobile ? '100%' : '700px',
               fontWeight: '400',
-              background: 'rgba(0, 0, 0, 0.15)',
-              padding: isMobile ? '16px 16px' : '20px 24px',
-              borderRadius: '6px',
-              backdropFilter: 'blur(6px)',
-              opacity: 1
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              padding: isMobile ? '20px 16px' : '28px 32px',
+              borderRadius: '12px',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              opacity: 1,
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
             }}>
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
             </p>

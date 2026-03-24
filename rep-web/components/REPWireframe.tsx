@@ -85,15 +85,14 @@ export const REPWireframe: React.FC = () => {
                 fontSize: '24px',
                 fontWeight: '700',
                 marginBottom: '8px'
-              }}>REP</div>
+              }}>Where We Live</div>
               <p style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '13px',
                 color: '#888',
                 lineHeight: '1.6'
               }}>
-                Rare Renal Equity Project<br />
-                Mapping structural inequity in kidney disease.
+                Mapping how place shapes kidney disease outcomes through data and patient stories.
               </p>
             </div>
 

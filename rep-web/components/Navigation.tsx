@@ -53,13 +53,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
             fontWeight: '700',
             color: '#1a1a1a',
             letterSpacing: '-0.5px'
-          }}>REP</span>
-          <span style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '13px',
-            color: '#666',
-            fontWeight: '400'
-          }}>Rare Renal Equity Project</span>
+          }}>Where We Live</span>
         </button>
 
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>

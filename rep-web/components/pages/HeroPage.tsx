@@ -55,7 +55,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             ? '24px 16px 60px 16px'
             : '50px 64px 50px 32px',
           position: 'absolute',
-          left: 'calc(50% + 50px)',
+          left: 'calc(50% + 150px)',
           top: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 2,

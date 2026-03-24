@@ -48,19 +48,21 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           zIndex: 1
         }} />
 
-        {/* Content - positioned at bottom left */}
+        {/* Content - positioned at bottom right */}
         <div style={{
           maxWidth: '1200px',
           padding: isMobile
-            ? '32px 16px 70px 16px'
-            : '70px 32px 100px calc(32px + 100px)',
+            ? '24px 16px 60px 16px'
+            : '48px 32px 80px auto',
+          marginLeft: isMobile ? '0' : 'auto',
+          marginRight: isMobile ? '0' : '0',
           position: 'relative',
           zIndex: 2,
-          width: '100%',
+          width: isMobile ? '100%' : 'auto',
           boxSizing: 'border-box'
         }}>
           <div style={{
-            maxWidth: isMobile ? '100%' : '700px',
+            maxWidth: isMobile ? '100%' : '600px',
             display: 'flex',
             flexDirection: 'column',
             gap: '0'
@@ -72,7 +74,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               fontWeight: '700',
               letterSpacing: '-2px',
               color: '#fff',
-              marginBottom: '8px',
+              marginBottom: '4px',
               opacity: 1,
               lineHeight: '1'
             }}>
@@ -82,11 +84,11 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             {/* Subtitle - "Your Story Starts With Where You Live" */}
             <h2 style={{
               fontFamily: 'Georgia, serif',
-              fontSize: isMobile ? 'clamp(16px, 4vw, 24px)' : 'clamp(18px, 3vw, 28px)',
+              fontSize: isMobile ? 'clamp(16px, 4vw, 24px)' : 'clamp(18px, 3vw, 26px)',
               fontWeight: '400',
               color: '#fff',
-              lineHeight: '1.3',
-              marginBottom: isMobile ? '40px' : '32px',
+              lineHeight: '1.2',
+              marginBottom: isMobile ? '20px' : '16px',
               letterSpacing: '-0.5px',
               fontStyle: 'italic'
             }}>
@@ -97,15 +99,15 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             {/* Subheading - Minimal Glass Morphism */}
             <p style={{
               fontFamily: 'system-ui, sans-serif',
-              fontSize: isMobile ? 'clamp(13px, 3.5vw, 16px)' : 'clamp(15px, 2vw, 18px)',
+              fontSize: isMobile ? 'clamp(12px, 3vw, 14px)' : 'clamp(13px, 1.8vw, 15px)',
               color: '#fff',
-              lineHeight: '1.7',
-              marginBottom: isMobile ? '50px' : '32px',
-              maxWidth: isMobile ? '100%' : '700px',
+              lineHeight: '1.6',
+              marginBottom: isMobile ? '40px' : '28px',
+              maxWidth: isMobile ? '100%' : '550px',
               fontWeight: '400',
               background: 'rgba(255, 255, 255, 0.03)',
               border: '1px solid rgba(255, 255, 255, 0.08)',
-              padding: isMobile ? '20px 16px' : '28px 32px',
+              padding: isMobile ? '16px 14px' : '20px 24px',
               borderRadius: '12px',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
@@ -115,7 +117,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
             </p>
 
-            {/* CTAs - positioned at bottom */}
+            {/* CTAs - positioned at bottom right */}
             <div style={{
               display: 'flex',
               gap: isMobile ? '12px' : '20px',
@@ -123,8 +125,8 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               alignItems: 'center',
               position: 'absolute',
               bottom: '10px',
-              left: isMobile ? '16px' : 'calc(32px + 100px)',
-              right: isMobile ? '16px' : 'auto',
+              left: isMobile ? '16px' : 'auto',
+              right: isMobile ? '16px' : '32px',
               zIndex: 10,
               maxWidth: isMobile ? 'calc(100% - 32px)' : 'auto'
             }}>

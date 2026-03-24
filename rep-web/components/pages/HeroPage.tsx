@@ -79,19 +79,19 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               Where We Live
             </div>
 
-            {/* Subtitle - "can shape Kidney Disease" */}
-            <p style={{
+            {/* Subtitle - "Your Story Starts With Where You Live" */}
+            <h2 style={{
               fontFamily: 'Georgia, serif',
-              fontSize: isMobile ? 'clamp(20px, 5vw, 28px)' : 'clamp(24px, 4vw, 36px)',
+              fontSize: isMobile ? 'clamp(20px, 5vw, 32px)' : 'clamp(28px, 4vw, 42px)',
               fontWeight: '400',
               color: '#fff',
-              lineHeight: '1.2',
+              lineHeight: '1.3',
               marginBottom: isMobile ? '40px' : '32px',
-              letterSpacing: '-0.5px',
-              fontStyle: 'italic'
+              letterSpacing: '-0.5px'
             }}>
-              can shape Kidney Disease
-            </p>
+              Your Story Starts<br />
+              With Where You Live
+            </h2>
 
             {/* Subheading - Glass Morphism */}
             <p style={{

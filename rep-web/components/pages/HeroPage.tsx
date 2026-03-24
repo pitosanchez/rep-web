@@ -48,22 +48,22 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           zIndex: 1
         }} />
 
-        {/* Content - positioned in upper-right area */}
+        {/* Content - positioned at center */}
         <div style={{
           maxWidth: isMobile ? '100%' : '550px',
           padding: isMobile
             ? '24px 16px 60px 16px'
-            : '100px 64px 48px 32px',
+            : '50px 64px 50px 32px',
           position: 'absolute',
-          top: 0,
-          right: 0,
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
           zIndex: 2,
           width: isMobile ? '100%' : 'auto',
           boxSizing: 'border-box',
-          height: isMobile ? 'auto' : '100vh',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'flex-start'
+          justifyContent: 'center'
         }}>
           <div style={{
             maxWidth: '100%',

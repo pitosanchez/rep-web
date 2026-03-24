@@ -80,7 +80,8 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               color: '#fff',
               marginBottom: '4px',
               opacity: 1,
-              lineHeight: '1'
+              lineHeight: '1',
+              whiteSpace: 'nowrap'
             }}>
               Where We Live
             </div>

@@ -16,7 +16,7 @@ export const MethodsPage: React.FC = () => (
           lineHeight: '1.7',
           maxWidth: '700px'
         }}>
-          Everything REP shows is built on explicit, auditable decisions.
+          Everything we show is built on explicit, auditable decisions.
           {`Here's how we work.`}
         </p>
       </div>
@@ -116,7 +116,7 @@ export const MethodsPage: React.FC = () => (
           color: '#1a1a1a',
           marginBottom: '48px',
           textAlign: 'center'
-        }}>{`What REP Shows & What It Doesn't`}</h2>
+        }}>{`What We Show & What We Don't`}</h2>
 
         <div style={{
           display: 'grid',
@@ -136,7 +136,7 @@ export const MethodsPage: React.FC = () => (
                 fontSize: '20px',
                 color: '#1a1a1a',
                 marginBottom: '16px'
-              }}>✓ REP DOES Show</h3>
+              }}>✓ We SHOW</h3>
               <ul style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '14px',
@@ -168,7 +168,7 @@ export const MethodsPage: React.FC = () => (
                 fontSize: '20px',
                 color: '#1a1a1a',
                 marginBottom: '16px'
-              }}>✗ REP Does NOT Show</h3>
+              }}>✗ We DON'T SHOW</h3>
               <ul style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '14px',
@@ -209,7 +209,7 @@ export const MethodsPage: React.FC = () => (
           lineHeight: '1.8',
           marginBottom: '32px'
         }}>
-          REP is built to be auditable. Every data suppression decision, every story threshold,
+          We are built to be auditable. Every data suppression decision, every story threshold,
           every narrative choice is logged and explainable.
         </p>
 

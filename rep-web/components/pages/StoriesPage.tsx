@@ -637,7 +637,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 color: '#444',
                 lineHeight: '1.5'
               }}>
-                I consent to REP using this anonymous submission in aggregated form by place and theme.
+                I consent to Where We Live using this anonymous submission in aggregated form by place and theme.
                 My story may appear alongside others from my neighborhood when patterns emerge.
               </span>
             </div>

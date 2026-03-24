@@ -82,18 +82,19 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             {/* Subtitle - "Your Story Starts With Where You Live" */}
             <h2 style={{
               fontFamily: 'Georgia, serif',
-              fontSize: isMobile ? 'clamp(20px, 5vw, 32px)' : 'clamp(28px, 4vw, 42px)',
+              fontSize: isMobile ? 'clamp(16px, 4vw, 24px)' : 'clamp(18px, 3vw, 28px)',
               fontWeight: '400',
               color: '#fff',
               lineHeight: '1.3',
               marginBottom: isMobile ? '40px' : '32px',
-              letterSpacing: '-0.5px'
+              letterSpacing: '-0.5px',
+              fontStyle: 'italic'
             }}>
               Your Story Starts<br />
               With Where You Live
             </h2>
 
-            {/* Subheading - Glass Morphism */}
+            {/* Subheading - Minimal Glass Morphism */}
             <p style={{
               fontFamily: 'system-ui, sans-serif',
               fontSize: isMobile ? 'clamp(13px, 3.5vw, 16px)' : 'clamp(15px, 2vw, 18px)',
@@ -102,14 +103,14 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               marginBottom: isMobile ? '50px' : '32px',
               maxWidth: isMobile ? '100%' : '700px',
               fontWeight: '400',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               padding: isMobile ? '20px 16px' : '28px 32px',
               borderRadius: '12px',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
               opacity: 1,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+              boxShadow: 'none'
             }}>
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
             </p>

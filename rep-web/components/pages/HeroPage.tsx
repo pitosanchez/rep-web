@@ -48,18 +48,18 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           zIndex: 1
         }} />
 
-        {/* Content - positioned at center, offset 50px right */}
+        {/* Content - positioned at center, offset 150px right on desktop */}
         <div style={{
-          maxWidth: isMobile ? '100%' : '550px',
+          maxWidth: isMobile ? 'calc(100% - 32px)' : '550px',
           padding: isMobile
-            ? '24px 16px 60px 16px'
+            ? '24px 16px 24px 16px'
             : '50px 64px 50px 32px',
           position: 'absolute',
-          left: 'calc(50% + 150px)',
-          top: '50%',
+          left: isMobile ? '50%' : 'calc(50% + 150px)',
+          top: isMobile ? '50%' : '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 2,
-          width: isMobile ? '100%' : 'auto',
+          width: isMobile ? 'auto' : 'auto',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
@@ -122,9 +122,9 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
             </p>
 
-            {/* CTAs - positioned below text content */}
+            {/* CTAs - hidden on mobile, positioned below text on desktop */}
             <div style={{
-              display: 'flex',
+              display: isMobile ? 'none' : 'flex',
               gap: isMobile ? '12px' : '20px',
               flexWrap: 'wrap',
               alignItems: 'center',

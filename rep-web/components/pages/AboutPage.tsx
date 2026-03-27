@@ -8,40 +8,27 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
   <div style={{ paddingTop: '80px' }}>
     {/* Hero Section */}
     <section style={{
-      background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/womaninthewindo.webp)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
       color: '#fff',
-      padding: '80px 32px'
+      padding: '120px 32px',
+      minHeight: '500px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
     }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <div style={{
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '13px',
-          fontWeight: '700',
-          letterSpacing: '2px',
-          textTransform: 'uppercase',
-          color: '#c45a3b',
-          marginBottom: '24px'
-        }}>
-          About Where We Live
-        </div>
+      <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
         <h1 style={{
           fontFamily: 'Georgia, serif',
-          fontSize: 'clamp(36px, 6vw, 56px)',
-          fontWeight: '400',
-          marginBottom: '32px',
-          lineHeight: '1.2'
+          fontSize: 'clamp(44px, 8vw, 72px)',
+          fontWeight: '300',
+          lineHeight: '1.1',
+          letterSpacing: '-1px'
         }}>
           Storytelling as Medicine
         </h1>
-        <p style={{
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '18px',
-          color: '#d0d0d0',
-          lineHeight: '1.8',
-          maxWidth: '700px'
-        }}>
-          Stories are the engine that keep human beings moving forward. They inform us, they inspire us, and at times, they make us uncomfortable—forcing us to confront truths we might otherwise avoid.
-        </p>
       </div>
     </section>
 
@@ -58,8 +45,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
           lineHeight: '1.9',
           color: '#333'
         }}>
-          <p style={{ marginBottom: '24px' }}>
-            Stories are the thread that holds together the fabric of the American experience. They are how we come to understand who we are, where we come from, and what we are responsible for.
+          <p style={{ marginBottom: '24px', fontSize: '18px' }}>
+            <span style={{
+              fontSize: '64px',
+              color: '#c45a3b',
+              fontWeight: '700',
+              float: 'left',
+              lineHeight: '0.75',
+              paddingRight: '10px',
+              paddingTop: '6px'
+            }}>S</span>
+            tories are the engine that carries us forward—the thread that binds together the fabric of who we are and what we are called to become. They inform us and inspire us. At times, they make us uncomfortable, forcing us to confront truths we would rather not see. But it is precisely in this discomfort that their power lives. Through stories, we come to understand ourselves, our origins, and what we owe to one another.
           </p>
 
           <p style={{ marginBottom: '24px' }}>

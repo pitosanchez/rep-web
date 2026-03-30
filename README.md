@@ -1,8 +1,12 @@
-# REP — Rare Renal Equity Project
+# Where We Live
 
 A public, interactive, place-based platform mapping how APOL1-mediated kidney disease and FSGS are shaped by structural factors — poverty, food environment, alcohol density, housing conditions, care access, and systemic inequity.
 
 **Not genetics. Geography and justice.**
+
+## Preview
+
+[![Where We Live Hero Page](./public/WhereWeLiveThumbNail.webp)](https://rep-web-wine.vercel.app/)
 
 ---
 

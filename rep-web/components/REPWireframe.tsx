@@ -8,6 +8,8 @@ import { NeighborhoodPage } from './pages/NeighborhoodPage';
 import { StoriesPage } from './pages/StoriesPage';
 import { AboutPage } from './pages/AboutPage';
 import { MethodsPage } from './pages/MethodsPage';
+import { Apol1Page } from './pages/Apol1Page';
+import { FsgsPage } from './pages/FsgsPage';
 
 /**
  * REP - Rare Renal Equity Project
@@ -63,6 +65,8 @@ export const REPWireframe: React.FC = () => {
       {currentPage === 'stories' && <StoriesPage selectedZip={selectedZip} />}
       {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
       {currentPage === 'methods' && <MethodsPage />}
+      {currentPage === 'apol1' && <Apol1Page onNavigate={handleNavigate} />}
+      {currentPage === 'fsgs' && <FsgsPage onNavigate={handleNavigate} />}
 
       {/* Footer */}
       <footer style={{
@@ -111,7 +115,7 @@ export const REPWireframe: React.FC = () => {
                 flexDirection: 'column',
                 gap: '8px'
               }}>
-                {['home', 'map', 'stories', 'about', 'methods'].map(page => (
+                {['home', 'map', 'stories', 'about', 'methods', 'apol1', 'fsgs'].map(page => (
                   <button
                     key={page}
                     onClick={() => handleNavigate(page)}

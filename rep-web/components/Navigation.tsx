@@ -1,7 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useHamburger } from '@/hooks/useResponsive';
+
+interface NavItem {
+  id: string;
+  label: string;
+  children?: NavItem[];
+}
 
 interface NavigationProps {
   currentPage: string;
@@ -10,13 +16,22 @@ interface NavigationProps {
 
 export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
   const { isOpen, toggle, close } = useHamburger();
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { id: 'home', label: 'Home' },
     { id: 'about', label: 'About' },
     { id: 'stories', label: 'Stories' },
     { id: 'map', label: 'Map Explorer' },
-    { id: 'methods', label: 'Methods' }
+    { id: 'methods', label: 'Methods' },
+    {
+      id: 'kidney-disease',
+      label: 'Kidney Disease',
+      children: [
+        { id: 'apol1', label: 'APOL1' },
+        { id: 'fsgs', label: 'FSGS' }
+      ]
+    }
   ];
 
   const handleNavClick = (page: string) => {
@@ -68,26 +83,92 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
           </button>
 
           <div className={`nav-links${isOpen ? ' open' : ''}`}>
-            {navItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '14px',
-                  color: currentPage === item.id ? '#1a1a1a' : '#666',
-                  fontWeight: currentPage === item.id ? '500' : '400',
-                  cursor: 'pointer',
-                  padding: isOpen ? '12px 24px' : '4px 0',
-                  borderBottom: !isOpen && currentPage === item.id ? '2px solid #c45a3b' : '2px solid transparent',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {item.label}
-              </button>
-            ))}
+            {navItems.map(item => {
+              const isActive = item.children
+                ? item.children.some(child => currentPage === child.id)
+                : currentPage === item.id;
+
+              return (
+                <div
+                  key={item.id}
+                  style={{
+                    position: 'relative',
+                    display: isOpen ? 'block' : 'inline-block'
+                  }}
+                  onMouseEnter={() => !isOpen && item.children && setOpenDropdown(item.id)}
+                  onMouseLeave={() => !isOpen && setOpenDropdown(null)}
+                >
+                  <button
+                    onClick={() => {
+                      if (item.children) {
+                        setOpenDropdown(openDropdown === item.id ? null : item.id);
+                      } else {
+                        handleNavClick(item.id);
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      fontFamily: 'system-ui, sans-serif',
+                      fontSize: '14px',
+                      color: isActive ? '#1a1a1a' : '#666',
+                      fontWeight: isActive ? '500' : '400',
+                      cursor: 'pointer',
+                      padding: isOpen ? '12px 24px' : '4px 0',
+                      borderBottom: !isOpen && isActive ? '2px solid #c45a3b' : '2px solid transparent',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    {item.label}
+                    {item.children && (
+                      <span style={{
+                        fontSize: '10px',
+                        transition: 'transform 0.2s ease',
+                        transform: openDropdown === item.id ? 'rotate(180deg)' : 'rotate(0deg)'
+                      }}>
+                        ▼
+                      </span>
+                    )}
+                  </button>
+
+                  {item.children && (
+                    <>
+                      {!isOpen && (
+                        <div className="nav-dropdown" style={{
+                          display: openDropdown === item.id ? 'flex' : 'none'
+                        }}>
+                          {item.children.map(child => (
+                            <button
+                              key={child.id}
+                              className={`nav-dropdown-item${currentPage === child.id ? ' active' : ''}`}
+                              onClick={() => handleNavClick(child.id)}
+                            >
+                              {child.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {isOpen && (
+                        <div>
+                          {item.children.map(child => (
+                            <button
+                              key={child.id}
+                              className={`nav-dropdown-item${currentPage === child.id ? ' active' : ''}`}
+                              onClick={() => handleNavClick(child.id)}
+                            >
+                              {child.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

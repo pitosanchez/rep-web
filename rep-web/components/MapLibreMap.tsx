@@ -219,14 +219,27 @@ export default function MapLibreMap({
         }
       });
 
-      // Environmental Exposure layer - placeholder color scheme
+      // Environmental Exposure layer - based on exposure_index
       map.current.addLayer({
         id: 'bronx-exposure',
         type: 'circle',
         source: 'bronx-zips',
         paint: {
-          'circle-radius': 8,
-          'circle-color': '#6b8f71',   // Green
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'exposure_index'],
+            0, 8,
+            1, 24
+          ],
+          'circle-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'exposure_index'],
+            0, '#6b8f71',   // Green (low exposure)
+            0.5, '#d4a574',   // Tan (medium exposure)
+            1, '#8b4332'    // Brown (high exposure)
+          ],
           'circle-opacity': 0.7,
           'circle-stroke-color': '#1a1a1a',
           'circle-stroke-width': 1,
@@ -456,9 +469,17 @@ export default function MapLibreMap({
     }
   }, [selectedZip, mapReady]);
 
-  // Toggle layer visibility
+  // Toggle layer visibility and adjust opacity for contrast
   useEffect(() => {
     if (!map.current || !mapReady) return;
+
+    // Count how many ZIP-level layers are visible for opacity adjustment
+    const visibleZipLayers = [
+      visibleLayers.diseaseBurden,
+      visibleLayers.careAccess,
+      visibleLayers.environmentalExposure,
+      visibleLayers.transit
+    ].filter(Boolean).length;
 
     // Disease Burden layer
     const burdenLayerId = 'bronx-zips-fill';
@@ -467,6 +488,13 @@ export default function MapLibreMap({
         burdenLayerId,
         'visibility',
         visibleLayers.diseaseBurden ? 'visible' : 'none'
+      );
+      // Adjust opacity: when multiple layers visible, reduce opacity for better contrast
+      const burdenOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
+      map.current.setPaintProperty(
+        burdenLayerId,
+        'circle-opacity',
+        ['case', ['boolean', ['feature-state', 'hover'], false], 0.9, burdenOpacity]
       );
     }
 
@@ -478,6 +506,12 @@ export default function MapLibreMap({
         'visibility',
         visibleLayers.careAccess ? 'visible' : 'none'
       );
+      const careOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
+      map.current.setPaintProperty(
+        careAccessLayerId,
+        'circle-opacity',
+        careOpacity
+      );
     }
 
     // Environmental Exposure layer
@@ -487,6 +521,12 @@ export default function MapLibreMap({
         exposureLayerId,
         'visibility',
         visibleLayers.environmentalExposure ? 'visible' : 'none'
+      );
+      const exposureOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
+      map.current.setPaintProperty(
+        exposureLayerId,
+        'circle-opacity',
+        exposureOpacity
       );
     }
 
@@ -498,14 +538,28 @@ export default function MapLibreMap({
         'visibility',
         visibleLayers.transit ? 'visible' : 'none'
       );
+      const transitOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
+      map.current.setPaintProperty(
+        transitLayerId,
+        'circle-opacity',
+        transitOpacity
+      );
     }
 
+    // ADI layer
     const adiFillId = 'adi-blockgroups-fill';
     if (map.current.getLayer(adiFillId)) {
       map.current.setLayoutProperty(
         adiFillId,
         'visibility',
         visibleLayers.areaDeprivationIndex ? 'visible' : 'none'
+      );
+      // Adjust ADI opacity when other layers are visible
+      const adiOpacity = (visibleLayers.diseaseBurden || visibleLayers.careAccess || visibleLayers.environmentalExposure || visibleLayers.transit) ? 0.35 : 0.55;
+      map.current.setPaintProperty(
+        adiFillId,
+        'fill-opacity',
+        adiOpacity
       );
     }
   }, [visibleLayers, mapReady]);

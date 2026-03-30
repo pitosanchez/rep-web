@@ -131,12 +131,22 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
           fontFamily: 'system-ui, sans-serif',
           fontSize: '16px',
           color: '#666',
-          maxWidth: '700px'
+          maxWidth: '700px',
+          marginBottom: '16px'
         }}>
-          Explore APOL1 and FSGS context by neighborhood. Click a ZIP code to see
-          disease burden, care access, environmental exposure, and what patients and
-          caregivers report about living and dying with kidney disease.
+          Explore APOL1 and FSGS context by neighborhood. Use the data layers to visualize disease burden, care access, environmental exposure, and area deprivation. Click a ZIP code to see detailed metrics and patient stories.
         </p>
+        <div style={{
+          background: '#fff9f5',
+          padding: '12px 16px',
+          borderRadius: '4px',
+          borderLeft: '4px solid #c45a3b',
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '14px',
+          color: '#333'
+        }}>
+          <strong>Tip:</strong> Toggle data layers to compare how different factors correlate with kidney disease burden in each neighborhood.
+        </div>
       </div>
     </section>
 
@@ -206,6 +216,48 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               color={layerColors.areaDeprivationIndex.accent}
               onChange={() => handleLayerToggle('areaDeprivationIndex')}
             />
+
+            {/* Layer Description */}
+            <div style={{
+              marginTop: '16px',
+              paddingTop: '12px',
+              borderTop: '1px solid #e8e4df',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '12px',
+              lineHeight: '1.6',
+              color: '#666'
+            }}>
+              {visibleLayers.diseaseBurden && (
+                <p style={{ margin: 0 }}>
+                  <strong>Disease Burden:</strong> Shows the estimated prevalence of APOL1-mediated kidney disease in each neighborhood based on genetic epidemiology data.
+                </p>
+              )}
+              {visibleLayers.careAccess && (
+                <p style={{ margin: 0 }}>
+                  <strong>Care Access:</strong> Measures proximity to nephrologists, dialysis centers, and transplant programs. Red indicates areas with limited access.
+                </p>
+              )}
+              {visibleLayers.environmentalExposure && (
+                <p style={{ margin: 0 }}>
+                  <strong>Environmental Exposure:</strong> Aggregates environmental stressors including pollution, food environment, and housing quality that impact kidney health.
+                </p>
+              )}
+              {visibleLayers.transit && (
+                <p style={{ margin: 0 }}>
+                  <strong>Transit Access:</strong> Measures public transportation connectivity, which affects access to medical care and social support for patients.
+                </p>
+              )}
+              {visibleLayers.areaDeprivationIndex && (
+                <p style={{ margin: 0 }}>
+                  <strong>Area Deprivation (ADI):</strong> Census-based index combining income, education, employment, and housing data. Purple indicates high deprivation.
+                </p>
+              )}
+              {!visibleLayers.diseaseBurden && !visibleLayers.careAccess && !visibleLayers.environmentalExposure && !visibleLayers.transit && !visibleLayers.areaDeprivationIndex && (
+                <p style={{ margin: 0, color: '#999' }}>
+                  Check a layer above to see its description.
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Section B: Legend */}

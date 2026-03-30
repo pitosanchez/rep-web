@@ -35,7 +35,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
       background: '#fff'
     }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        {/* What is FSGS Section */}
+        {/* Overview Section */}
         <div style={{ marginBottom: '60px' }}>
           <h2 style={{
             fontFamily: 'Georgia, serif',
@@ -44,7 +44,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             marginBottom: '24px',
             color: '#1a1a1a'
           }}>
-            What is FSGS?
+            Overview
           </h2>
           <div style={{
             fontFamily: 'system-ui, sans-serif',
@@ -53,51 +53,18 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             color: '#333'
           }}>
             <p style={{ marginBottom: '20px' }}>
-              Many diseases and conditions can affect your kidney function by attacking and damaging the glomeruli. Glomeruli are the tiny filtering units inside your kidney where blood is cleaned of wastes and toxins. These diseases and conditions are called glomerular diseases and can have many different causes.
+              <strong>Focal segmental glomerulosclerosis (FSGS)</strong> is a disease in which scar tissue develops on the glomeruli—the small parts of the kidneys that filter waste from the blood. Glomeruli are the tiny filtering units inside your kidney where blood is cleaned of wastes and toxins.
             </p>
             <p style={{ marginBottom: '20px' }}>
-              <strong>Focal segmental glomerulosclerosis (FSGS)</strong> is a type of glomerular disease and results in scarring (sclerosis) in your kidney. You may begin to feel sick, experience swelling, have foamy urine and feel rundown due to the build up of toxins in your body.
+              FSGS is a serious condition that can lead to kidney failure, which can only be treated with dialysis or kidney transplant. Only some glomeruli are affected, but over time FSGS can lead to progressive kidney damage. You may experience swelling, have foamy urine and feel rundown due to the buildup of toxins in your body.
             </p>
             <p>
-              Only some glomeruli are affected, but over time FSGS can lead to kidney failure where dialysis or a kidney transplant is required.
+              Treatment options for FSGS depend on the type you have and can help slow ongoing kidney damage and might lead to improved kidney function over time.
             </p>
           </div>
         </div>
 
-        {/* Understanding the Term */}
-        <div style={{ marginBottom: '60px' }}>
-          <h3 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '24px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Breaking Down the Term
-          </h3>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333',
-            background: '#faf7f3',
-            padding: '24px',
-            borderLeft: '4px solid #c45a3b',
-            borderRadius: '4px'
-          }}>
-            <p style={{ marginBottom: '12px' }}>
-              <strong>Focal:</strong> Only some of the glomeruli in your kidneys are affected (not all of them)
-            </p>
-            <p style={{ marginBottom: '12px' }}>
-              <strong>Segmental:</strong> Only part of each affected glomerulus is damaged
-            </p>
-            <p>
-              <strong>Glomerulosclerosis:</strong> Scarring (fibrosis) and hardening of the glomeruli
-            </p>
-          </div>
-        </div>
-
-        {/* What Causes FSGS Section */}
+        {/* Types of FSGS Section */}
         <div style={{ marginBottom: '60px' }}>
           <h2 style={{
             fontFamily: 'Georgia, serif',
@@ -106,7 +73,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             marginBottom: '24px',
             color: '#1a1a1a'
           }}>
-            What Causes FSGS?
+            Types of FSGS
           </h2>
           <div style={{
             fontFamily: 'system-ui, sans-serif',
@@ -114,55 +81,57 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             lineHeight: '1.9',
             color: '#333'
           }}>
-            <p style={{ marginBottom: '20px' }}>
-              There are 3 types of FSGS: <strong>Primary, Secondary, and Genetic</strong>.
-            </p>
-            <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Primary FSGS:</strong> The cause is unknown or idiopathic
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Secondary FSGS:</strong> Caused by an underlying disease or condition
-              </li>
-              <li>
-                <strong>Genetic FSGS:</strong> Caused by inherited gene mutations
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Who Can Get FSGS Section */}
-        <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Who Can Get FSGS?
-          </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>FSGS occurs more frequently in:</p>
-            <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>
-                Males more than females
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                Adults more than children
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                Adults age 45 and older (most prevalent age group)
-              </li>
-              <li>
-                People of African American descent
-              </li>
-            </ul>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '12px',
+                color: '#1a1a1a'
+              }}>Primary FSGS</h3>
+              <p>
+                Many people diagnosed with FSGS have no known cause for their condition. This is called primary (idiopathic) FSGS.
+              </p>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '12px',
+                color: '#1a1a1a'
+              }}>Secondary FSGS</h3>
+              <p>
+                Several factors can cause secondary FSGS, including infections, drug toxicity, diseases (such as diabetes or sickle cell disease), obesity, and other kidney diseases. Controlling or treating the underlying cause often slows ongoing kidney damage and might lead to improved kidney function over time.
+              </p>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '12px',
+                color: '#1a1a1a'
+              }}>Genetic FSGS</h3>
+              <p style={{ marginBottom: '12px' }}>
+                This is a rare form of FSGS caused by genetic changes, also called familial FSGS. It's suspected when several members of a family show signs of FSGS.
+              </p>
+              <p>
+                Familial FSGS can also occur when neither parent has the disease but each one carries a copy of an altered gene that can be passed on to the next generation.
+              </p>
+            </div>
+            <div>
+              <h3 style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '12px',
+                color: '#1a1a1a'
+              }}>Unknown FSGS</h3>
+              <p>
+                In some cases, the underlying cause of FSGS cannot be determined despite the evaluation of clinical symptoms and extensive testing.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -175,7 +144,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             marginBottom: '24px',
             color: '#1a1a1a'
           }}>
-            Symptoms of FSGS
+            Symptoms
           </h2>
           <div style={{
             fontFamily: 'system-ui, sans-serif',
@@ -184,16 +153,101 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             color: '#333'
           }}>
             <p style={{ marginBottom: '20px' }}>
-              Many people with FSGS have <strong>no symptoms at all</strong>. When symptoms are present, the most common include:
+              Many people with FSGS have <strong>no symptoms at all</strong>. When symptoms are present, they might include:
             </p>
             <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>Swelling in the legs, feet, hands, and face</li>
-              <li style={{ marginBottom: '12px' }}>Foamy or bubbly urine</li>
-              <li style={{ marginBottom: '12px' }}>Weight gain from fluid retention</li>
+              <li style={{ marginBottom: '12px' }}>
+                <strong>Swelling (edema)</strong> in the legs and ankles, around the eyes, and in other body parts
+              </li>
+              <li style={{ marginBottom: '12px' }}>
+                <strong>Weight gain</strong> from fluid buildup
+              </li>
+              <li style={{ marginBottom: '12px' }}>
+                <strong>Foamy urine</strong> from protein buildup (proteinuria)
+              </li>
               <li style={{ marginBottom: '12px' }}>Fatigue and weakness</li>
               <li style={{ marginBottom: '12px' }}>Loss of appetite</li>
               <li style={{ marginBottom: '12px' }}>High blood pressure</li>
               <li>Muscle cramps</li>
+            </ul>
+            <div style={{
+              background: '#fff9f5',
+              padding: '20px',
+              borderLeft: '4px solid #c45a3b',
+              borderRadius: '4px',
+              marginTop: '24px'
+            }}>
+              <p style={{ marginBottom: 0 }}>
+                <strong>When to see a doctor:</strong> Contact your healthcare provider if you have any of the symptoms of FSGS.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Causes Section */}
+        <div style={{ marginBottom: '60px' }}>
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '32px',
+            fontWeight: '400',
+            marginBottom: '24px',
+            color: '#1a1a1a'
+          }}>
+            Causes
+          </h2>
+          <div style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '17px',
+            lineHeight: '1.9',
+            color: '#333'
+          }}>
+            <p style={{ marginBottom: '20px' }}>
+              Focal segmental glomerulosclerosis (FSGS) can be caused by a variety of conditions:
+            </p>
+            <ul style={{ marginLeft: '20px' }}>
+              <li style={{ marginBottom: '12px' }}>Medical conditions including diabetes, sickle cell disease, lupus, and other kidney diseases</li>
+              <li style={{ marginBottom: '12px' }}>Obesity</li>
+              <li style={{ marginBottom: '12px' }}>Infections such as HIV and hepatitis C</li>
+              <li style={{ marginBottom: '12px' }}>Damage from illicit drugs, medicines, or toxins</li>
+              <li style={{ marginBottom: '12px' }}>Gene changes passed through families (inherited gene changes) that can cause a rare form of FSGS</li>
+              <li>Sometimes there is no known cause</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Risk Factors Section */}
+        <div style={{ marginBottom: '60px' }}>
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '32px',
+            fontWeight: '400',
+            marginBottom: '24px',
+            color: '#1a1a1a'
+          }}>
+            Risk Factors
+          </h2>
+          <div style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '17px',
+            lineHeight: '1.9',
+            color: '#333'
+          }}>
+            <p style={{ marginBottom: '20px' }}>
+              Factors that can raise your risk of developing FSGS include:
+            </p>
+            <ul style={{ marginLeft: '20px', marginBottom: '20px' }}>
+              <li style={{ marginBottom: '12px' }}>
+                <strong>Medical conditions</strong> that can damage the kidneys such as diabetes, lupus, obesity, and other kidney diseases
+              </li>
+              <li style={{ marginBottom: '12px' }}>
+                <strong>Certain infections</strong> including HIV and hepatitis C
+              </li>
+              <li style={{ marginBottom: '12px' }}>
+                <strong>Gene changes</strong> passed through families that can raise the risk of FSGS
+              </li>
+              <li>
+                <strong>Demographics:</strong> Males more than females; adults age 45 and older most prevalent; more common in people of African American descent
+              </li>
             </ul>
           </div>
         </div>
@@ -223,10 +277,10 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
                 <strong>Blood tests:</strong> Check kidney function and protein levels
               </li>
               <li style={{ marginBottom: '12px' }}>
-                <strong>Urine tests:</strong> Look for protein and blood in urine
+                <strong>Urine tests:</strong> Look for protein (proteinuria) and blood in urine
               </li>
               <li>
-                <strong>Kidney biopsy:</strong> A small sample of kidney tissue is examined under a microscope to confirm the diagnosis
+                <strong>Kidney biopsy:</strong> A small sample of kidney tissue is examined under a microscope to confirm the diagnosis and determine the type of FSGS
               </li>
             </ul>
           </div>
@@ -241,7 +295,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             marginBottom: '24px',
             color: '#1a1a1a'
           }}>
-            Medications to Relieve Symptoms
+            Medications to Manage FSGS
           </h2>
           <div style={{
             fontFamily: 'system-ui, sans-serif',
@@ -287,7 +341,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             color: '#333'
           }}>
             <p style={{ marginBottom: '20px' }}>
-              Yes, there are important lifestyle modifications that can help support healthy kidneys:
+              Important lifestyle modifications that can help support healthy kidneys:
             </p>
             <ul style={{ marginLeft: '20px', marginBottom: '24px' }}>
               <li style={{ marginBottom: '12px' }}>Stop smoking</li>
@@ -323,7 +377,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
           </div>
         </div>
 
-        {/* Progression Section */}
+        {/* Complications Section */}
         <div style={{ marginBottom: '60px' }}>
           <h2 style={{
             fontFamily: 'Georgia, serif',
@@ -332,7 +386,7 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             marginBottom: '24px',
             color: '#1a1a1a'
           }}>
-            What Happens if FSGS Progresses to Kidney Failure?
+            Complications
           </h2>
           <div style={{
             fontFamily: 'system-ui, sans-serif',
@@ -341,16 +395,40 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
             color: '#333'
           }}>
             <p style={{ marginBottom: '20px' }}>
-              There are two main treatment options for kidney failure. Together, you and your healthcare provider will discuss which treatment option is best for you:
+              Focal segmental glomerulosclerosis (FSGS) may lead to other health concerns, including:
             </p>
-            <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Dialysis:</strong> A mechanical process that filters waste and excess fluid from your blood
-              </li>
-              <li>
-                <strong>Kidney transplant:</strong> Receiving a healthy kidney from a donor
-              </li>
-            </ul>
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '12px',
+                color: '#1a1a1a'
+              }}>Nephrotic Syndrome</h3>
+              <p>
+                This kidney condition causes the body to pass too much protein in the urine. Nephrotic syndrome raises the risk of other health conditions, such as blood clots and high blood pressure.
+              </p>
+            </div>
+            <div>
+              <h3 style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '18px',
+                fontWeight: '600',
+                marginBottom: '12px',
+                color: '#1a1a1a'
+              }}>Kidney Failure</h3>
+              <p style={{ marginBottom: '12px' }}>
+                Damage to the kidneys that can't be fixed causes the kidneys to stop working. The only treatments for kidney failure are dialysis or kidney transplant.
+              </p>
+              <ul style={{ marginLeft: '20px' }}>
+                <li style={{ marginBottom: '12px' }}>
+                  <strong>Dialysis:</strong> A mechanical process that filters waste and excess fluid from your blood
+                </li>
+                <li>
+                  <strong>Kidney transplant:</strong> Receiving a healthy kidney from a donor
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 

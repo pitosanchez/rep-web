@@ -37,39 +37,86 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
       padding: '80px 32px',
       background: '#fff'
     }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {/* Essay Content */}
         <div style={{
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '17px',
-          lineHeight: '1.9',
+          fontFamily: 'Georgia, serif',
+          fontSize: '18px',
+          lineHeight: '1.8',
           color: '#333'
         }}>
-          <p style={{ marginBottom: '24px', fontSize: '18px' }}>
-            <span style={{
-              fontSize: '64px',
-              color: '#c45a3b',
+          {/* Opening with large artistic drop cap */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '120px 1fr',
+            gap: '24px',
+            alignItems: 'flex-start',
+            marginBottom: '48px'
+          }}>
+            <div style={{
+              fontSize: '180px',
               fontWeight: '700',
-              float: 'left',
-              lineHeight: '0.75',
-              paddingRight: '10px',
-              paddingTop: '6px'
-            }}>S</span>
-            tories are the engine that carries us forward—the thread that binds together the fabric of who we are and what we are called to become. They inform us and inspire us. At times, they make us uncomfortable, forcing us to confront truths we would rather not see. But it is precisely in this discomfort that their power lives. Through stories, we come to understand ourselves, our origins, and what we owe to one another.
+              color: '#c45a3b',
+              lineHeight: '0.8',
+              textAlign: 'center',
+              paddingTop: '20px'
+            }}>
+              S
+            </div>
+            <div>
+              <h3 style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '32px',
+                fontWeight: '400',
+                color: '#1a1a1a',
+                marginBottom: '24px',
+                marginTop: '0'
+              }}>
+                tories are the engine that keep human beings moving forward.
+              </h3>
+
+              <p style={{ marginBottom: '20px' }}>
+                They inform us. They inspire us. And at times, they make us uncomfortable—forcing us to confront truths we might otherwise avoid.
+              </p>
+
+              <p style={{ marginBottom: '20px' }}>
+                Stories are the thread that holds together the fabric of the American experience. They are how we come to understand who we are, where we come from, and what we are responsible for.
+              </p>
+
+              <p style={{ marginBottom: '0', fontWeight: '600' }}>
+                We learn through stories.
+              </p>
+            </div>
+          </div>
+
+          <p style={{ marginBottom: '24px' }}>
+            From <em>Down These Mean Streets</em>, where a young man made the streets of Spanish Harlem visible to those who had never seen them, to <em>To Kill a Mockingbird</em>, where the moral clarity of Atticus Finch forced a nation to confront its conscience. Through the work of Toni Morrison, who did not allow history to be simplified or forgotten, and even through the voice of Richard Pryor, who told the truth in ways others could not.
           </p>
 
           <p style={{ marginBottom: '24px' }}>
-            We learn through stories. From <em>Down These Mean Streets</em> by Piri Thomas, to <em>To Kill a Mockingbird</em> and the moral clarity of Atticus Finch, to the work of Toni Morrison, who forced us to sit with the legacy of slavery, identity, and healing. Even in comedy, someone like Richard Pryor used storytelling to challenge norms and expose reality when others could not. Stories do something data alone cannot—they make us feel, and in doing so, they make us care.
+            These stories did not just inform. They shifted perspective. They expanded what people were willing to see—and therefore what they were willing to change.
           </p>
 
           <p style={{
             marginBottom: '32px',
+            fontSize: '20px',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            paddingLeft: '24px',
+            borderLeft: '4px solid #c45a3b'
+          }}>
+            Because stories do something data alone cannot.
+            <br /><br />
+            They make us feel. And in doing so, they make us care.
+          </p>
+
+          <p style={{
+            marginBottom: '48px',
             fontFamily: 'Georgia, serif',
-            fontSize: '19px',
+            fontSize: '20px',
             fontStyle: 'italic',
-            color: '#666',
-            borderLeft: '4px solid #c45a3b',
-            paddingLeft: '24px'
+            color: '#c45a3b',
+            fontWeight: '500'
           }}>
             This project is built on that belief.
           </p>

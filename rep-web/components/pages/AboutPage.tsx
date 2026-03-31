@@ -48,18 +48,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
           {/* Opening with large artistic drop cap */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '120px 1fr',
-            gap: '24px',
-            alignItems: 'flex-start',
-            marginBottom: '48px'
+            gridTemplateColumns: '100px 1fr',
+            gap: '12px',
+            alignItems: 'flex-start'
           }}>
             <div style={{
               fontSize: '180px',
               fontWeight: '700',
               color: '#c45a3b',
-              lineHeight: '0.8',
+              lineHeight: '0.75',
               textAlign: 'center',
-              paddingTop: '20px'
+              marginTop: '-8px'
             }}>
               S
             </div>
@@ -69,17 +68,18 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
                 fontSize: '32px',
                 fontWeight: '400',
                 color: '#1a1a1a',
-                marginBottom: '24px',
-                marginTop: '0'
+                marginBottom: '18px',
+                marginTop: '0',
+                lineHeight: '1.3'
               }}>
                 tories are the engine that keep human beings moving forward.
               </h3>
 
-              <p style={{ marginBottom: '20px' }}>
+              <p style={{ marginBottom: '18px', marginTop: '0' }}>
                 They inform us. They inspire us. And at times, they make us uncomfortable—forcing us to confront truths we might otherwise avoid.
               </p>
 
-              <p style={{ marginBottom: '20px' }}>
+              <p style={{ marginBottom: '18px' }}>
                 Stories are the thread that holds together the fabric of the American experience. They are how we come to understand who we are, where we come from, and what we are responsible for.
               </p>
 
@@ -89,21 +89,22 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
             </div>
           </div>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{ marginBottom: '18px', marginTop: '18px' }}>
             From <em>Down These Mean Streets</em>, where a young man made the streets of Spanish Harlem visible to those who had never seen them, to <em>To Kill a Mockingbird</em>, where the moral clarity of Atticus Finch forced a nation to confront its conscience. Through the work of Toni Morrison, who did not allow history to be simplified or forgotten, and even through the voice of Richard Pryor, who told the truth in ways others could not.
           </p>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{ marginBottom: '18px' }}>
             These stories did not just inform. They shifted perspective. They expanded what people were willing to see—and therefore what they were willing to change.
           </p>
 
           <p style={{
-            marginBottom: '32px',
+            marginBottom: '24px',
             fontSize: '20px',
             fontWeight: '600',
             color: '#1a1a1a',
             paddingLeft: '24px',
-            borderLeft: '4px solid #c45a3b'
+            borderLeft: '4px solid #c45a3b',
+            lineHeight: '1.7'
           }}>
             Because stories do something data alone cannot.
             <br /><br />

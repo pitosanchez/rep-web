@@ -24,7 +24,7 @@ const shouldPinRoot = explicitlyPinned || (
   !npmPrefix
 );
 
-const withNextIntl = createNextIntlPlugin('./rep-web/lib/i18n.ts');
+const withNextIntl = createNextIntlPlugin('./lib/i18n.ts');
 
 const nextConfig: NextConfig = shouldPinRoot
   ? {

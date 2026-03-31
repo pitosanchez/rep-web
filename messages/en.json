@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "stories": "Stories",
+    "about": "About",
+    "methods": "Methods",
+    "kidneyDisease": "Kidney Disease",
+    "apol1": "APOL1",
+    "fsgs": "FSGS"
+  },
+  "hero": {
+    "title": "Where We Live",
+    "subtitle": "Mapping how place shapes kidney disease outcomes through data and patient stories.",
+    "cta": "Explore the Map"
+  },
+  "map": {
+    "title": "Map Explorer",
+    "description": "Explore APOL1 and FSGS context by neighborhood. Use the data layers to visualize disease burden, care access, environmental exposure, and area deprivation. Click a ZIP code to see detailed metrics and patient stories.",
+    "tip": "Toggle data layers to compare how different factors correlate with kidney disease burden in each neighborhood.",
+    "dataLayers": "Data Layers",
+    "legend": "Legend",
+    "selectedArea": "Selected Area",
+    "diseaseBurden": "Disease Burden",
+    "careAccess": "Care Access",
+    "environmentalExposure": "Environmental Exposure",
+    "transit": "Transit",
+    "areaDeprivation": "Area Deprivation (ADI)"
+  },
+  "stories": {
+    "title": "Patient Stories",
+    "description": "These stories represent patterns documented across communities. Names and identifying details are composite, but the structural barriers they face are real.",
+    "clickToRead": "Click to read full story"
+  },
+  "about": {
+    "title": "Storytelling as Medicine",
+    "missionTitle": "Our Mission",
+    "scienceTitle": "The Science of Stories"
+  },
+  "language": "Language",
+  "english": "English",
+  "spanish": "Español"
+}

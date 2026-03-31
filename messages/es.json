@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "map": "Mapa",
+    "stories": "Historias",
+    "about": "Acerca de",
+    "methods": "Métodos",
+    "kidneyDisease": "Enfermedad Renal",
+    "apol1": "APOL1",
+    "fsgs": "FSGS"
+  },
+  "hero": {
+    "title": "Donde Vivimos",
+    "subtitle": "Mapeando cómo el lugar influye en los resultados de la enfermedad renal a través de datos e historias de pacientes.",
+    "cta": "Explorar el Mapa"
+  },
+  "map": {
+    "title": "Explorador de Mapas",
+    "description": "Explore el contexto de APOL1 y FSGS por vecindario. Use las capas de datos para visualizar carga de enfermedad, acceso a cuidados, exposición ambiental y deprivación de área. Haga clic en un código ZIP para ver métricas detalladas e historias de pacientes.",
+    "tip": "Alterne las capas de datos para comparar cómo diferentes factores se correlacionan con la carga de enfermedad renal en cada vecindario.",
+    "dataLayers": "Capas de Datos",
+    "legend": "Leyenda",
+    "selectedArea": "Área Seleccionada",
+    "diseaseBurden": "Carga de Enfermedad",
+    "careAccess": "Acceso a Cuidados",
+    "environmentalExposure": "Exposición Ambiental",
+    "transit": "Transporte",
+    "areaDeprivation": "Deprivación de Área (ADI)"
+  },
+  "stories": {
+    "title": "Historias de Pacientes",
+    "description": "Estas historias representan patrones documentados en comunidades. Los nombres y detalles de identificación son compuestos, pero las barreras estructurales que enfrentan son reales.",
+    "clickToRead": "Haga clic para leer la historia completa"
+  },
+  "about": {
+    "title": "La Narración como Medicina",
+    "missionTitle": "Nuestra Misión",
+    "scienceTitle": "La Ciencia de las Historias"
+  },
+  "language": "Idioma",
+  "english": "English",
+  "spanish": "Español"
+}

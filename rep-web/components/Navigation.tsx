@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useHamburger } from '@/hooks/useResponsive';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface NavItem {
   id: string;
@@ -73,6 +74,8 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
         </button>
 
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <LanguageSwitcher />
+
           <button
             className="hamburger-btn"
             onClick={toggle}

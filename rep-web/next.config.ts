@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
 
 // Control turbopack.root pinning safely to avoid workspace-root inference issues when
 // invoking npm from the repository root (for example: `npm --prefix rep-web run dev`).
@@ -23,6 +24,8 @@ const shouldPinRoot = explicitlyPinned || (
   !npmPrefix
 );
 
+const withNextIntl = createNextIntlPlugin('./rep-web/lib/i18n.ts');
+
 const nextConfig: NextConfig = shouldPinRoot
   ? {
       turbopack: {
@@ -33,4 +36,4 @@ const nextConfig: NextConfig = shouldPinRoot
     }
   : {};
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

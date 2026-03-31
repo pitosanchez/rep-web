@@ -6,7 +6,7 @@ A public, interactive, place-based platform mapping how APOL1-mediated kidney di
 
 ## Preview
 
-[![Where We Live Hero Page](./public/WhereWeLiveThumbNail.webp)](https://rep-web-wine.vercel.app/)
+[![Where We Live](./public/where-nail.webp)](https://rep-web-wine.vercel.app/)
 
 ---
 

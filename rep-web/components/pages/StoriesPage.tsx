@@ -32,6 +32,90 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
 
   return (
     <div style={{ paddingTop: '80px' }}>
+      {/* Storytelling Introduction Section */}
+      <section style={{
+        padding: '80px 32px',
+        background: '#faf7f3',
+        borderBottom: '1px solid #e8e4df'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {/* Opening with artistic drop cap */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '80px 1fr',
+            gap: '20px',
+            alignItems: 'start',
+            marginBottom: '40px'
+          }}>
+            <div style={{
+              fontSize: '140px',
+              fontFamily: 'Georgia, serif',
+              fontWeight: '700',
+              color: '#c45a3b',
+              lineHeight: '0.85',
+              textAlign: 'center'
+            }}>
+              S
+            </div>
+            <div>
+              <p style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '18px',
+                lineHeight: '1.8',
+                color: '#444',
+                marginBottom: '24px'
+              }}>
+                tories transport us. When you listen to someone tell their life in detail—their struggles, their resilience, the systems that have failed them—your brain lights up in ways that facts alone cannot achieve.
+              </p>
+              <p style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '16px',
+                lineHeight: '1.7',
+                color: '#666',
+                fontStyle: 'italic',
+                marginBottom: '0'
+              }}>
+                "Stories wield a particularly strong influence over our attitudes and behavior," says Melanie Green, a communication professor who studies the power of narrative in healthcare. When you hear about someone who identifies with you making a change, you're more likely to make it yourself.
+              </p>
+            </div>
+          </div>
+
+          {/* Supporting content */}
+          <div style={{
+            marginTop: '40px',
+            paddingTop: '40px',
+            borderTop: '1px solid #e8e4df'
+          }}>
+            <p style={{
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '15px',
+              lineHeight: '1.7',
+              color: '#555',
+              marginBottom: '20px'
+            }}>
+              Brain imaging shows that when someone tells a story, the listener's brain waves actually synchronize with the storyteller's. Different brain regions light up—not just language processing, but networks that handle emotions, predict outcomes, and imagine another person's perspective.
+            </p>
+            <p style={{
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '15px',
+              lineHeight: '1.7',
+              color: '#555',
+              marginBottom: '20px'
+            }}>
+              The stories below represent patterns documented across neighborhoods in the Bronx. Names and identifying details are composites, but the structural barriers these patients face—the geographic isolation from specialists, environmental exposures, insurance gaps, food insecurity—are real and persistent.
+            </p>
+            <p style={{
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '15px',
+              lineHeight: '1.7',
+              color: '#555'
+            }}>
+              Read these not just for understanding, but for the shift in perspective that comes when you hear another's story in detail. Stories hit us "in the heart," and that matters.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Example Stories Section */}
       <section style={{
         padding: '64px 32px',
@@ -54,8 +138,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
             maxWidth: '620px',
             lineHeight: '1.6'
           }}>
-            These stories represent patterns documented across communities. Names and identifying details are composite,
-            but the structural barriers they face are real.
+            Click any story to read the full narrative, understand the geographic and structural context, and see how where you live shapes your path to care.
           </p>
 
           {/* Stories Grid */}

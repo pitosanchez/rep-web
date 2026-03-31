@@ -40,14 +40,14 @@ function addAdiBlockgroupLayers(
           'interpolate',
           ['linear'],
           ['to-number', ['get', 'ADI_NATRANK'], 50],
-          1, '#e8f5e9',
-          25, '#fff9c4',
-          50, '#ffcc80',
-          75, '#ef5350',
-          100, '#7b1fa2',
+          1, '#d0e8d0',
+          25, '#fce8a1',
+          50, '#f5a623',
+          75, '#e84c3d',
+          100, '#5c1fa2',
         ],
-        'fill-opacity': 0.55,
-        'fill-outline-color': 'rgba(26, 26, 26, 0.35)',
+        'fill-opacity': 0.65,
+        'fill-outline-color': 'rgba(26, 26, 26, 0.5)',
       },
       layout: {
         visibility: visible ? 'visible' : 'none',
@@ -160,31 +160,31 @@ export default function MapLibreMap({
             'interpolate',
             ['linear'],
             ['get', 'weight_tot'],
-            0, 8,
-            1, 24
+            0, 10,
+            1, 28
           ],
           'circle-color': [
             'interpolate',
             ['linear'],
             ['get', 'weight_tot'],
-            0, '#a8d5ba',  // Light green (low)
-            0.5, '#d4a574',  // Tan (medium)
-            1, '#c45a3b'   // Terracotta (high)
+            0, '#6ab576',  // Darker green (low)
+            0.5, '#c89a54',  // Darker tan (medium)
+            1, '#a83d25'   // Darker terracotta (high)
           ],
           'circle-opacity': [
             'case',
             ['boolean', ['feature-state', 'hover'], false],
-            0.9,
-            0.7
+            0.95,
+            0.85
           ],
           'circle-stroke-color': '#1a1a1a',
           'circle-stroke-width': [
             'case',
             ['boolean', ['feature-state', 'selected'], false],
             3,
-            1
+            2
           ],
-          'circle-stroke-opacity': 0.8
+          'circle-stroke-opacity': 0.9
         }
       });
 
@@ -198,21 +198,21 @@ export default function MapLibreMap({
             'interpolate',
             ['linear'],
             ['get', 'weight_res'],
-            0, 8,
-            1, 24
+            0, 10,
+            1, 28
           ],
           'circle-color': [
             'interpolate',
             ['linear'],
             ['get', 'weight_res'],
-            0, '#4a90e2',   // Blue (low)
-            0.5, '#7ab3f5',   // Light blue (medium)
-            1, '#d96666'    // Red (high)
+            0, '#1a5aa0',   // Dark blue (low access = good)
+            0.5, '#4a7ec8',   // Medium blue
+            1, '#b8334d'    // Dark red (high access barrier = bad)
           ],
-          'circle-opacity': 0.7,
+          'circle-opacity': 0.85,
           'circle-stroke-color': '#1a1a1a',
-          'circle-stroke-width': 1,
-          'circle-stroke-opacity': 0.8
+          'circle-stroke-width': 2,
+          'circle-stroke-opacity': 0.9
         },
         layout: {
           visibility: 'none'
@@ -229,21 +229,21 @@ export default function MapLibreMap({
             'interpolate',
             ['linear'],
             ['get', 'exposure_index'],
-            0, 8,
-            1, 24
+            0, 10,
+            1, 28
           ],
           'circle-color': [
             'interpolate',
             ['linear'],
             ['get', 'exposure_index'],
-            0, '#6b8f71',   // Green (low exposure)
-            0.5, '#d4a574',   // Tan (medium exposure)
-            1, '#8b4332'    // Brown (high exposure)
+            0, '#3d6b41',   // Dark green (low exposure)
+            0.5, '#a08050',   // Dark tan (medium exposure)
+            1, '#5c2e1f'    // Dark brown (high exposure)
           ],
-          'circle-opacity': 0.7,
+          'circle-opacity': 0.85,
           'circle-stroke-color': '#1a1a1a',
-          'circle-stroke-width': 1,
-          'circle-stroke-opacity': 0.8
+          'circle-stroke-width': 2,
+          'circle-stroke-opacity': 0.9
         },
         layout: {
           visibility: 'none'
@@ -260,21 +260,21 @@ export default function MapLibreMap({
             'interpolate',
             ['linear'],
             ['get', 'weight_tot'],
-            0, 8,
-            1, 24
+            0, 10,
+            1, 28
           ],
           'circle-color': [
             'interpolate',
             ['linear'],
             ['get', 'weight_tot'],
-            0, '#ffd700',   // Gold (low)
-            0.5, '#ffa500',   // Orange (medium)
-            1, '#ff6b6b'    // Red (high)
+            0, '#b39f00',   // Dark gold (low)
+            0.5, '#d97706',   // Dark orange (medium)
+            1, '#c41e3a'    // Dark red (high)
           ],
-          'circle-opacity': 0.7,
+          'circle-opacity': 0.85,
           'circle-stroke-color': '#1a1a1a',
-          'circle-stroke-width': 1,
-          'circle-stroke-opacity': 0.8
+          'circle-stroke-width': 2,
+          'circle-stroke-opacity': 0.9
         },
         layout: {
           visibility: 'none'
@@ -481,6 +481,23 @@ export default function MapLibreMap({
       visibleLayers.transit
     ].filter(Boolean).length;
 
+    // Determine opacity based on number of visible layers
+    let layerOpacity: number;
+    let strokeWidth: number;
+    if (visibleZipLayers === 0) {
+      layerOpacity = 0;
+      strokeWidth = 0;
+    } else if (visibleZipLayers === 1) {
+      layerOpacity = 0.85;
+      strokeWidth = 2;
+    } else if (visibleZipLayers === 2) {
+      layerOpacity = 0.65;
+      strokeWidth = 1.5;
+    } else {
+      layerOpacity = 0.45;
+      strokeWidth = 1;
+    }
+
     // Disease Burden layer
     const burdenLayerId = 'bronx-zips-fill';
     if (map.current.getLayer(burdenLayerId)) {
@@ -489,12 +506,15 @@ export default function MapLibreMap({
         'visibility',
         visibleLayers.diseaseBurden ? 'visible' : 'none'
       );
-      // Adjust opacity: when multiple layers visible, reduce opacity for better contrast
-      const burdenOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
       map.current.setPaintProperty(
         burdenLayerId,
         'circle-opacity',
-        ['case', ['boolean', ['feature-state', 'hover'], false], 0.9, burdenOpacity]
+        ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, layerOpacity]
+      );
+      map.current.setPaintProperty(
+        burdenLayerId,
+        'circle-stroke-width',
+        strokeWidth
       );
     }
 
@@ -506,11 +526,15 @@ export default function MapLibreMap({
         'visibility',
         visibleLayers.careAccess ? 'visible' : 'none'
       );
-      const careOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
       map.current.setPaintProperty(
         careAccessLayerId,
         'circle-opacity',
-        careOpacity
+        ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, layerOpacity]
+      );
+      map.current.setPaintProperty(
+        careAccessLayerId,
+        'circle-stroke-width',
+        strokeWidth
       );
     }
 
@@ -522,11 +546,15 @@ export default function MapLibreMap({
         'visibility',
         visibleLayers.environmentalExposure ? 'visible' : 'none'
       );
-      const exposureOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
       map.current.setPaintProperty(
         exposureLayerId,
         'circle-opacity',
-        exposureOpacity
+        ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, layerOpacity]
+      );
+      map.current.setPaintProperty(
+        exposureLayerId,
+        'circle-stroke-width',
+        strokeWidth
       );
     }
 
@@ -538,11 +566,15 @@ export default function MapLibreMap({
         'visibility',
         visibleLayers.transit ? 'visible' : 'none'
       );
-      const transitOpacity = visibleZipLayers > 1 ? 0.5 : 0.7;
       map.current.setPaintProperty(
         transitLayerId,
         'circle-opacity',
-        transitOpacity
+        ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, layerOpacity]
+      );
+      map.current.setPaintProperty(
+        transitLayerId,
+        'circle-stroke-width',
+        strokeWidth
       );
     }
 

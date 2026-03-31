@@ -22,28 +22,28 @@ interface MapPageProps {
 const layerColors = {
   diseaseBurden: {
     name: 'Disease Burden',
-    accent: '#c45a3b',
-    gradient: 'linear-gradient(to right, #a8d5ba, #d4a574, #c45a3b)'
+    accent: '#a83d25',
+    gradient: 'linear-gradient(to right, #6ab576, #c89a54, #a83d25)'
   },
   careAccess: {
     name: 'Care Access',
-    accent: '#d96666',
-    gradient: 'linear-gradient(to right, #4a90e2, #7ab3f5, #d96666)'
+    accent: '#b8334d',
+    gradient: 'linear-gradient(to right, #1a5aa0, #4a7ec8, #b8334d)'
   },
   environmentalExposure: {
     name: 'Environmental Exposure',
-    accent: '#6b8f71',
-    gradient: 'linear-gradient(to right, #6b8f71, #6b8f71)'
+    accent: '#5c2e1f',
+    gradient: 'linear-gradient(to right, #3d6b41, #a08050, #5c2e1f)'
   },
   transit: {
     name: 'Transit',
-    accent: '#ff6b6b',
-    gradient: 'linear-gradient(to right, #ffd700, #ffa500, #ff6b6b)'
+    accent: '#c41e3a',
+    gradient: 'linear-gradient(to right, #b39f00, #d97706, #c41e3a)'
   },
   areaDeprivationIndex: {
     name: 'Area Deprivation (ADI)',
-    accent: '#7b1fa2',
-    gradient: 'linear-gradient(to right, #e8f5e9, #fff9c4, #ffcc80, #ef5350, #7b1fa2)'
+    accent: '#5c1fa2',
+    gradient: 'linear-gradient(to right, #d0e8d0, #fce8a1, #f5a623, #e84c3d, #5c1fa2)'
   }
 };
 

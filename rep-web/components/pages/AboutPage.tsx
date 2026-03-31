@@ -159,6 +159,41 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => (
             marginBottom: '20px',
             marginTop: '48px'
           }}>
+            The Science of Stories
+          </h2>
+
+          <p style={{ marginBottom: '24px' }}>
+            When you listen to a story, your brain does something remarkable. Brain imaging shows that the listener's brain waves actually synchronize with the storyteller's. It's as though the storyteller is trying to "make your brain similar to mine in areas that really capture the meaning, the situation, the schema—the context of the world."
+          </p>
+
+          <p style={{ marginBottom: '24px' }}>
+            Different regions light up—not just those involved in language processing, but networks that handle emotions, predict what will happen next, and imagine another person's motives and perspective. Your palms may sweat. You'll blink faster. Your heart might flutter. You become physically immersed in someone else's experience.
+          </p>
+
+          <p style={{ marginBottom: '24px' }}>
+            Research shows that stories wield a particularly strong influence over our attitudes and behavior. When you read about someone you identify with making a change, you're more likely to make it yourself. When you hear a story rather than a lecture or list of facts, the information feels more real, more important, more personal. It hits you in the heart.
+          </p>
+
+          <p style={{
+            marginBottom: '32px',
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            fontStyle: 'italic',
+            color: '#666',
+            borderLeft: '4px solid #c45a3b',
+            paddingLeft: '24px'
+          }}>
+            Messages that feel like commands aren't always received well. But when someone tells you a story about their struggle, the information comes across less like a lecture and more like a personal truth. That matters.
+          </p>
+
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '28px',
+            fontWeight: '600',
+            color: '#1a1a1a',
+            marginBottom: '20px',
+            marginTop: '48px'
+          }}>
             Integrating Stories into Systems
           </h2>
 

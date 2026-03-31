@@ -36,160 +36,149 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
           inset: 0,
           backgroundImage: 'url(/my-playground.webp)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center center',
+          backgroundPosition: isMobile ? '38% center' : 'center center',
           backgroundAttachment: isMobile ? 'scroll' : 'fixed',
           opacity: 1,
           zIndex: 0
         }} />
 
-        {/* Lighter overlay - only on bottom left for text readability */}
+        {/* Overlay */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: 'linear-gradient(to top right, rgba(26, 26, 26, 0.5) 0%, rgba(26, 26, 26, 0.2) 40%, transparent 80%)',
+          background: isMobile
+            ? 'radial-gradient(ellipse at center, rgba(26,26,26,0.45) 0%, rgba(26,26,26,0.65) 100%)'
+            : 'linear-gradient(to top right, rgba(26, 26, 26, 0.5) 0%, rgba(26, 26, 26, 0.2) 40%, transparent 80%)',
           zIndex: 1
         }} />
 
-        {/* Content - positioned at center, offset 150px right on desktop */}
+        {/* Content */}
         <div style={{
-          maxWidth: isMobile ? 'calc(100% - 32px)' : '550px',
-          padding: isMobile
-            ? '24px 16px 24px 16px'
-            : '50px 64px 50px 32px',
+          maxWidth: isMobile ? '320px' : '550px',
+          padding: isMobile ? '28px 20px' : '50px 64px 50px 32px',
           position: 'absolute',
-          left: isMobile ? '50%' : 'calc(50% + 150px)',
-          top: isMobile ? '50%' : '50%',
+          left: '50%',
+          top: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 2,
-          width: isMobile ? 'auto' : 'auto',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center'
+          alignItems: isMobile ? 'center' : 'flex-start',
+          textAlign: isMobile ? 'center' : 'left'
         }}>
+          {/* Site name */}
           <div style={{
-            maxWidth: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0'
+            fontFamily: 'Georgia, serif',
+            fontSize: isMobile ? 'clamp(30px, 8vw, 44px)' : 'clamp(48px, 8vw, 64px)',
+            fontWeight: '700',
+            letterSpacing: '-2px',
+            color: '#fff',
+            marginBottom: '6px',
+            lineHeight: '1',
+            whiteSpace: 'nowrap'
           }}>
-            {/* Site name - bigger and bolder FOCAL TITLE */}
-            <div style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: isMobile ? 'clamp(32px, 9vw, 52px)' : 'clamp(48px, 8vw, 64px)',
-              fontWeight: '700',
-              letterSpacing: '-2px',
-              color: '#fff',
-              marginBottom: '4px',
-              opacity: 1,
-              lineHeight: '1',
-              whiteSpace: 'nowrap'
-            }}>
-              Where We Live
-            </div>
+            Where We Live
+          </div>
 
-            {/* Subtitle */}
-            <h2 style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: isMobile ? 'clamp(16px, 4vw, 24px)' : 'clamp(18px, 3vw, 26px)',
-              fontWeight: '400',
-              color: '#fff',
-              lineHeight: '1.2',
-              marginBottom: isMobile ? '20px' : '16px',
-              letterSpacing: '-0.5px',
-              fontStyle: 'italic'
-            }}>
-              {t('tagline1')}<br />
-              {t('tagline2')}
-            </h2>
+          {/* Subtitle */}
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: isMobile ? 'clamp(15px, 4vw, 20px)' : 'clamp(18px, 3vw, 26px)',
+            fontWeight: '400',
+            color: '#fff',
+            lineHeight: '1.3',
+            marginBottom: isMobile ? '16px' : '16px',
+            letterSpacing: '-0.5px',
+            fontStyle: 'italic'
+          }}>
+            {t('tagline1')}<br />
+            {t('tagline2')}
+          </h2>
 
-            {/* Subheading */}
-            <p style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: isMobile ? 'clamp(12px, 3vw, 14px)' : 'clamp(13px, 1.8vw, 15px)',
-              color: '#fff',
-              lineHeight: '1.6',
-              marginBottom: isMobile ? '40px' : '28px',
-              maxWidth: isMobile ? '100%' : '550px',
-              fontWeight: '400',
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              padding: isMobile ? '16px 14px' : '20px 24px',
-              borderRadius: '12px',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              opacity: 1,
-              boxShadow: 'none'
-            }}>
-              {t('description')}
-            </p>
+          {/* Description */}
+          <p style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: isMobile ? '13px' : 'clamp(13px, 1.8vw, 15px)',
+            color: '#fff',
+            lineHeight: '1.6',
+            marginBottom: isMobile ? '24px' : '28px',
+            maxWidth: isMobile ? '100%' : '550px',
+            fontWeight: '400',
+            background: 'rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            padding: isMobile ? '14px 16px' : '20px 24px',
+            borderRadius: '12px',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+          }}>
+            {t('description')}
+          </p>
 
-            {/* CTAs */}
-            <div style={{
-              display: isMobile ? 'none' : 'flex',
-              gap: isMobile ? '12px' : '20px',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              marginTop: isMobile ? '20px' : '32px',
-              zIndex: 10,
-              maxWidth: isMobile ? 'calc(100% - 32px)' : 'auto'
-            }}>
-              <button
-                onClick={() => onNavigate('map')}
-                style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: isMobile ? '14px' : '16px',
-                  fontWeight: '600',
-                  padding: isMobile ? '14px 24px' : '18px 40px',
-                  background: '#c45a3b',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 4px 20px rgba(196, 90, 59, 0.3)',
-                  flex: isMobile ? '1' : 'auto',
-                  whiteSpace: 'nowrap'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#a84830';
-                  e.currentTarget.style.boxShadow = '0 6px 28px rgba(196, 90, 59, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#c45a3b';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(196, 90, 59, 0.3)';
-                }}
-              >
-                {isMobile ? t('map') : t('exploreMap')}
-              </button>
+          {/* CTAs */}
+          <div style={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? '10px' : '20px',
+            alignItems: 'center',
+            width: isMobile ? '100%' : 'auto',
+            zIndex: 10,
+          }}>
+            <button
+              onClick={() => onNavigate('map')}
+              style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: isMobile ? '14px' : '16px',
+                fontWeight: '600',
+                padding: isMobile ? '14px 0' : '18px 40px',
+                width: isMobile ? '100%' : 'auto',
+                background: '#c45a3b',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 20px rgba(196, 90, 59, 0.3)',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#a84830';
+                e.currentTarget.style.boxShadow = '0 6px 28px rgba(196, 90, 59, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#c45a3b';
+                e.currentTarget.style.boxShadow = '0 4px 20px rgba(196, 90, 59, 0.3)';
+              }}
+            >
+              {t('exploreMap')}
+            </button>
 
-              <button
-                onClick={() => onNavigate('stories')}
-                style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: isMobile ? '14px' : '16px',
-                  fontWeight: '600',
-                  padding: isMobile ? '14px 24px' : '18px 40px',
-                  background: 'rgba(255, 255, 255, 0.15)',
-                  color: '#fff',
-                  border: '2px solid #fff',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  backdropFilter: 'blur(10px)',
-                  flex: isMobile ? '1' : 'auto',
-                  whiteSpace: 'nowrap'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                }}
-              >
-                {isMobile ? t('stories') : t('readStories')}
-              </button>
-            </div>
+            <button
+              onClick={() => onNavigate('stories')}
+              style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: isMobile ? '14px' : '16px',
+                fontWeight: '600',
+                padding: isMobile ? '14px 0' : '18px 40px',
+                width: isMobile ? '100%' : 'auto',
+                background: 'rgba(255, 255, 255, 0.15)',
+                color: '#fff',
+                border: '2px solid #fff',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                backdropFilter: 'blur(10px)',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+              }}
+            >
+              {t('readStories')}
+            </button>
           </div>
         </div>
       </section>

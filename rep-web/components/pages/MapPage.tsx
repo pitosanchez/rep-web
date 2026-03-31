@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import MapLibreMap from '@/components/MapLibreMap';
 
 interface ZipToTractRow {
@@ -18,36 +19,36 @@ interface MapPageProps {
   onNavigate: (page: string) => void;
 }
 
-// Color scheme for layers - used in legend
 const layerColors = {
   diseaseBurden: {
-    name: 'Disease Burden',
+    nameKey: 'diseaseBurden' as const,
     accent: '#a83d25',
     gradient: 'linear-gradient(to right, #6ab576, #c89a54, #a83d25)'
   },
   careAccess: {
-    name: 'Care Access',
+    nameKey: 'careAccess' as const,
     accent: '#b8334d',
     gradient: 'linear-gradient(to right, #1a5aa0, #4a7ec8, #b8334d)'
   },
   environmentalExposure: {
-    name: 'Environmental Exposure',
+    nameKey: 'environmentalExposure' as const,
     accent: '#5c2e1f',
     gradient: 'linear-gradient(to right, #3d6b41, #a08050, #5c2e1f)'
   },
   transit: {
-    name: 'Transit',
+    nameKey: 'transit' as const,
     accent: '#c41e3a',
     gradient: 'linear-gradient(to right, #b39f00, #d97706, #c41e3a)'
   },
   areaDeprivationIndex: {
-    name: 'Area Deprivation (ADI)',
+    nameKey: 'areaDeprivation' as const,
     accent: '#5c1fa2',
     gradient: 'linear-gradient(to right, #d0e8d0, #fce8a1, #f5a623, #e84c3d, #5c1fa2)'
   }
 };
 
 export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNavigate }) => {
+  const t = useTranslations('map');
   const [visibleLayers, setVisibleLayers] = useState({
     diseaseBurden: true,
     careAccess: false,
@@ -126,7 +127,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
           fontWeight: '400',
           color: '#1a1a1a',
           marginBottom: '12px'
-        }}>Map Explorer</h1>
+        }}>{t('title')}</h1>
         <p style={{
           fontFamily: 'system-ui, sans-serif',
           fontSize: '16px',
@@ -134,7 +135,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
           maxWidth: '700px',
           marginBottom: '16px'
         }}>
-          Explore APOL1 and FSGS context by neighborhood. Use the data layers to visualize disease burden, care access, environmental exposure, and area deprivation. Click a ZIP code to see detailed metrics and patient stories.
+          {t('description')}
         </p>
         <div style={{
           background: '#fff9f5',
@@ -145,7 +146,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
           fontSize: '14px',
           color: '#333'
         }}>
-          <strong>Tip:</strong> Toggle data layers to compare how different factors correlate with kidney disease burden in each neighborhood.
+          <strong>Tip:</strong> {t('tip')}
         </div>
       </div>
     </section>
@@ -184,34 +185,34 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               letterSpacing: '1px',
               textTransform: 'uppercase',
               marginBottom: '12px'
-            }}>Data Layers</div>
+            }}>{t('dataLayers')}</div>
 
             <LayerCheckbox
-              label="Disease Burden"
+              label={t('diseaseBurden')}
               checked={visibleLayers.diseaseBurden}
               color={layerColors.diseaseBurden.accent}
               onChange={() => handleLayerToggle('diseaseBurden')}
             />
             <LayerCheckbox
-              label="Care Access"
+              label={t('careAccess')}
               checked={visibleLayers.careAccess}
               color={layerColors.careAccess.accent}
               onChange={() => handleLayerToggle('careAccess')}
             />
             <LayerCheckbox
-              label="Environmental Exposure"
+              label={t('environmentalExposure')}
               checked={visibleLayers.environmentalExposure}
               color={layerColors.environmentalExposure.accent}
               onChange={() => handleLayerToggle('environmentalExposure')}
             />
             <LayerCheckbox
-              label="Transit"
+              label={t('transit')}
               checked={visibleLayers.transit}
               color={layerColors.transit.accent}
               onChange={() => handleLayerToggle('transit')}
             />
             <LayerCheckbox
-              label="Area Deprivation (ADI)"
+              label={t('areaDeprivation')}
               checked={visibleLayers.areaDeprivationIndex}
               color={layerColors.areaDeprivationIndex.accent}
               onChange={() => handleLayerToggle('areaDeprivationIndex')}
@@ -229,32 +230,32 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
             }}>
               {visibleLayers.diseaseBurden && (
                 <p style={{ margin: 0 }}>
-                  <strong>Disease Burden:</strong> Shows the estimated prevalence of APOL1-mediated kidney disease in each neighborhood based on genetic epidemiology data.
+                  <strong>{t('diseaseBurden')}:</strong> {t('diseaseBurdenDesc')}
                 </p>
               )}
               {visibleLayers.careAccess && (
                 <p style={{ margin: 0 }}>
-                  <strong>Care Access:</strong> Measures proximity to nephrologists, dialysis centers, and transplant programs. Red indicates areas with limited access.
+                  <strong>{t('careAccess')}:</strong> {t('careAccessDesc')}
                 </p>
               )}
               {visibleLayers.environmentalExposure && (
                 <p style={{ margin: 0 }}>
-                  <strong>Environmental Exposure:</strong> Aggregates environmental stressors including pollution, food environment, and housing quality that impact kidney health.
+                  <strong>{t('environmentalExposure')}:</strong> {t('environmentalDesc')}
                 </p>
               )}
               {visibleLayers.transit && (
                 <p style={{ margin: 0 }}>
-                  <strong>Transit Access:</strong> Measures public transportation connectivity, which affects access to medical care and social support for patients.
+                  <strong>{t('transit')}:</strong> {t('transitDesc')}
                 </p>
               )}
               {visibleLayers.areaDeprivationIndex && (
                 <p style={{ margin: 0 }}>
-                  <strong>Area Deprivation (ADI):</strong> Census-based index combining income, education, employment, and housing data. Purple indicates high deprivation.
+                  <strong>{t('areaDeprivation')}:</strong> {t('adiDesc')}
                 </p>
               )}
               {!visibleLayers.diseaseBurden && !visibleLayers.careAccess && !visibleLayers.environmentalExposure && !visibleLayers.transit && !visibleLayers.areaDeprivationIndex && (
                 <p style={{ margin: 0, color: '#999' }}>
-                  Check a layer above to see its description.
+                  {t('noLayerSelected')}
                 </p>
               )}
             </div>
@@ -273,7 +274,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               letterSpacing: '1px',
               textTransform: 'uppercase',
               marginBottom: '12px'
-            }}>Legend</div>
+            }}>{t('legend')}</div>
 
             <div style={{
               fontFamily: 'system-ui, sans-serif',
@@ -281,7 +282,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               color: '#444',
               marginBottom: '8px'
             }}>
-              {layerColors[activeLegendLayer].name}
+              {t(layerColors[activeLegendLayer].nameKey)}
             </div>
 
             <div style={{
@@ -299,8 +300,8 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               fontSize: '11px',
               color: '#666'
             }}>
-              <span>Low</span>
-              <span>High</span>
+              <span>{t('low')}</span>
+              <span>{t('high')}</span>
             </div>
           </div>
 
@@ -318,7 +319,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
                 marginBottom: '12px'
-              }}>Selected Area</div>
+              }}>{t('selectedArea')}</div>
 
               <div style={{
                 fontFamily: 'Georgia, serif',
@@ -347,25 +348,25 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
                 fontSize: '12px'
               }}>
                 <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>Res. Weight</div>
+                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('resWeight')}</div>
                   <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontWeight: '600', color: '#1a1a1a' }}>
                     {(selectedZipData.weight_res * 100).toFixed(0)}%
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>Tot. Weight</div>
+                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('totWeight')}</div>
                   <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontWeight: '600', color: '#1a1a1a' }}>
                     {(selectedZipData.weight_tot * 100).toFixed(0)}%
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>NTA Code</div>
+                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('ntaCode')}</div>
                   <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#1a1a1a' }}>
                     {selectedZipData.nta_code || '—'}
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>NTA Name</div>
+                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('ntaName')}</div>
                   <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#1a1a1a' }}>
                     {selectedZipData.nta_name || '—'}
                   </div>
@@ -390,7 +391,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#a84830'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = '#c45a3b'; }}
               >
-                View Full Profile →
+                {t('viewProfile')}
               </button>
             </div>
           ) : (
@@ -401,7 +402,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               fontSize: '12px',
               color: '#999'
             }}>
-              Click a neighborhood on the map to see its profile
+              {t('clickNeighborhood')}
             </div>
           )}
 
@@ -421,7 +422,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
               letterSpacing: '1px',
               textTransform: 'uppercase'
             }}>
-              Neighborhoods
+              {t('neighborhoods')}
             </div>
 
             {error && (
@@ -434,7 +435,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '12px'
               }}>
-                Error loading: {error}
+                {t('errorLoading')} {error}
               </div>
             )}
 
@@ -446,7 +447,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '12px'
               }}>
-                Loading...
+                {t('loading')}
               </div>
             )}
 

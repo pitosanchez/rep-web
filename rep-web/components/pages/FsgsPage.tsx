@@ -1,10 +1,16 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 interface FsgsPageProps {
   onNavigate?: (page: string) => void;
 }
 
-export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
+export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate: _onNavigate }) => {
+  const t = useTranslations('fsgs');
+
+  return (
   <div style={{ paddingTop: '80px' }}>
     {/* Hero Section */}
     <section style={{
@@ -24,442 +30,198 @@ export const FsgsPage: React.FC<FsgsPageProps> = ({ onNavigate }) => (
           lineHeight: '1.1',
           letterSpacing: '-1px'
         }}>
-          Focal Segmental Glomerulosclerosis (FSGS)
+          {t('heroTitle')}
         </h1>
       </div>
     </section>
 
     {/* Main Content */}
-    <section style={{
-      padding: '80px 32px',
-      background: '#fff'
-    }}>
+    <section style={{ padding: '80px 32px', background: '#fff' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        {/* Overview Section */}
+
+        {/* Overview */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Overview
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('overviewTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              <strong>Focal segmental glomerulosclerosis (FSGS)</strong> is a disease in which scar tissue develops on the glomeruli—the small parts of the kidneys that filter waste from the blood. Glomeruli are the tiny filtering units inside your kidney where blood is cleaned of wastes and toxins.
-            </p>
-            <p style={{ marginBottom: '20px' }}>
-              FSGS is a serious condition that can lead to kidney failure, which can only be treated with dialysis or kidney transplant. Only some glomeruli are affected, but over time FSGS can lead to progressive kidney damage. You may experience swelling, have foamy urine and feel rundown due to the buildup of toxins in your body.
-            </p>
-            <p>
-              Treatment options for FSGS depend on the type you have and can help slow ongoing kidney damage and might lead to improved kidney function over time.
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('overviewPara1')}</p>
+            <p style={{ marginBottom: '20px' }}>{t('overviewPara2')}</p>
+            <p>{t('overviewPara3')}</p>
           </div>
         </div>
 
-        {/* Types of FSGS Section */}
+        {/* Types of FSGS */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Types of FSGS
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('typesTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
             <div style={{ marginBottom: '20px' }}>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '18px',
-                fontWeight: '600',
-                marginBottom: '12px',
-                color: '#1a1a1a'
-              }}>Primary FSGS</h3>
-              <p>
-                Many people diagnosed with FSGS have no known cause for their condition. This is called primary (idiopathic) FSGS.
-              </p>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>{t('primaryTitle')}</h3>
+              <p>{t('primaryDesc')}</p>
             </div>
             <div style={{ marginBottom: '20px' }}>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '18px',
-                fontWeight: '600',
-                marginBottom: '12px',
-                color: '#1a1a1a'
-              }}>Secondary FSGS</h3>
-              <p>
-                Several factors can cause secondary FSGS, including infections, drug toxicity, diseases (such as diabetes or sickle cell disease), obesity, and other kidney diseases. Controlling or treating the underlying cause often slows ongoing kidney damage and might lead to improved kidney function over time.
-              </p>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>{t('secondaryTitle')}</h3>
+              <p>{t('secondaryDesc')}</p>
             </div>
             <div style={{ marginBottom: '20px' }}>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '18px',
-                fontWeight: '600',
-                marginBottom: '12px',
-                color: '#1a1a1a'
-              }}>Genetic FSGS</h3>
-              <p style={{ marginBottom: '12px' }}>
-                This is a rare form of FSGS caused by genetic changes, also called familial FSGS. It's suspected when several members of a family show signs of FSGS.
-              </p>
-              <p>
-                Familial FSGS can also occur when neither parent has the disease but each one carries a copy of an altered gene that can be passed on to the next generation.
-              </p>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>{t('geneticTitle')}</h3>
+              <p style={{ marginBottom: '12px' }}>{t('geneticPara1')}</p>
+              <p>{t('geneticPara2')}</p>
             </div>
             <div>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '18px',
-                fontWeight: '600',
-                marginBottom: '12px',
-                color: '#1a1a1a'
-              }}>Unknown FSGS</h3>
-              <p>
-                In some cases, the underlying cause of FSGS cannot be determined despite the evaluation of clinical symptoms and extensive testing.
-              </p>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>{t('unknownTitle')}</h3>
+              <p>{t('unknownDesc')}</p>
             </div>
           </div>
         </div>
 
-        {/* Symptoms Section */}
+        {/* Symptoms */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Symptoms
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('symptomsTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              Many people with FSGS have <strong>no symptoms at all</strong>. When symptoms are present, they might include:
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('symptomsPara1')}</p>
             <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Swelling (edema)</strong> in the legs and ankles, around the eyes, and in other body parts
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Weight gain</strong> from fluid buildup
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Foamy urine</strong> from protein buildup (proteinuria)
-              </li>
-              <li style={{ marginBottom: '12px' }}>Fatigue and weakness</li>
-              <li style={{ marginBottom: '12px' }}>Loss of appetite</li>
-              <li style={{ marginBottom: '12px' }}>High blood pressure</li>
-              <li>Muscle cramps</li>
+              <li style={{ marginBottom: '12px' }}>{t('symptomItem1')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('symptomItem2')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('symptomItem3')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('symptomItem4')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('symptomItem5')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('symptomItem6')}</li>
+              <li>{t('symptomItem7')}</li>
             </ul>
-            <div style={{
-              background: '#fff9f5',
-              padding: '20px',
-              borderLeft: '4px solid #c45a3b',
-              borderRadius: '4px',
-              marginTop: '24px'
-            }}>
-              <p style={{ marginBottom: 0 }}>
-                <strong>When to see a doctor:</strong> Contact your healthcare provider if you have any of the symptoms of FSGS.
-              </p>
+            <div style={{ background: '#fff9f5', padding: '20px', borderLeft: '4px solid #c45a3b', borderRadius: '4px', marginTop: '24px' }}>
+              <p style={{ marginBottom: 0 }}><strong>{t('seeDoctor')}</strong></p>
             </div>
           </div>
         </div>
 
-        {/* Causes Section */}
+        {/* Causes */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Causes
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('causesTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              Focal segmental glomerulosclerosis (FSGS) can be caused by a variety of conditions:
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('causesPara1')}</p>
             <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>Medical conditions including diabetes, sickle cell disease, lupus, and other kidney diseases</li>
-              <li style={{ marginBottom: '12px' }}>Obesity</li>
-              <li style={{ marginBottom: '12px' }}>Infections such as HIV and hepatitis C</li>
-              <li style={{ marginBottom: '12px' }}>Damage from illicit drugs, medicines, or toxins</li>
-              <li style={{ marginBottom: '12px' }}>Gene changes passed through families (inherited gene changes) that can cause a rare form of FSGS</li>
-              <li>Sometimes there is no known cause</li>
+              <li style={{ marginBottom: '12px' }}>{t('causeItem1')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('causeItem2')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('causeItem3')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('causeItem4')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('causeItem5')}</li>
+              <li>{t('causeItem6')}</li>
             </ul>
           </div>
         </div>
 
-        {/* Risk Factors Section */}
+        {/* Risk Factors */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Risk Factors
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('riskTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              Factors that can raise your risk of developing FSGS include:
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('riskPara1')}</p>
             <ul style={{ marginLeft: '20px', marginBottom: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Medical conditions</strong> that can damage the kidneys such as diabetes, lupus, obesity, and other kidney diseases
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Certain infections</strong> including HIV and hepatitis C
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Gene changes</strong> passed through families that can raise the risk of FSGS
-              </li>
-              <li>
-                <strong>Demographics:</strong> Males more than females; adults age 45 and older most prevalent; more common in people of African American descent
-              </li>
+              <li style={{ marginBottom: '12px' }}>{t('riskItem1')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('riskItem2')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('riskItem3')}</li>
+              <li>{t('riskItem4')}</li>
             </ul>
           </div>
         </div>
 
-        {/* Diagnosis Section */}
+        {/* Diagnosis */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            How is FSGS Diagnosed?
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('diagnosisTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              If your healthcare provider suspects FSGS, they will review your medical history and order some tests such as:
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('diagnosisPara1')}</p>
             <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Blood tests:</strong> Check kidney function and protein levels
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Urine tests:</strong> Look for protein (proteinuria) and blood in urine
-              </li>
-              <li>
-                <strong>Kidney biopsy:</strong> A small sample of kidney tissue is examined under a microscope to confirm the diagnosis and determine the type of FSGS
-              </li>
+              <li style={{ marginBottom: '12px' }}>{t('diagItem1')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('diagItem2')}</li>
+              <li>{t('diagItem3')}</li>
             </ul>
           </div>
         </div>
 
-        {/* Medications Section */}
+        {/* Medications */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Medications to Manage FSGS
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('medsTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              Several medications can help manage FSGS symptoms and slow progression:
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('medsPara1')}</p>
             <ul style={{ marginLeft: '20px' }}>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>ACE inhibitors or ARBs:</strong> Lower blood pressure and reduce protein in urine
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Corticosteroids:</strong> Reduce inflammation in the kidneys
-              </li>
-              <li style={{ marginBottom: '12px' }}>
-                <strong>Immunosuppressants:</strong> Suppress the immune response attacking the kidneys
-              </li>
-              <li>
-                <strong>Diuretics:</strong> Help manage swelling and fluid retention
-              </li>
+              <li style={{ marginBottom: '12px' }}>{t('medItem1')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('medItem2')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('medItem3')}</li>
+              <li>{t('medItem4')}</li>
             </ul>
           </div>
         </div>
 
-        {/* Lifestyle Changes Section */}
+        {/* Lifestyle Changes */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Lifestyle Changes
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('lifestyleTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              Important lifestyle modifications that can help support healthy kidneys:
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('lifestylePara1')}</p>
             <ul style={{ marginLeft: '20px', marginBottom: '24px' }}>
-              <li style={{ marginBottom: '12px' }}>Stop smoking</li>
-              <li style={{ marginBottom: '12px' }}>Follow a low sodium / low protein diet</li>
-              <li style={{ marginBottom: '12px' }}>Be active and exercise regularly</li>
-              <li style={{ marginBottom: '12px' }}>Avoid medications that can harm kidneys (such as NSAIDs)</li>
-              <li style={{ marginBottom: '12px' }}>Maintain a healthy weight</li>
-              <li>Take daily vitamins (such as Vitamin D)</li>
+              <li style={{ marginBottom: '12px' }}>{t('lifestyleItem1')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('lifestyleItem2')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('lifestyleItem3')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('lifestyleItem4')}</li>
+              <li style={{ marginBottom: '12px' }}>{t('lifestyleItem5')}</li>
+              <li>{t('lifestyleItem6')}</li>
             </ul>
-            <div style={{
-              background: '#faf7f3',
-              padding: '24px',
-              borderLeft: '4px solid #c45a3b',
-              borderRadius: '4px',
-              marginTop: '24px'
-            }}>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '20px',
-                fontWeight: '400',
-                marginBottom: '12px',
-                color: '#1a1a1a'
-              }}>
-                Goals of Treatment
+            <div style={{ background: '#faf7f3', padding: '24px', borderLeft: '4px solid #c45a3b', borderRadius: '4px', marginTop: '24px' }}>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '20px', fontWeight: '400', marginBottom: '12px', color: '#1a1a1a' }}>
+                {t('goalsTitle')}
               </h3>
-              <p style={{ marginBottom: '12px' }}>
-                <strong>Short-term goals:</strong> Reduce proteinuria, control blood pressure, manage swelling
-              </p>
-              <p>
-                <strong>Long-term goals:</strong> Preserve kidney function, prevent progression to kidney failure, maintain quality of life
-              </p>
+              <p style={{ marginBottom: '12px' }}><strong>{t('shortTermGoals')}</strong></p>
+              <p><strong>{t('longTermGoals')}</strong></p>
             </div>
           </div>
         </div>
 
-        {/* Complications Section */}
+        {/* Complications */}
         <div style={{ marginBottom: '60px' }}>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '32px',
-            fontWeight: '400',
-            marginBottom: '24px',
-            color: '#1a1a1a'
-          }}>
-            Complications
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '400', marginBottom: '24px', color: '#1a1a1a' }}>
+            {t('complicationsTitle')}
           </h2>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p style={{ marginBottom: '20px' }}>
-              Focal segmental glomerulosclerosis (FSGS) may lead to other health concerns, including:
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p style={{ marginBottom: '20px' }}>{t('complicationsPara1')}</p>
             <div style={{ marginBottom: '20px' }}>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '18px',
-                fontWeight: '600',
-                marginBottom: '12px',
-                color: '#1a1a1a'
-              }}>Nephrotic Syndrome</h3>
-              <p>
-                This kidney condition causes the body to pass too much protein in the urine. Nephrotic syndrome raises the risk of other health conditions, such as blood clots and high blood pressure.
-              </p>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>{t('nephroticTitle')}</h3>
+              <p>{t('nephroticDesc')}</p>
             </div>
             <div>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '18px',
-                fontWeight: '600',
-                marginBottom: '12px',
-                color: '#1a1a1a'
-              }}>Kidney Failure</h3>
-              <p style={{ marginBottom: '12px' }}>
-                Damage to the kidneys that can't be fixed causes the kidneys to stop working. The only treatments for kidney failure are dialysis or kidney transplant.
-              </p>
+              <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>{t('failureTitle')}</h3>
+              <p style={{ marginBottom: '12px' }}>{t('failurePara1')}</p>
               <ul style={{ marginLeft: '20px' }}>
-                <li style={{ marginBottom: '12px' }}>
-                  <strong>Dialysis:</strong> A mechanical process that filters waste and excess fluid from your blood
-                </li>
-                <li>
-                  <strong>Kidney transplant:</strong> Receiving a healthy kidney from a donor
-                </li>
+                <li style={{ marginBottom: '12px' }}>{t('dialysisDesc')}</li>
+                <li>{t('transplantDesc')}</li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* Final Section */}
-        <div style={{
-          background: '#faf7f3',
-          padding: '40px',
-          borderRadius: '8px',
-          textAlign: 'center'
-        }}>
-          <h3 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '24px',
-            fontWeight: '400',
-            marginBottom: '16px',
-            color: '#1a1a1a'
-          }}>
-            Your Unique FSGS Journey
+        {/* Final */}
+        <div style={{ background: '#faf7f3', padding: '40px', borderRadius: '8px', textAlign: 'center' }}>
+          <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '24px', fontWeight: '400', marginBottom: '16px', color: '#1a1a1a' }}>
+            {t('journeyTitle')}
           </h3>
-          <div style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#333'
-          }}>
-            <p>
-              The FSGS journey is unique for each patient. Close follow-up care with your healthcare provider is extremely important to help maintain the health of your kidneys and manage your condition effectively.
-            </p>
+          <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
+            <p>{t('journeyDesc')}</p>
           </div>
         </div>
       </div>
     </section>
   </div>
-);
+  );
+};

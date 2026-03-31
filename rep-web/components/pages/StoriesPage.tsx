@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { themes } from '@/lib/mockData';
 import { stories } from '@/lib/stories';
 
@@ -7,6 +10,7 @@ interface StoriesPageProps {
 }
 
 export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
+  const t = useTranslations('stories');
   const [selectedThemes, setSelectedThemes] = useState<string[]>(['Travel burden', 'Delayed referrals']);
   const [expandedStory, setExpandedStory] = useState<string | null>(null);
 
@@ -45,7 +49,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
             fontWeight: '400',
             color: '#1a1a1a',
             marginBottom: '12px'
-          }}>Patient Stories</h2>
+          }}>{t('title')}</h2>
           <p style={{
             fontFamily: 'system-ui, sans-serif',
             fontSize: '16px',
@@ -54,8 +58,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
             maxWidth: '620px',
             lineHeight: '1.6'
           }}>
-            These stories represent patterns documented across communities. Names and identifying details are composite,
-            but the structural barriers they face are real.
+            {t('description')}
           </p>
 
           {/* Stories Grid */}
@@ -136,7 +139,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                     fontWeight: '500',
                     margin: 0
                   }}>
-                    Click to read full story
+                    {t('clickToRead')}
                   </p>
                   <span style={{
                     fontSize: '14px',
@@ -177,7 +180,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                     marginBottom: '32px'
                   }}
                 >
-                  ← Back to stories
+                  {t('backToStories')}
                 </button>
 
                 {(() => {
@@ -289,7 +292,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                         marginBottom: '20px',
                         paddingBottom: '12px',
                         borderBottom: `1px solid #e8e4df`
-                      }}>The Story</h3>
+                      }}>{t('theStory')}</h3>
                       <div style={{ marginBottom: '40px' }}>
                         {story.narrative.map((para, i) => (
                           <p
@@ -341,7 +344,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                         marginBottom: '20px',
                         paddingBottom: '12px',
                         borderBottom: `1px solid #e8e4df`
-                      }}>Geography + Structural Reality</h3>
+                      }}>{t('geographyContext')}</h3>
                       <div style={{ marginBottom: '40px' }}>
                         {story.geographyContext.map((para, i) => (
                           <p
@@ -371,7 +374,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                         marginBottom: '20px',
                         paddingBottom: '12px',
                         borderBottom: `1px solid #e8e4df`
-                      }}>Reflection</h3>
+                      }}>{t('reflection')}</h3>
                       <div style={{
                         background: story.accentColor + '10',
                         borderLeft: `4px solid ${story.accentColor}`,
@@ -399,7 +402,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                           color: '#1a1a1a',
                           marginBottom: '8px'
                         }}>
-                          What would have changed his outcome:
+                          {t('wouldChange')}
                         </p>
                         <p style={{
                           fontFamily: 'Georgia, serif',
@@ -419,7 +422,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                           color: '#1a1a1a',
                           marginBottom: '8px'
                         }}>
-                          What he wishes he had known:
+                          {t('shouldKnow')}
                         </p>
                         <p style={{
                           fontFamily: 'Georgia, serif',
@@ -451,16 +454,14 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
             fontWeight: '400',
             color: '#1a1a1a',
             marginBottom: '16px'
-          }}>Share Your Experience</h1>
+          }}>{t('shareTitle')}</h1>
           <p style={{
             fontFamily: 'system-ui, sans-serif',
             fontSize: '17px',
             color: '#666',
             lineHeight: '1.6'
           }}>
-            This is for patients and caregivers living with <strong>APOL1-mediated
-            kidney disease</strong> or <strong>FSGS</strong>. Your submission is
-            anonymous by default and grounded in neighborhood.
+            {t('shareDesc')}
           </p>
         </div>
       </section>
@@ -486,10 +487,10 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                   fontWeight: '500',
                   color: '#1a1a1a',
                   marginBottom: '8px'
-                }}>ZIP Code</label>
+                }}>{t('zipCode')}</label>
                 <input
                   type="text"
-                  placeholder="e.g., 10456"
+                  placeholder={t('zipPlaceholder')}
                   defaultValue={selectedZip || ''}
                   style={{
                     width: '100%',
@@ -510,7 +511,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                   fontWeight: '500',
                   color: '#1a1a1a',
                   marginBottom: '8px'
-                }}>I am a</label>
+                }}>{t('iAmA')}</label>
                 <select style={{
                   width: '100%',
                   padding: '14px 16px',
@@ -520,8 +521,8 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                   fontSize: '15px',
                   background: '#fff'
                 }}>
-                  <option>Patient</option>
-                  <option>Caregiver</option>
+                  <option>{t('patient')}</option>
+                  <option>{t('caregiver')}</option>
                 </select>
               </div>
             </div>
@@ -534,7 +535,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 fontWeight: '500',
                 color: '#1a1a1a',
                 marginBottom: '8px'
-              }}>Condition</label>
+              }}>{t('condition')}</label>
               <select style={{
                 width: '100%',
                 padding: '14px 16px',
@@ -558,7 +559,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 fontWeight: '500',
                 color: '#1a1a1a',
                 marginBottom: '12px'
-              }}>Themes (select all that apply)</label>
+              }}>{t('themes')}</label>
               <div style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -594,9 +595,9 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 fontWeight: '500',
                 color: '#1a1a1a',
                 marginBottom: '8px'
-              }}>Your reflection (anonymous)</label>
+              }}>{t('yourReflection')}</label>
               <textarea
-                placeholder="How does where you live affect your kidney care? What do clinicians misunderstand about your environment?"
+                placeholder={t('reflectionPlaceholder')}
                 style={{
                   width: '100%',
                   padding: '16px',
@@ -615,9 +616,9 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 color: '#888',
                 marginTop: '8px'
               }}>
-                {`Don't include names, exact addresses, employer details, or anything identifying.`}
+                {t('privacyNote')}
                 <br />
-                Keep it under 240 characters.
+                {t('charLimit')}
               </p>
             </div>
 
@@ -637,8 +638,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 color: '#444',
                 lineHeight: '1.5'
               }}>
-                I consent to Where We Live using this anonymous submission in aggregated form by place and theme.
-                My story may appear alongside others from my neighborhood when patterns emerge.
+                {t('consent')}
               </span>
             </div>
 
@@ -654,7 +654,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
               fontWeight: '500',
               cursor: 'pointer'
             }}>
-              Submit Your Story
+              {t('submit')}
             </button>
           </div>
 
@@ -670,7 +670,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
               fontSize: '18px',
               color: '#1a1a1a',
               marginBottom: '16px'
-            }}>How stories become evidence</h3>
+            }}>{t('howStoriesTitle')}</h3>
             <ol style={{
               fontFamily: 'system-ui, sans-serif',
               fontSize: '14px',
@@ -678,11 +678,11 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
               lineHeight: '1.8',
               paddingLeft: '20px'
             }}>
-              <li>You select your neighborhood and respond to guided prompts</li>
-              <li>Submissions are reviewed for safety and clarity</li>
-              <li>Stories are grouped by place and theme</li>
-              <li>Individual entries appear only when patterns emerge (minimum threshold)</li>
-              <li>Your voice becomes structural evidence, not isolated testimony</li>
+              <li>{t('howStep1')}</li>
+              <li>{t('howStep2')}</li>
+              <li>{t('howStep3')}</li>
+              <li>{t('howStep4')}</li>
+              <li>{t('howStep5')}</li>
             </ol>
           </div>
         </div>

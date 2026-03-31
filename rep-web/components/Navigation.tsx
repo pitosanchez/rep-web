@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useHamburger } from '@/hooks/useResponsive';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface NavItem {
   id: string;
-  label: string;
+  labelKey: string;
   children?: NavItem[];
 }
 
@@ -18,20 +19,21 @@ interface NavigationProps {
 export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
   const { isOpen, toggle, close } = useHamburger();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const t = useTranslations('nav');
 
   const navItems: NavItem[] = [
-    { id: 'home', label: 'Home' },
-    { id: 'about', label: 'About' },
-    { id: 'stories', label: 'Stories' },
-    { id: 'map', label: 'Map Explorer' },
-    { id: 'methods', label: 'Methods' },
+    { id: 'home', labelKey: 'home' },
+    { id: 'about', labelKey: 'about' },
+    { id: 'stories', labelKey: 'stories' },
+    { id: 'map', labelKey: 'map' },
+    { id: 'methods', labelKey: 'methods' },
     {
       id: 'kidney-disease',
-      label: 'Kidney Disease',
+      labelKey: 'kidneyDisease',
       children: [
-        { id: 'kidney-disease-overview', label: 'Overview' },
-        { id: 'apol1', label: 'APOL1' },
-        { id: 'fsgs', label: 'FSGS' }
+        { id: 'kidney-disease-overview', labelKey: 'overview' },
+        { id: 'apol1', labelKey: 'apol1' },
+        { id: 'fsgs', labelKey: 'fsgs' }
       ]
     }
   ];
@@ -53,6 +55,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
       borderBottom: '1px solid rgba(0,0,0,0.08)'
     }}>
       <div className="nav-inner">
+        {/* Logo — left */}
         <button
           onClick={() => handleNavClick('home')}
           style={{
@@ -61,7 +64,8 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'baseline',
-            gap: '12px'
+            gap: '12px',
+            flexShrink: 0
           }}
         >
           <span style={{
@@ -73,9 +77,102 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
           }}>Where We Live</span>
         </button>
 
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <LanguageSwitcher />
+        {/* Nav links — center */}
+        <div className={`nav-links${isOpen ? ' open' : ''}`}>
+          {navItems.map(item => {
+            const isActive = item.children
+              ? item.children.some(child => currentPage === child.id)
+              : currentPage === item.id;
 
+            return (
+              <div
+                key={item.id}
+                style={{
+                  position: 'relative',
+                  display: isOpen ? 'block' : 'inline-block'
+                }}
+                onMouseEnter={() => !isOpen && item.children && setOpenDropdown(item.id)}
+                onMouseLeave={() => !isOpen && setOpenDropdown(null)}
+              >
+                <button
+                  onClick={() => {
+                    if (item.children) {
+                      if (isOpen) {
+                        setOpenDropdown(openDropdown === item.id ? null : item.id);
+                      } else {
+                        handleNavClick(item.id);
+                      }
+                    } else {
+                      handleNavClick(item.id);
+                    }
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontFamily: 'system-ui, sans-serif',
+                    fontSize: '14px',
+                    color: isActive ? '#1a1a1a' : '#666',
+                    fontWeight: isActive ? '500' : '400',
+                    cursor: 'pointer',
+                    padding: isOpen ? '12px 24px' : '4px 0',
+                    borderBottom: !isOpen && isActive ? '2px solid #c45a3b' : '2px solid transparent',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  {t(item.labelKey)}
+                  {item.children && (
+                    <span style={{
+                      fontSize: '10px',
+                      transition: 'transform 0.2s ease',
+                      transform: openDropdown === item.id ? 'rotate(180deg)' : 'rotate(0deg)'
+                    }}>
+                      ▼
+                    </span>
+                  )}
+                </button>
+
+                {item.children && (
+                  <>
+                    {!isOpen && (
+                      <div className="nav-dropdown" style={{
+                        display: openDropdown === item.id ? 'flex' : 'none'
+                      }}>
+                        {item.children.map(child => (
+                          <button
+                            key={child.id}
+                            className={`nav-dropdown-item${currentPage === child.id ? ' active' : ''}`}
+                            onClick={() => handleNavClick(child.id)}
+                          >
+                            {t(child.labelKey)}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {isOpen && (
+                      <div>
+                        {item.children.map(child => (
+                          <button
+                            key={child.id}
+                            className={`nav-dropdown-item${currentPage === child.id ? ' active' : ''}`}
+                            onClick={() => handleNavClick(child.id)}
+                          >
+                            {t(child.labelKey)}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Right side — hamburger (mobile) + language switcher (always) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
           <button
             className="hamburger-btn"
             onClick={toggle}
@@ -85,99 +182,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
             <span />
             <span />
           </button>
-
-          <div className={`nav-links${isOpen ? ' open' : ''}`}>
-            {navItems.map(item => {
-              const isActive = item.children
-                ? item.children.some(child => currentPage === child.id)
-                : currentPage === item.id;
-
-              return (
-                <div
-                  key={item.id}
-                  style={{
-                    position: 'relative',
-                    display: isOpen ? 'block' : 'inline-block'
-                  }}
-                  onMouseEnter={() => !isOpen && item.children && setOpenDropdown(item.id)}
-                  onMouseLeave={() => !isOpen && setOpenDropdown(null)}
-                >
-                  <button
-                    onClick={() => {
-                      if (item.children) {
-                        if (isOpen) {
-                          setOpenDropdown(openDropdown === item.id ? null : item.id);
-                        } else {
-                          handleNavClick(item.id);
-                        }
-                      } else {
-                        handleNavClick(item.id);
-                      }
-                    }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '14px',
-                      color: isActive ? '#1a1a1a' : '#666',
-                      fontWeight: isActive ? '500' : '400',
-                      cursor: 'pointer',
-                      padding: isOpen ? '12px 24px' : '4px 0',
-                      borderBottom: !isOpen && isActive ? '2px solid #c45a3b' : '2px solid transparent',
-                      transition: 'all 0.2s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px'
-                    }}
-                  >
-                    {item.label}
-                    {item.children && (
-                      <span style={{
-                        fontSize: '10px',
-                        transition: 'transform 0.2s ease',
-                        transform: openDropdown === item.id ? 'rotate(180deg)' : 'rotate(0deg)'
-                      }}>
-                        ▼
-                      </span>
-                    )}
-                  </button>
-
-                  {item.children && (
-                    <>
-                      {!isOpen && (
-                        <div className="nav-dropdown" style={{
-                          display: openDropdown === item.id ? 'flex' : 'none'
-                        }}>
-                          {item.children.map(child => (
-                            <button
-                              key={child.id}
-                              className={`nav-dropdown-item${currentPage === child.id ? ' active' : ''}`}
-                              onClick={() => handleNavClick(child.id)}
-                            >
-                              {child.label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {isOpen && (
-                        <div>
-                          {item.children.map(child => (
-                            <button
-                              key={child.id}
-                              className={`nav-dropdown-item${currentPage === child.id ? ' active' : ''}`}
-                              onClick={() => handleNavClick(child.id)}
-                            >
-                              {child.label}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          <LanguageSwitcher />
         </div>
       </div>
     </nav>

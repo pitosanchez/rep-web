@@ -1,111 +1,57 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React from 'react';
 
 export function LanguageSwitcher() {
   const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
 
-  const toggleLocale = (newLocale: string) => {
+  const switchTo = (newLocale: string) => {
     if (newLocale === locale) return;
-
-    // Remove current locale from pathname
-    const pathWithoutLocale = pathname.replace(`/${locale}`, '');
-
-    // Build new pathname with new locale
-    const newPathname = `/${newLocale}${pathWithoutLocale || ''}`;
-
-    // Navigate to new locale path
-    router.push(newPathname);
-    setIsOpen(false);
+    window.location.href = `/${newLocale}`;
   };
 
-  const languages = [
-    { code: 'en', label: 'English', flag: '🇺🇸' },
-    { code: 'es', label: 'Español', flag: '🇪🇸' }
-  ];
-
-  const currentLanguage = languages.find(lang => lang.code === locale);
-
   return (
-    <div style={{ position: 'relative' }}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          background: 'none',
-          border: 'none',
-          padding: '8px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          cursor: 'pointer',
-          color: '#666',
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '14px',
-          fontWeight: '500',
-          transition: 'color 0.2s ease'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#1a1a1a';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.color = '#666';
-        }}
-      >
-        <span>{currentLanguage?.flag}</span>
-        <span>{currentLanguage?.code.toUpperCase()}</span>
-      </button>
-
-      {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '100%',
-            right: 0,
-            background: '#fff',
-            border: '1px solid #e8e4df',
-            borderRadius: '6px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-            minWidth: '140px',
-            marginTop: '8px',
-            zIndex: 1000
-          }}
-        >
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => toggleLocale(lang.code)}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '12px 16px',
-                border: 'none',
-                background: locale === lang.code ? '#faf7f3' : '#fff',
-                textAlign: 'left',
-                cursor: 'pointer',
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '14px',
-                color: locale === lang.code ? '#c45a3b' : '#666',
-                fontWeight: locale === lang.code ? '600' : '400',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#faf7f3';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = locale === lang.code ? '#faf7f3' : '#fff';
-              }}
-            >
-              <span style={{ marginRight: '8px' }}>{lang.flag}</span>
-              {lang.label}
-            </button>
-          ))}
-        </div>
-      )}
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      background: 'rgba(0,0,0,0.06)',
+      borderRadius: '6px',
+      padding: '3px',
+      gap: '2px'
+    }}>
+      {(['en', 'es'] as const).map((code) => {
+        const label = code === 'en' ? 'ENG' : 'SPA';
+        const isActive = locale === code;
+        return (
+          <button
+            key={code}
+            onClick={() => switchTo(code)}
+            style={{
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '12px',
+              fontWeight: isActive ? '700' : '500',
+              letterSpacing: '0.5px',
+              padding: '5px 10px',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: isActive ? 'default' : 'pointer',
+              background: isActive ? '#1a1a1a' : 'transparent',
+              color: isActive ? '#fff' : '#888',
+              transition: 'all 0.2s ease',
+              lineHeight: 1
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) e.currentTarget.style.color = '#1a1a1a';
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) e.currentTarget.style.color = '#888';
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 }

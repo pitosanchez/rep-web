@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface HeroPageProps {
   onNavigate: (page: string) => void;
@@ -8,6 +9,7 @@ interface HeroPageProps {
 
 export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const t = useTranslations('hero');
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -86,7 +88,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               Where We Live
             </div>
 
-            {/* Subtitle - "Your Story Starts With Where You Live" */}
+            {/* Subtitle */}
             <h2 style={{
               fontFamily: 'Georgia, serif',
               fontSize: isMobile ? 'clamp(16px, 4vw, 24px)' : 'clamp(18px, 3vw, 26px)',
@@ -97,11 +99,11 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               letterSpacing: '-0.5px',
               fontStyle: 'italic'
             }}>
-              Your Story Starts<br />
-              With Where You Live
+              {t('tagline1')}<br />
+              {t('tagline2')}
             </h2>
 
-            {/* Subheading - Minimal Glass Morphism */}
+            {/* Subheading */}
             <p style={{
               fontFamily: 'system-ui, sans-serif',
               fontSize: isMobile ? 'clamp(12px, 3vw, 14px)' : 'clamp(13px, 1.8vw, 15px)',
@@ -119,10 +121,10 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               opacity: 1,
               boxShadow: 'none'
             }}>
-              Mapping how genetics, place, and structural inequality converge in APOL1-mediated kidney disease and FSGS — with patient stories grounded in geography.
+              {t('description')}
             </p>
 
-            {/* CTAs - hidden on mobile, positioned below text on desktop */}
+            {/* CTAs */}
             <div style={{
               display: isMobile ? 'none' : 'flex',
               gap: isMobile ? '12px' : '20px',
@@ -158,7 +160,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
                   e.currentTarget.style.boxShadow = '0 4px 20px rgba(196, 90, 59, 0.3)';
                 }}
               >
-                {isMobile ? 'Map' : 'Explore the Map'}
+                {isMobile ? t('map') : t('exploreMap')}
               </button>
 
               <button
@@ -185,7 +187,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
                 }}
               >
-                {isMobile ? 'Stories' : 'Read Stories'}
+                {isMobile ? t('stories') : t('readStories')}
               </button>
             </div>
           </div>
@@ -210,7 +212,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             lineHeight: '1.5',
             marginBottom: '24px'
           }}>
-            A public accountability platform that connects data with human experience.
+            {t('missionStatement')}
           </div>
 
           <p style={{
@@ -220,7 +222,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             lineHeight: '1.8',
             marginBottom: '20px'
           }}>
-            Numbers can tell us what is happening. Stories explain why. By pairing datasets with real stories from patients and families living in the Bronx, we see something different. The rates become human. The percentages become people.
+            {t('missionBody1')}
           </p>
 
           <p style={{
@@ -229,7 +231,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             color: '#666',
             lineHeight: '1.8'
           }}>
-            This is how we build accountability. This is how we change systems.
+            {t('missionBody2')}
           </p>
         </div>
       </section>
@@ -251,7 +253,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             marginBottom: isMobile ? '32px' : '60px',
             textAlign: 'center'
           }}>
-            How REP Works
+            {t('howItWorks')}
           </h2>
 
           <div style={{
@@ -260,21 +262,9 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             gap: isMobile ? '24px' : '48px'
           }}>
             {[
-              {
-                number: '01',
-                title: 'Map the Data',
-                description: 'Geographic data reveals patterns of disease burden, care access, environmental exposure, and structural inequality across neighborhoods.'
-              },
-              {
-                number: '02',
-                title: 'Share Stories',
-                description: 'Patient and caregiver stories grounded in place show what the data cannot: lived experience, context, and human reality.'
-              },
-              {
-                number: '03',
-                title: 'Build Accountability',
-                description: 'When data and stories converge, systems change. Researchers, clinicians, and policymakers can see clearly and respond accordingly.'
-              }
+              { number: '01', titleKey: 'pillar1Title', descKey: 'pillar1Desc' },
+              { number: '02', titleKey: 'pillar2Title', descKey: 'pillar2Desc' },
+              { number: '03', titleKey: 'pillar3Title', descKey: 'pillar3Desc' }
             ].map((item, i) => (
               <div key={i} style={{
                 padding: isMobile ? '24px' : '40px',
@@ -298,7 +288,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
                   color: '#1a1a1a',
                   marginBottom: '12px'
                 }}>
-                  {item.title}
+                  {t(item.titleKey)}
                 </h3>
                 <p style={{
                   fontFamily: 'system-ui, sans-serif',
@@ -306,7 +296,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
                   color: '#666',
                   lineHeight: '1.7'
                 }}>
-                  {item.description}
+                  {t(item.descKey)}
                 </p>
               </div>
             ))}
@@ -331,7 +321,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             fontWeight: '400',
             marginBottom: '20px'
           }}>
-            Ready to explore?
+            {t('ctaTitle')}
           </h2>
 
           <p style={{
@@ -341,7 +331,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
             marginBottom: '32px',
             lineHeight: '1.7'
           }}>
-            Start with the map to see how place shapes disease burden. Then read stories to understand why it matters.
+            {t('ctaDesc')}
           </p>
 
           <button
@@ -365,7 +355,7 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
               e.currentTarget.style.background = '#c45a3b';
             }}
           >
-            Open Map Explorer
+            {t('openMap')}
           </button>
         </div>
       </section>

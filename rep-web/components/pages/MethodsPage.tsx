@@ -1,14 +1,16 @@
-import React from 'react';
+'use client';
 
-export const MethodsPage: React.FC = () => (
+import React from 'react';
+import { useTranslations } from 'next-intl';
+
+export const MethodsPage: React.FC = () => {
+  const t = useTranslations('methods');
+
+  return (
   <div style={{ paddingTop: '80px' }}>
-    <section className="section-pad-md" style={{
-      background: '#faf7f3'
-    }}>
+    <section className="section-pad-md" style={{ background: '#faf7f3' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <h1 className="heading-xl" style={{
-          marginBottom: '24px'
-        }}>Methods & Transparency</h1>
+        <h1 className="heading-xl" style={{ marginBottom: '24px' }}>{t('title')}</h1>
         <p style={{
           fontFamily: 'system-ui, sans-serif',
           fontSize: '18px',
@@ -16,15 +18,12 @@ export const MethodsPage: React.FC = () => (
           lineHeight: '1.7',
           maxWidth: '700px'
         }}>
-          Everything we show is built on explicit, auditable decisions.
-          {`Here's how we work.`}
+          {t('subtitle')}
         </p>
       </div>
     </section>
 
-    <section className="section-pad-md" style={{
-      background: '#fff'
-    }}>
+    <section className="section-pad-md" style={{ background: '#fff' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <div className="grid-2col">
           {/* Data Sources */}
@@ -35,7 +34,7 @@ export const MethodsPage: React.FC = () => (
               fontWeight: '400',
               color: '#1a1a1a',
               marginBottom: '20px'
-            }}>Data Sources</h2>
+            }}>{t('dataSourcesTitle')}</h2>
             <div style={{
               fontFamily: 'system-ui, sans-serif',
               fontSize: '15px',
@@ -46,20 +45,20 @@ export const MethodsPage: React.FC = () => (
               gap: '16px'
             }}>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>US Census / ACS</strong>
-                <p>Poverty, education, income, housing (5-year estimates)</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('census')}</strong>
+                <p>{t('censusDesc')}</p>
               </div>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>OpenStreetMap</strong>
-                <p>Fast food, liquor stores, grocery access, transit (aggregated)</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('osm')}</strong>
+                <p>{t('osmDesc')}</p>
               </div>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>Patient Stories</strong>
-                <p>Anonymous submissions tied to neighborhood, reviewed for safety</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('patientStories')}</strong>
+                <p>{t('patientStoriesDesc')}</p>
               </div>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>CDC / ATSDR</strong>
-                <p>SVI (Social Vulnerability Index) — later phase</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('cdc')}</strong>
+                <p>{t('cdcDesc')}</p>
               </div>
             </div>
           </div>
@@ -72,7 +71,7 @@ export const MethodsPage: React.FC = () => (
               fontWeight: '400',
               color: '#1a1a1a',
               marginBottom: '20px'
-            }}>Safety & Suppression</h2>
+            }}>{t('safetyTitle')}</h2>
             <div style={{
               fontFamily: 'system-ui, sans-serif',
               fontSize: '15px',
@@ -83,20 +82,20 @@ export const MethodsPage: React.FC = () => (
               gap: '16px'
             }}>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>Minimum Cell Size</strong>
-                <p>Metrics with n &lt; 11 are suppressed (NCHS standard)</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('minCellSize')}</strong>
+                <p>{t('minCellSizeDesc')}</p>
               </div>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>Geography Downgrading</strong>
-                <p>If insufficient data at tract level, aggregate to county</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('geoDowngrade')}</strong>
+                <p>{t('geoDowngradeDesc')}</p>
               </div>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>Story Threshold</strong>
-                <p>Stories show only when 5+ submissions from same area/theme</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('storyThreshold')}</strong>
+                <p>{t('storyThresholdDesc')}</p>
               </div>
               <div>
-                <strong style={{ color: '#1a1a1a' }}>No Individual Inference</strong>
-                <p>Data never presented in ways that could re-identify people</p>
+                <strong style={{ color: '#1a1a1a' }}>{t('noIndividual')}</strong>
+                <p>{t('noIndividualDesc')}</p>
               </div>
             </div>
           </div>
@@ -105,9 +104,7 @@ export const MethodsPage: React.FC = () => (
     </section>
 
     {/* What REP Can & Cannot Say */}
-    <section className="section-pad-md" style={{
-      background: '#f9f9f9'
-    }}>
+    <section className="section-pad-md" style={{ background: '#f9f9f9' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <h2 style={{
           fontFamily: 'Georgia, serif',
@@ -116,7 +113,7 @@ export const MethodsPage: React.FC = () => (
           color: '#1a1a1a',
           marginBottom: '48px',
           textAlign: 'center'
-        }}>{`What We Show & What We Don't`}</h2>
+        }}>{t('whatWeShowTitle')}</h2>
 
         <div style={{
           display: 'grid',
@@ -136,7 +133,7 @@ export const MethodsPage: React.FC = () => (
                 fontSize: '20px',
                 color: '#1a1a1a',
                 marginBottom: '16px'
-              }}>✓ We SHOW</h3>
+              }}>{t('weShowTitle')}</h3>
               <ul style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '14px',
@@ -144,13 +141,13 @@ export const MethodsPage: React.FC = () => (
                 lineHeight: '1.8',
                 listStylePosition: 'inside'
               }}>
-                <li>Neighborhood-level patterns</li>
-                <li>Associations between factors</li>
-                <li>Environmental conditions</li>
-                <li>Aggregated patient experiences</li>
-                <li>Care access barriers</li>
-                <li>Structural inequities</li>
-                <li>Where investment could help</li>
+                <li>{t('weShow1')}</li>
+                <li>{t('weShow2')}</li>
+                <li>{t('weShow3')}</li>
+                <li>{t('weShow4')}</li>
+                <li>{t('weShow5')}</li>
+                <li>{t('weShow6')}</li>
+                <li>{t('weShow7')}</li>
               </ul>
             </div>
           </div>
@@ -168,7 +165,7 @@ export const MethodsPage: React.FC = () => (
                 fontSize: '20px',
                 color: '#1a1a1a',
                 marginBottom: '16px'
-              }}>✗ We DON'T SHOW</h3>
+              }}>{t('weDontShowTitle')}</h3>
               <ul style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '14px',
@@ -176,13 +173,13 @@ export const MethodsPage: React.FC = () => (
                 lineHeight: '1.8',
                 listStylePosition: 'inside'
               }}>
-                <li>Individual-level health data</li>
-                <li>Genetic risk predictions</li>
-                <li>Clinical diagnoses</li>
-                <li>Causal claims</li>
-                <li>Who will get sick (predictive)</li>
-                <li>Identifying details about patients</li>
-                <li>Any data that could re-identify people</li>
+                <li>{t('weDontShow1')}</li>
+                <li>{t('weDontShow2')}</li>
+                <li>{t('weDontShow3')}</li>
+                <li>{t('weDontShow4')}</li>
+                <li>{t('weDontShow5')}</li>
+                <li>{t('weDontShow6')}</li>
+                <li>{t('weDontShow7')}</li>
               </ul>
             </div>
           </div>
@@ -191,9 +188,7 @@ export const MethodsPage: React.FC = () => (
     </section>
 
     {/* Governance */}
-    <section className="section-pad-md" style={{
-      background: '#fff'
-    }}>
+    <section className="section-pad-md" style={{ background: '#fff' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         <h2 style={{
           fontFamily: 'Georgia, serif',
@@ -201,7 +196,7 @@ export const MethodsPage: React.FC = () => (
           fontWeight: '400',
           color: '#1a1a1a',
           marginBottom: '24px'
-        }}>Governance & Oversight</h2>
+        }}>{t('governanceTitle')}</h2>
         <p style={{
           fontFamily: 'system-ui, sans-serif',
           fontSize: '16px',
@@ -209,8 +204,7 @@ export const MethodsPage: React.FC = () => (
           lineHeight: '1.8',
           marginBottom: '32px'
         }}>
-          We are built to be auditable. Every data suppression decision, every story threshold,
-          every narrative choice is logged and explainable.
+          {t('governanceBody')}
         </p>
 
         <div style={{
@@ -225,8 +219,7 @@ export const MethodsPage: React.FC = () => (
             color: '#666',
             lineHeight: '1.8'
           }}>
-            <strong>IRB Review:</strong> All data governance rules follow NCHS guidelines
-            and are suitable for IRB scrutiny.
+            <strong>{t('irb')}</strong> {t('irbDesc')}
           </p>
           <p style={{
             fontFamily: 'system-ui, sans-serif',
@@ -235,8 +228,7 @@ export const MethodsPage: React.FC = () => (
             lineHeight: '1.8',
             marginTop: '12px'
           }}>
-            <strong>Audit Trail:</strong> Every governance decision — suppression, downgrading, narrative approval —
-            is logged with timestamp and reasoning.
+            <strong>{t('audit')}</strong> {t('auditDesc')}
           </p>
           <p style={{
             fontFamily: 'system-ui, sans-serif',
@@ -245,11 +237,11 @@ export const MethodsPage: React.FC = () => (
             lineHeight: '1.8',
             marginTop: '12px'
           }}>
-            <strong>Community Input:</strong> Rules are designed with community partners,
-            researchers, and funders.
+            <strong>{t('community')}</strong> {t('communityDesc')}
           </p>
         </div>
       </div>
     </section>
   </div>
-);
+  );
+};

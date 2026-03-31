@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Navigation } from './Navigation';
 import { HeroPage } from './pages/HeroPage';
 import { MapPage } from './pages/MapPage';
@@ -22,6 +23,8 @@ import { FsgsPage } from './pages/FsgsPage';
 export const REPWireframe: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('home');
   const [selectedZip, setSelectedZip] = useState<string | null>(null);
+  const tFooter = useTranslations('footer');
+  const tNav = useTranslations('nav');
 
   const handleNavigate = (page: string) => {
     setCurrentPage(page);
@@ -91,14 +94,14 @@ export const REPWireframe: React.FC = () => {
                 fontSize: '24px',
                 fontWeight: '700',
                 marginBottom: '8px'
-              }}>Where We Live</div>
+              }}>{tFooter('tagline')}</div>
               <p style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '13px',
                 color: '#888',
                 lineHeight: '1.6'
               }}>
-                Mapping how place shapes kidney disease outcomes through data and patient stories.
+                {tFooter('description')}
               </p>
             </div>
 
@@ -111,7 +114,7 @@ export const REPWireframe: React.FC = () => {
                 textTransform: 'uppercase',
                 color: '#c45a3b',
                 marginBottom: '12px'
-              }}>Navigation</div>
+              }}>{tFooter('navigationLabel')}</div>
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -137,7 +140,7 @@ export const REPWireframe: React.FC = () => {
                       e.currentTarget.style.color = '#aaa';
                     }}
                   >
-                    {page.charAt(0).toUpperCase() + page.slice(1)}
+                    {tNav(page === 'kidney-disease-overview' ? 'kidneyDisease' : page === 'home' ? 'home' : page === 'map' ? 'map' : page === 'stories' ? 'stories' : page === 'about' ? 'about' : page === 'methods' ? 'methods' : page === 'apol1' ? 'apol1' : page === 'fsgs' ? 'fsgs' : page)}
                   </button>
                 ))}
               </div>
@@ -152,7 +155,7 @@ export const REPWireframe: React.FC = () => {
                 textTransform: 'uppercase',
                 color: '#c45a3b',
                 marginBottom: '12px'
-              }}>Resources</div>
+              }}>{tFooter('resourcesLabel')}</div>
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -188,8 +191,8 @@ export const REPWireframe: React.FC = () => {
             color: '#666'
           }}>
             <p>
-              Built with care for health equity and community benefit.<br />
-              Not genetics. Geography and justice.
+              {tFooter('built')}<br />
+              {tFooter('motto')}
             </p>
           </div>
         </div>

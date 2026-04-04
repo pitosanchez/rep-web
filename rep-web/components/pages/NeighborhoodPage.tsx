@@ -131,7 +131,7 @@ const SignalBar: React.FC<{
         <span style={{
           fontFamily: 'system-ui, sans-serif',
           fontSize: '12px',
-          color: ghost ? '#555' : '#ccc'
+          color: ghost ? '#aaa' : '#444'
         }}>
           {label}
         </span>
@@ -139,7 +139,7 @@ const SignalBar: React.FC<{
           <span style={{
             fontFamily: 'system-ui, sans-serif',
             fontSize: '10px',
-            color: '#555'
+            color: '#aaa'
           }}>
             {Math.round(weight * 100)}% weight
           </span>
@@ -161,7 +161,7 @@ const SignalBar: React.FC<{
       {/* Track */}
       <div style={{
         height: '5px',
-        background: 'rgba(255,255,255,0.06)',
+        background: 'rgba(0,0,0,0.07)',
         borderRadius: '3px',
         overflow: 'hidden'
       }}>
@@ -170,7 +170,7 @@ const SignalBar: React.FC<{
           <div style={{
             height: '100%',
             width: `${Math.round(weight * 100 * 5)}%`,
-            background: 'rgba(255,255,255,0.08)',
+            background: 'rgba(0,0,0,0.10)',
             borderRadius: '3px'
           }} />
         ) : pct !== null ? (
@@ -198,7 +198,7 @@ const WwliGauge: React.FC<{ score: number; tier: 'low' | 'moderate' | 'high' }> 
         {/* Track */}
         <circle cx="70" cy="70" r="52"
           fill="none"
-          stroke="rgba(255,255,255,0.07)"
+          stroke="rgba(0,0,0,0.07)"
           strokeWidth="10"
         />
         {/* Progress */}
@@ -223,7 +223,7 @@ const WwliGauge: React.FC<{ score: number; tier: 'low' | 'moderate' | 'high' }> 
           fontFamily: 'Georgia, serif',
           fontSize: '36px',
           fontWeight: '300',
-          color: '#fff',
+          color: '#1a1a1a',
           lineHeight: 1
         }}>
           {score}
@@ -231,7 +231,7 @@ const WwliGauge: React.FC<{ score: number; tier: 'low' | 'moderate' | 'high' }> 
         <span style={{
           fontFamily: 'system-ui, sans-serif',
           fontSize: '10px',
-          color: '#888',
+          color: '#aaa',
           marginTop: '4px'
         }}>
           / 100
@@ -413,7 +413,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
   // ── Loading / error ───────────────────────────────────────────────────────
   if (loading || error || !neighborhood) {
     return (
-      <div style={{ paddingTop: '80px', minHeight: '100vh', background: '#1a1a1a' }}>
+      <div style={{ paddingTop: '80px', minHeight: '100vh', background: '#faf7f3' }}>
         <div style={{
           maxWidth: '600px',
           margin: '0 auto',
@@ -423,7 +423,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
           <button onClick={onReturn} style={{
             fontFamily: 'system-ui, sans-serif',
             fontSize: '13px',
-            color: '#666',
+            color: '#888',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -436,7 +436,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
           <p style={{
             fontFamily: 'Georgia, serif',
             fontSize: '24px',
-            color: loading ? '#888' : '#c45a3b',
+            color: loading ? '#1a1a1a' : '#c45a3b',
             marginBottom: '12px'
           }}>
             {loading ? 'Loading…' : 'Unable to load neighborhood'}
@@ -457,9 +457,9 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
   return (
     <div style={{ paddingTop: '80px' }}>
 
-      {/* ── HEADER: dark, WWLI as hero number ──────────────────── */}
+      {/* ── HEADER ──────────────────────────────────────────────── */}
       <section style={{
-        background: '#1a1a1a',
+        background: '#faf7f3',
         padding: '48px 48px 0',
         borderBottom: `3px solid ${wwliColor}`
       }}>
@@ -479,7 +479,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
               fontSize: '12px',
               fontWeight: '500',
               letterSpacing: '1px',
-              color: '#666',
+              color: '#888',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
@@ -521,7 +521,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 fontWeight: '600',
                 letterSpacing: '3px',
                 textTransform: 'uppercase',
-                color: '#555',
+                color: '#c45a3b',
                 marginBottom: '12px'
               }}>
                 Neighborhood Profile · {neighborhood.city}, {neighborhood.state}
@@ -531,7 +531,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 fontFamily: 'Georgia, serif',
                 fontSize: 'clamp(28px, 5vw, 52px)',
                 fontWeight: '300',
-                color: '#fff',
+                color: '#1a1a1a',
                 lineHeight: '1.1',
                 marginBottom: '8px',
                 letterSpacing: '-0.5px'
@@ -542,7 +542,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
               <p style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '16px',
-                color: '#555'
+                color: '#666'
               }}>
                 ZIP {neighborhood.zip} · {neighborhood.tractCount} census tract{neighborhood.tractCount !== 1 ? 's' : ''}
               </p>
@@ -559,8 +559,8 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                   { label: 'Residential Burden', value: neighborhood.residentialBurden, note: '40% of WWLI' },
                 ].map(({ label, value, note }) => (
                   <div key={label} style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#fff',
+                    border: '1px solid #e8e4df',
                     borderRadius: '4px',
                     padding: '12px 16px'
                   }}>
@@ -568,20 +568,20 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                       fontFamily: 'Georgia, serif',
                       fontSize: '22px',
                       fontWeight: '300',
-                      color: '#fff'
+                      color: '#1a1a1a'
                     }}>
-                      {value}<span style={{ fontSize: '13px', color: '#555', marginLeft: '2px' }}>/100</span>
+                      {value}<span style={{ fontSize: '13px', color: '#aaa', marginLeft: '2px' }}>/100</span>
                     </div>
                     <div style={{
                       fontFamily: 'system-ui, sans-serif',
                       fontSize: '11px',
-                      color: '#666',
+                      color: '#444',
                       marginTop: '2px'
                     }}>{label}</div>
                     <div style={{
                       fontFamily: 'system-ui, sans-serif',
                       fontSize: '10px',
-                      color: '#444',
+                      color: '#aaa',
                       marginTop: '2px'
                     }}>{note}</div>
                   </div>
@@ -612,7 +612,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 <div style={{
                   fontFamily: 'system-ui, sans-serif',
                   fontSize: '12px',
-                  color: '#555'
+                  color: '#888'
                 }}>
                   {WWLI_LABEL[neighborhood.wwliTier]}
                 </div>
@@ -623,7 +623,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
       </section>
 
       {/* ── WWLI Methodology ──────────────────────────────────────── */}
-      <section style={{ background: '#111', padding: '24px 48px' }}>
+      <section style={{ background: '#fff', padding: '20px 48px', borderBottom: '1px solid #e8e4df' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{
             display: 'flex',
@@ -635,7 +635,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
               fontFamily: 'system-ui, sans-serif',
               fontSize: '11px',
               fontWeight: '600',
-              color: '#444',
+              color: '#c45a3b',
               letterSpacing: '1px',
               textTransform: 'uppercase',
               paddingTop: '2px',
@@ -646,7 +646,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
             <span style={{
               fontFamily: 'Georgia, serif',
               fontSize: '13px',
-              color: '#555',
+              color: '#666',
               fontStyle: 'italic',
               lineHeight: '1.6'
             }}>
@@ -659,7 +659,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
       </section>
 
       {/* ── AI SIGNAL PANEL ───────────────────────────────────────── */}
-      <section style={{ background: '#1a1a1a', padding: '64px 48px' }}>
+      <section style={{ background: '#fff', padding: '64px 48px', borderBottom: '1px solid #e8e4df' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
@@ -686,7 +686,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 fontFamily: 'Georgia, serif',
                 fontSize: 'clamp(22px, 3vw, 32px)',
                 fontWeight: '300',
-                color: '#fff',
+                color: '#1a1a1a',
                 lineHeight: '1.3',
                 marginBottom: '20px'
               }}>
@@ -706,7 +706,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                         fontFamily: 'Georgia, serif',
                         fontSize: '40px',
                         fontWeight: '300',
-                        color: '#fff',
+                        color: '#1a1a1a',
                         lineHeight: 1
                       }}>
                         {signalData.sbi_score !== null
@@ -716,7 +716,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                       <div style={{
                         fontFamily: 'system-ui, sans-serif',
                         fontSize: '11px',
-                        color: '#555',
+                        color: '#888',
                         marginTop: '4px'
                       }}>SBI Score / 100</div>
                     </div>
@@ -725,7 +725,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                         fontFamily: 'Georgia, serif',
                         fontSize: '40px',
                         fontWeight: '300',
-                        color: '#fff',
+                        color: '#1a1a1a',
                         lineHeight: 1
                       }}>
                         {signalData.story_count}
@@ -733,7 +733,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                       <div style={{
                         fontFamily: 'system-ui, sans-serif',
                         fontSize: '11px',
-                        color: '#555',
+                        color: '#888',
                         marginTop: '4px'
                       }}>Stories analyzed</div>
                     </div>
@@ -751,7 +751,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                         <div style={{
                           fontFamily: 'system-ui, sans-serif',
                           fontSize: '11px',
-                          color: '#555',
+                          color: '#888',
                           marginTop: '4px'
                         }}>Avg AI confidence</div>
                       </div>
@@ -761,7 +761,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                     fontFamily: 'Georgia, serif',
                     fontSize: '15px',
                     fontStyle: 'italic',
-                    color: '#555',
+                    color: '#666',
                     lineHeight: '1.65'
                   }}>
                     Each story submitted from this neighborhood is scanned by AI across 12 structural
@@ -774,7 +774,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                     fontFamily: 'Georgia, serif',
                     fontSize: '16px',
                     fontStyle: 'italic',
-                    color: '#555',
+                    color: '#666',
                     lineHeight: '1.7',
                     marginBottom: '24px'
                   }}>
@@ -819,7 +819,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 ].map(({ color, label }) => (
                   <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: color, flexShrink: 0 }} />
-                    <span style={{ fontFamily: 'system-ui', fontSize: '11px', color: '#555' }}>{label}</span>
+                    <span style={{ fontFamily: 'system-ui', fontSize: '11px', color: '#666' }}>{label}</span>
                   </div>
                 ))}
               </div>
@@ -835,10 +835,10 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                     fontWeight: '600',
                     letterSpacing: '2px',
                     textTransform: 'uppercase',
-                    color: '#444',
+                    color: '#888',
                     marginBottom: '12px',
                     paddingBottom: '8px',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)'
+                    borderBottom: '1px solid #e8e4df'
                   }}>
                     {group.label}
                   </div>

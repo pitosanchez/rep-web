@@ -534,21 +534,21 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
       {/* ═══════════════════════════════════════════════════════════════════════
           CLOSING — white with terracotta accent border
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '100px 32px', borderTop: '4px solid #c45a3b' }}>
+      <section style={{ background: '#fff', padding: '48px 32px', borderTop: '4px solid #c45a3b' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div style={{ maxWidth: '640px' }}>
+          <div style={{ maxWidth: '520px' }}>
             <ChapterLabel>{t('bottomLineTitle')}</ChapterLabel>
             <h2 style={{
               fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: '300',
-              color: '#1a1a1a', lineHeight: '1.15', margin: '0 0 32px'
+              fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: '300',
+              color: '#1a1a1a', lineHeight: '1.25', margin: '0 0 20px'
             }}>
               {t('bottomLineDesc')}
             </h2>
             <p style={{
-              fontFamily: 'Georgia, serif', fontSize: '18px', fontStyle: 'italic',
-              color: '#c45a3b', lineHeight: '1.6', margin: '0 0 48px',
-              borderLeft: '3px solid #c45a3b', paddingLeft: '24px'
+              fontFamily: 'Georgia, serif', fontSize: '14px', fontStyle: 'italic',
+              color: '#c45a3b', lineHeight: '1.6', margin: '0 0 28px',
+              borderLeft: '2px solid #c45a3b', paddingLeft: '16px'
             }}>
               In the Bronx, where kidney disease rates are among the highest in the country,
               knowing your numbers is not just health advice. It is survival.

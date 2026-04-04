@@ -11,6 +11,7 @@
 import { promises as fs, existsSync } from 'fs';
 import { NextResponse } from 'next/server';
 import path from 'path';
+import { zipToNeighborhood } from '@/lib/storyZipMapping';
 
 const getGeoDataFilePath = (filename: string) => {
   // Backward compatible: if running from repo root or from `rep-web/`.
@@ -58,9 +59,14 @@ interface NeighborhoodProfile {
   residentialWeight: number;
   totalWeight: number;
   tracts: string[];
-  burdenIndex: number;
-  avgTravel: number;
-  exposureIndex: number;
+  /** Where We Live Index: 0–100 composite from geo weights */
+  wwli: number;
+  /** Residential concentration component of WWLI (0–100) */
+  residentialBurden: number;
+  /** Total weight component of WWLI (0–100) */
+  structuralWeight: number;
+  /** WWLI tier label */
+  wwliTier: 'low' | 'moderate' | 'high';
 }
 
 export async function GET(request: Request) {
@@ -106,25 +112,45 @@ export async function GET(request: Request) {
     const avgResWeight = zipRows.reduce((sum, r) => sum + r.weight_res, 0) / zipRows.length;
     const avgTotWeight = zipRows.reduce((sum, r) => sum + r.weight_tot, 0) / zipRows.length;
 
-    // For now, derive burden index from total weight as a proxy
-    // (burden increases with total weight; scale to 0-100)
-    const burdenIndex = Math.round(avgTotWeight * 100);
-    const avgTravel = 60 + Math.random() * 20; // Placeholder until we have real transit data
-    const exposureIndex = 70 + Math.random() * 15; // Placeholder until we have real exposure data
+    // ── Where We Live Index (WWLI) ────────────────────────────────────────────
+    // A composite 0–100 score derived from census tract geographic weights.
+    //
+    // Components:
+    //   • Structural weight (weight_tot): how concentrated total tract burden is
+    //     in this ZIP — higher = more population exposed to structural stressors.
+    //     Weight: 60%
+    //   • Residential concentration (weight_res): share of residential population
+    //     relative to total ZIP activity — higher = more residents vs. daytime pop.
+    //     Weight: 40%
+    //
+    // Both source values range 0–1; WWLI is expressed 0–100.
+    // Tiers: 0–33 = lower relative burden, 34–66 = moderate, 67–100 = high.
+    const residentialBurden = Math.round(avgResWeight * 100);
+    const structuralWeight  = Math.round(avgTotWeight * 100);
+    const wwli = Math.round(structuralWeight * 0.60 + residentialBurden * 0.40);
+    const wwliTier: 'low' | 'moderate' | 'high' =
+      wwli <= 33 ? 'low' : wwli <= 66 ? 'moderate' : 'high';
+
+    // Resolve neighborhood name: prefer NTA from geo data, fall back to local mapping
+    const resolvedName =
+      (firstRow.nta_name && firstRow.nta_name !== 'Unassigned')
+        ? firstRow.nta_name
+        : (zipToNeighborhood[zip] ?? 'Bronx Neighborhood');
 
     const profile: NeighborhoodProfile = {
       zip,
-      nta_code: firstRow.nta_code || 'UNASSIGNED',
-      nta_name: firstRow.nta_name || 'Unassigned Neighborhood',
+      nta_code: firstRow.nta_code || 'BX',
+      nta_name: resolvedName,
       city: 'New York',
       state: 'NY',
       tractCount: uniqueTracts.length,
       residentialWeight: avgResWeight,
       totalWeight: avgTotWeight,
       tracts: uniqueTracts,
-      burdenIndex,
-      avgTravel: Math.round(avgTravel),
-      exposureIndex
+      wwli,
+      residentialBurden,
+      structuralWeight,
+      wwliTier,
     };
 
     return NextResponse.json({

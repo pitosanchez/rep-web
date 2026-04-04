@@ -19,33 +19,57 @@ interface MapPageProps {
   onNavigate: (page: string) => void;
 }
 
-const layerColors = {
-  diseaseBurden: {
-    nameKey: 'diseaseBurden' as const,
+const layers = [
+  {
+    key: 'diseaseBurden' as const,
+    labelKey: 'diseaseBurden' as const,
+    descKey: 'diseaseBurdenDesc' as const,
     accent: '#a83d25',
     gradient: 'linear-gradient(to right, #6ab576, #c89a54, #a83d25)'
   },
-  careAccess: {
-    nameKey: 'careAccess' as const,
+  {
+    key: 'careAccess' as const,
+    labelKey: 'careAccess' as const,
+    descKey: 'careAccessDesc' as const,
     accent: '#b8334d',
     gradient: 'linear-gradient(to right, #1a5aa0, #4a7ec8, #b8334d)'
   },
-  environmentalExposure: {
-    nameKey: 'environmentalExposure' as const,
+  {
+    key: 'environmentalExposure' as const,
+    labelKey: 'environmentalExposure' as const,
+    descKey: 'environmentalDesc' as const,
     accent: '#5c2e1f',
     gradient: 'linear-gradient(to right, #3d6b41, #a08050, #5c2e1f)'
   },
-  transit: {
-    nameKey: 'transit' as const,
+  {
+    key: 'transit' as const,
+    labelKey: 'transit' as const,
+    descKey: 'transitDesc' as const,
     accent: '#c41e3a',
     gradient: 'linear-gradient(to right, #b39f00, #d97706, #c41e3a)'
   },
-  areaDeprivationIndex: {
-    nameKey: 'areaDeprivation' as const,
+  {
+    key: 'areaDeprivationIndex' as const,
+    labelKey: 'areaDeprivation' as const,
+    descKey: 'adiDesc' as const,
     accent: '#5c1fa2',
     gradient: 'linear-gradient(to right, #d0e8d0, #fce8a1, #f5a623, #e84c3d, #5c1fa2)'
   }
-};
+];
+
+// ── Floating panel shell ───────────────────────────────────────────────────
+const Panel: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
+  <div style={{
+    background: 'rgba(18, 18, 18, 0.93)',
+    border: '1px solid rgba(255,255,255,0.08)',
+    borderRadius: '4px',
+    color: '#fff',
+    backdropFilter: 'blur(4px)',
+    ...style
+  }}>
+    {children}
+  </div>
+);
 
 export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNavigate }) => {
   const t = useTranslations('map');
@@ -56,22 +80,14 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
     transit: false,
     areaDeprivationIndex: true
   });
+  const [layerPanelOpen, setLayerPanelOpen] = useState(true);
   const [uniqueZips, setUniqueZips] = useState<ZipToTractRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Fetch ZIP-to-tract data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/geo/zip-to-tracts');
-        if (!response.ok) {
-          throw new Error(`Failed to fetch ZIP data: ${response.statusText}`);
-        }
-        const result = await response.json();
+    fetch('/api/geo/zip-to-tracts')
+      .then(r => r.json())
+      .then(result => {
         if (result.success && result.data) {
-          // Get unique ZIPs (take first occurrence of each ZIP)
           const seen = new Set<string>();
           const unique = result.data.filter((row: ZipToTractRow) => {
             if (seen.has(row.zip)) return false;
@@ -79,528 +95,383 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
             return true;
           });
           setUniqueZips(unique);
-        } else {
-          throw new Error('Invalid response format');
         }
-      } catch (err) {
-        console.error('Error fetching ZIP data:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+      })
+      .catch(console.error);
   }, []);
 
   const handleLayerToggle = (layer: keyof typeof visibleLayers) => {
-    setVisibleLayers(prev => ({
-      ...prev,
-      [layer]: !prev[layer]
-    }));
+    setVisibleLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
   };
 
-  // Get the currently active layer for legend display
-  const getActiveLayers = () => {
-    return Object.entries(visibleLayers)
-      .filter(([, isVisible]) => isVisible)
-      .map(([layerId]) => layerId as keyof typeof visibleLayers);
-  };
-
-  const activeLayers = getActiveLayers();
-  const activeLegendLayer = activeLayers.length > 0 ? activeLayers[0] : 'diseaseBurden';
-
-  // Find selected ZIP data for the stats panel
+  const activeLayers = layers.filter(l => visibleLayers[l.key]);
+  const legendLayer = activeLayers[0] ?? layers[0];
   const selectedZipData = selectedZip ? uniqueZips.find(z => z.zip === selectedZip) : null;
 
   return (
-  <div style={{ paddingTop: '80px' }}>
-    {/* Header Section */}
-    <section style={{
-      padding: '48px 32px 24px',
-      background: '#faf7f3'
+    <div style={{
+      paddingTop: '80px',
+      height: '100vh',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <h1 style={{
-          fontFamily: 'Georgia, serif',
-          fontSize: 'clamp(24px, 5vw, 36px)',
-          fontWeight: '400',
-          color: '#1a1a1a',
-          marginBottom: '12px'
-        }}>{t('title')}</h1>
-        <p style={{
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '16px',
-          color: '#666',
-          maxWidth: '700px',
-          marginBottom: '16px'
-        }}>
-          {t('description')}
-        </p>
-        <div style={{
-          background: '#fff9f5',
-          padding: '12px 16px',
-          borderRadius: '4px',
-          borderLeft: '4px solid #c45a3b',
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '14px',
-          color: '#333'
-        }}>
-          <strong>Tip:</strong> {t('tip')}
-        </div>
-      </div>
-    </section>
-
-    {/* Main Map Section */}
-    <section style={{
-      padding: '0',
-      background: '#fff',
-      minHeight: 'auto'
-    }}>
-      <div className="map-layout">
-        {/* Map Column */}
-        <div className="map-canvas">
-          <MapLibreMap
-            selectedZip={selectedZip}
-            onZipClick={(zip) => {
-              onSelectZip(zip);
-              onNavigate('neighborhood');
-            }}
-            visibleLayers={visibleLayers}
-          />
-        </div>
-
-        {/* Sidebar Panel */}
-        <div className="map-sidebar">
-          {/* Section A: Data Layers */}
-          <div style={{
-            padding: '20px 16px',
-            borderBottom: '1px solid #e8e4df'
-          }}>
-            <div style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '11px',
-              fontWeight: '600',
-              color: '#888',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              marginBottom: '12px'
-            }}>{t('dataLayers')}</div>
-
-            <LayerCheckbox
-              label={t('diseaseBurden')}
-              checked={visibleLayers.diseaseBurden}
-              color={layerColors.diseaseBurden.accent}
-              onChange={() => handleLayerToggle('diseaseBurden')}
-            />
-            <LayerCheckbox
-              label={t('careAccess')}
-              checked={visibleLayers.careAccess}
-              color={layerColors.careAccess.accent}
-              onChange={() => handleLayerToggle('careAccess')}
-            />
-            <LayerCheckbox
-              label={t('environmentalExposure')}
-              checked={visibleLayers.environmentalExposure}
-              color={layerColors.environmentalExposure.accent}
-              onChange={() => handleLayerToggle('environmentalExposure')}
-            />
-            <LayerCheckbox
-              label={t('transit')}
-              checked={visibleLayers.transit}
-              color={layerColors.transit.accent}
-              onChange={() => handleLayerToggle('transit')}
-            />
-            <LayerCheckbox
-              label={t('areaDeprivation')}
-              checked={visibleLayers.areaDeprivationIndex}
-              color={layerColors.areaDeprivationIndex.accent}
-              onChange={() => handleLayerToggle('areaDeprivationIndex')}
-            />
-
-            {/* Layer Description */}
-            <div style={{
-              marginTop: '16px',
-              paddingTop: '12px',
-              borderTop: '1px solid #e8e4df',
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '12px',
-              lineHeight: '1.6',
-              color: '#666'
-            }}>
-              {visibleLayers.diseaseBurden && (
-                <p style={{ margin: 0 }}>
-                  <strong>{t('diseaseBurden')}:</strong> {t('diseaseBurdenDesc')}
-                </p>
-              )}
-              {visibleLayers.careAccess && (
-                <p style={{ margin: 0 }}>
-                  <strong>{t('careAccess')}:</strong> {t('careAccessDesc')}
-                </p>
-              )}
-              {visibleLayers.environmentalExposure && (
-                <p style={{ margin: 0 }}>
-                  <strong>{t('environmentalExposure')}:</strong> {t('environmentalDesc')}
-                </p>
-              )}
-              {visibleLayers.transit && (
-                <p style={{ margin: 0 }}>
-                  <strong>{t('transit')}:</strong> {t('transitDesc')}
-                </p>
-              )}
-              {visibleLayers.areaDeprivationIndex && (
-                <p style={{ margin: 0 }}>
-                  <strong>{t('areaDeprivation')}:</strong> {t('adiDesc')}
-                </p>
-              )}
-              {!visibleLayers.diseaseBurden && !visibleLayers.careAccess && !visibleLayers.environmentalExposure && !visibleLayers.transit && !visibleLayers.areaDeprivationIndex && (
-                <p style={{ margin: 0, color: '#999' }}>
-                  {t('noLayerSelected')}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Section B: Legend */}
-          <div style={{
-            padding: '20px 16px',
-            borderBottom: '1px solid #e8e4df'
-          }}>
-            <div style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '11px',
-              fontWeight: '600',
-              color: '#888',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              marginBottom: '12px'
-            }}>{t('legend')}</div>
-
-            <div style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '12px',
-              color: '#444',
-              marginBottom: '8px'
-            }}>
-              {t(layerColors[activeLegendLayer].nameKey)}
-            </div>
-
-            <div style={{
-              height: '24px',
-              background: layerColors[activeLegendLayer].gradient,
-              borderRadius: '4px',
-              marginBottom: '8px',
-              border: '1px solid #e8e4df'
-            }} />
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '11px',
-              color: '#666'
-            }}>
-              <span>{t('low')}</span>
-              <span>{t('high')}</span>
-            </div>
-          </div>
-
-          {/* Section C: Selected Area Stats */}
-          {selectedZipData ? (
-            <div style={{
-              padding: '20px 16px',
-              borderBottom: '1px solid #e8e4df'
-            }}>
-              <div style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '11px',
-                fontWeight: '600',
-                color: '#888',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                marginBottom: '12px'
-              }}>{t('selectedArea')}</div>
-
-              <div style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '16px',
-                fontWeight: '600',
-                color: '#1a1a1a',
-                marginBottom: '4px'
-              }}>
-                {selectedZipData.zip}
-              </div>
-
-              <div style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '13px',
-                color: '#666',
-                marginBottom: '12px'
-              }}>
-                {selectedZipData.nta_name || 'Unassigned'}
-              </div>
-
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '12px',
-                marginBottom: '12px',
-                fontSize: '12px'
-              }}>
-                <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('resWeight')}</div>
-                  <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontWeight: '600', color: '#1a1a1a' }}>
-                    {(selectedZipData.weight_res * 100).toFixed(0)}%
-                  </div>
-                </div>
-                <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('totWeight')}</div>
-                  <div style={{ fontFamily: 'Georgia, serif', fontSize: '16px', fontWeight: '600', color: '#1a1a1a' }}>
-                    {(selectedZipData.weight_tot * 100).toFixed(0)}%
-                  </div>
-                </div>
-                <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('ntaCode')}</div>
-                  <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#1a1a1a' }}>
-                    {selectedZipData.nta_code || '—'}
-                  </div>
-                </div>
-                <div>
-                  <div style={{ color: '#888', marginBottom: '4px' }}>{t('ntaName')}</div>
-                  <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#1a1a1a' }}>
-                    {selectedZipData.nta_name || '—'}
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => onNavigate('neighborhood')}
-                style={{
-                  width: '100%',
-                  background: '#c45a3b',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '10px 16px',
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'background 0.2s ease'
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#a84830'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = '#c45a3b'; }}
-              >
-                {t('viewProfile')}
-              </button>
-            </div>
-          ) : (
-            <div style={{
-              padding: '20px 16px',
-              borderBottom: '1px solid #e8e4df',
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '12px',
-              color: '#999'
-            }}>
-              {t('clickNeighborhood')}
-            </div>
-          )}
-
-          {/* Section D: Neighborhoods List */}
-          <div style={{
-            flex: 1,
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <div style={{
-              padding: '16px 16px 12px',
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '11px',
-              fontWeight: '600',
-              color: '#888',
-              letterSpacing: '1px',
-              textTransform: 'uppercase'
-            }}>
-              {t('neighborhoods')}
-            </div>
-
-            {error && (
-              <div style={{
-                padding: '12px 16px',
-                margin: '0 8px 8px 8px',
-                background: '#fff3f0',
-                borderRadius: '6px',
-                color: '#c45a3b',
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '12px'
-              }}>
-                {t('errorLoading')} {error}
-              </div>
-            )}
-
-            {loading && (
-              <div style={{
-                padding: '16px',
-                textAlign: 'center',
-                color: '#999',
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '12px'
-              }}>
-                {t('loading')}
-              </div>
-            )}
-
-            {!loading && uniqueZips.length > 0 && (
-              <div style={{
-                flex: 1,
-                overflow: 'auto',
-                padding: '8px 8px'
-              }}>
-                {uniqueZips.map(n => (
-                  <NeighborhoodCard
-                    key={n.zip}
-                    data={n}
-                    isSelected={selectedZip === n.zip}
-                    onSelect={() => {
-                      onSelectZip(n.zip);
-                      onNavigate('neighborhood');
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-  );
-};
-
-interface LayerCheckboxProps {
-  label: string;
-  checked: boolean;
-  color: string;
-  onChange: () => void;
-}
-
-const LayerCheckbox: React.FC<LayerCheckboxProps> = ({ label, checked, color, onChange }) => (
-  <label style={{
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    fontFamily: 'system-ui, sans-serif',
-    fontSize: '13px',
-    color: '#444',
-    marginBottom: '10px',
-    cursor: 'pointer'
-  }}>
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={onChange}
-      style={{ accentColor: color, width: '16px', height: '16px', cursor: 'pointer' }}
-    />
-    <span>{label}</span>
-  </label>
-);
-
-interface NeighborhoodCardProps {
-  data: ZipToTractRow;
-  isSelected: boolean;
-  onSelect: () => void;
-}
-
-const NeighborhoodCard: React.FC<NeighborhoodCardProps> = ({ data, isSelected, onSelect }) => {
-  // Calculate color based on weight_tot using the Disease Burden color scale
-  const getColorForValue = (value: number) => {
-    if (value < 0.25) return '#a8d5ba';
-    if (value < 0.5) return '#c4b5a0';
-    if (value < 0.75) return '#d4a574';
-    return '#c45a3b';
-  };
-
-  const indicatorColor = getColorForValue(data.weight_tot);
-
-  return (
-    <button
-      onClick={onSelect}
-      style={{
-        background: isSelected ? '#faf7f3' : '#fff',
-        border: isSelected ? '2px solid #c45a3b' : '1px solid #e8e4df',
-        borderRadius: '8px',
-        padding: '12px',
-        marginBottom: '8px',
-        textAlign: 'left',
-        cursor: 'pointer',
-        transition: 'all 0.2s ease'
-      }}
-      onMouseEnter={e => {
-        if (!isSelected) {
-          e.currentTarget.style.borderColor = '#c45a3b';
-          e.currentTarget.style.backgroundColor = '#faf7f3';
-        }
-      }}
-      onMouseLeave={e => {
-        if (!isSelected) {
-          e.currentTarget.style.borderColor = '#e8e4df';
-          e.currentTarget.style.backgroundColor = '#fff';
-        }
-      }}
-    >
+      {/* ── Full-height map container ──────────────────────────── */}
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '8px',
-        gap: '8px'
+        position: 'relative',
+        flex: 1,
+        overflow: 'hidden'
       }}>
-        <div style={{ flex: 1 }}>
-          <div style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '14px',
-            fontWeight: '600',
-            color: '#1a1a1a',
-            marginBottom: '2px'
-          }}>
-            {data.nta_name || 'Unassigned'}
-          </div>
+        {/* The map itself */}
+        <MapLibreMap
+          selectedZip={selectedZip}
+          onZipClick={(zip) => {
+            onSelectZip(zip);
+            onNavigate('neighborhood');
+          }}
+          visibleLayers={visibleLayers}
+        />
+
+        {/* ── TOP-LEFT: Identity ─────────────────────────────── */}
+        <Panel style={{
+          position: 'absolute',
+          top: '16px',
+          left: '16px',
+          zIndex: 10,
+          padding: '16px 20px',
+          maxWidth: '260px'
+        }}>
           <div style={{
             fontFamily: 'system-ui, sans-serif',
-            fontSize: '11px',
-            color: '#888'
+            fontSize: '10px',
+            fontWeight: '600',
+            letterSpacing: '2.5px',
+            textTransform: 'uppercase',
+            color: '#c45a3b',
+            marginBottom: '6px'
           }}>
-            {data.zip}
+            {t('title')}
           </div>
-        </div>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '14px',
+            fontStyle: 'italic',
+            color: 'rgba(255,255,255,0.6)',
+            lineHeight: '1.5',
+            margin: 0
+          }}>
+            Not genetics. Geography and justice.
+          </p>
+        </Panel>
+
+        {/* ── LEFT: Layer controls ───────────────────────────── */}
         <div style={{
-          width: '12px',
-          height: '12px',
-          borderRadius: '50%',
-          background: indicatorColor,
-          flexShrink: 0,
-          marginTop: '2px',
-          border: '1px solid rgba(0,0,0,0.1)'
-        }} />
-      </div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '8px',
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '11px',
-        color: '#666'
-      }}>
-        <div>
-          <div style={{ color: '#888', fontSize: '10px' }}>Res Weight</div>
-          <div style={{ fontWeight: '600', color: '#1a1a1a' }}>{(data.weight_res * 100).toFixed(0)}%</div>
+          position: 'absolute',
+          top: '100px',
+          left: '16px',
+          zIndex: 10,
+          width: '220px'
+        }}>
+          {/* Panel header / toggle */}
+          <Panel style={{ marginBottom: '2px' }}>
+            <button
+              onClick={() => setLayerPanelOpen(o => !o)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
+                padding: '12px 16px',
+                background: 'none',
+                border: 'none',
+                color: '#fff',
+                cursor: 'pointer',
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '10px',
+                fontWeight: '600',
+                letterSpacing: '2px',
+                textTransform: 'uppercase'
+              }}
+            >
+              {t('dataLayers')}
+              <span style={{
+                fontSize: '16px',
+                color: '#c45a3b',
+                lineHeight: 1,
+                transform: layerPanelOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+                transition: 'transform 0.2s ease',
+                display: 'inline-block'
+              }}>
+                ›
+              </span>
+            </button>
+          </Panel>
+
+          {layerPanelOpen && (
+            <Panel>
+              {/* Layer toggles */}
+              <div style={{ padding: '8px 0 4px' }}>
+                {layers.map(layer => (
+                  <label
+                    key={layer.key}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      padding: '8px 16px',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s ease',
+                      background: visibleLayers[layer.key] ? 'rgba(196,90,59,0.08)' : 'none'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = visibleLayers[layer.key] ? 'rgba(196,90,59,0.08)' : 'none'; }}
+                  >
+                    {/* Custom checkbox */}
+                    <div
+                      onClick={() => handleLayerToggle(layer.key)}
+                      style={{
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: '3px',
+                        border: `2px solid ${visibleLayers[layer.key] ? layer.accent : 'rgba(255,255,255,0.25)'}`,
+                        background: visibleLayers[layer.key] ? layer.accent : 'transparent',
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      {visibleLayers[layer.key] && (
+                        <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                          <path d="M1 3L3 5L7 1" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <span style={{
+                      fontFamily: 'system-ui, sans-serif',
+                      fontSize: '12px',
+                      color: visibleLayers[layer.key] ? '#fff' : 'rgba(255,255,255,0.55)',
+                      lineHeight: '1.3',
+                      transition: 'color 0.15s ease'
+                    }}>
+                      {t(layer.labelKey)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              {/* Active layer description */}
+              {activeLayers.length > 0 && (
+                <div style={{
+                  borderTop: '1px solid rgba(255,255,255,0.07)',
+                  padding: '12px 16px'
+                }}>
+                  <p style={{
+                    fontFamily: 'system-ui, sans-serif',
+                    fontSize: '11px',
+                    color: 'rgba(255,255,255,0.4)',
+                    lineHeight: '1.6',
+                    margin: 0
+                  }}>
+                    {t(activeLayers[0].descKey)}
+                  </p>
+                </div>
+              )}
+
+              {/* Legend */}
+              <div style={{
+                borderTop: '1px solid rgba(255,255,255,0.07)',
+                padding: '12px 16px'
+              }}>
+                <div style={{
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '10px',
+                  fontWeight: '600',
+                  letterSpacing: '1.5px',
+                  textTransform: 'uppercase',
+                  color: 'rgba(255,255,255,0.35)',
+                  marginBottom: '8px'
+                }}>
+                  {t('legend')} · {t(legendLayer.labelKey)}
+                </div>
+                <div style={{
+                  height: '8px',
+                  background: legendLayer.gradient,
+                  borderRadius: '4px',
+                  marginBottom: '6px'
+                }} />
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '10px',
+                  color: 'rgba(255,255,255,0.35)'
+                }}>
+                  <span>{t('low')}</span>
+                  <span>{t('high')}</span>
+                </div>
+              </div>
+            </Panel>
+          )}
         </div>
-        <div>
-          <div style={{ color: '#888', fontSize: '10px' }}>Tot Weight</div>
-          <div style={{ fontWeight: '600', color: '#1a1a1a' }}>{(data.weight_tot * 100).toFixed(0)}%</div>
-        </div>
+
+        {/* ── BOTTOM: Selected neighborhood bar ─────────────── */}
+        {selectedZipData ? (
+          <Panel style={{
+            position: 'absolute',
+            bottom: '24px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 10,
+            padding: '0',
+            display: 'flex',
+            alignItems: 'stretch',
+            gap: '0',
+            minWidth: '480px',
+            maxWidth: '680px',
+            overflow: 'hidden'
+          }}>
+            {/* Accent bar */}
+            <div style={{
+              width: '4px',
+              background: '#c45a3b',
+              flexShrink: 0
+            }} />
+
+            {/* ZIP info */}
+            <div style={{ padding: '16px 24px', flex: 1 }}>
+              <div style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '10px',
+                fontWeight: '600',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                color: '#c45a3b',
+                marginBottom: '4px'
+              }}>
+                {t('selectedArea')}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+                <span style={{
+                  fontFamily: 'Georgia, serif',
+                  fontSize: '22px',
+                  color: '#fff',
+                  fontWeight: '300'
+                }}>
+                  {selectedZipData.nta_name || 'Unassigned'}
+                </span>
+                <span style={{
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '13px',
+                  color: 'rgba(255,255,255,0.4)'
+                }}>
+                  ZIP {selectedZipData.zip}
+                </span>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '24px',
+              padding: '16px 24px',
+              borderLeft: '1px solid rgba(255,255,255,0.07)'
+            }}>
+              {[
+                { label: t('resWeight'), value: `${(selectedZipData.weight_res * 100).toFixed(0)}%` },
+                { label: t('totWeight'), value: `${(selectedZipData.weight_tot * 100).toFixed(0)}%` }
+              ].map(({ label, value }) => (
+                <div key={label} style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontFamily: 'Georgia, serif',
+                    fontSize: '20px',
+                    color: '#fff',
+                    fontWeight: '300'
+                  }}>
+                    {value}
+                  </div>
+                  <div style={{
+                    fontFamily: 'system-ui, sans-serif',
+                    fontSize: '10px',
+                    color: 'rgba(255,255,255,0.35)',
+                    marginTop: '2px'
+                  }}>
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <button
+              onClick={() => onNavigate('neighborhood')}
+              style={{
+                padding: '0 28px',
+                background: '#c45a3b',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '12px',
+                fontWeight: '600',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                transition: 'background 0.2s ease',
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#a84830'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#c45a3b'; }}
+            >
+              {t('viewProfile')}
+              <span style={{ fontSize: '16px' }}>→</span>
+            </button>
+          </Panel>
+        ) : (
+          /* ── Bottom prompt when nothing selected ──────────── */
+          <Panel style={{
+            position: 'absolute',
+            bottom: '24px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 10,
+            padding: '12px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            whiteSpace: 'nowrap'
+          }}>
+            <div style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: '#c45a3b',
+              flexShrink: 0,
+              animation: 'pulse 2s infinite'
+            }} />
+            <span style={{
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '13px',
+              color: 'rgba(255,255,255,0.6)'
+            }}>
+              {t('clickNeighborhood')}
+            </span>
+          </Panel>
+        )}
+
+        {/* ── Pulse animation keyframes injected inline ──────── */}
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+          }
+        `}</style>
       </div>
-    </button>
+    </div>
   );
 };

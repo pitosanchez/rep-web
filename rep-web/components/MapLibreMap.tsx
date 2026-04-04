@@ -603,7 +603,6 @@ export default function MapLibreMap({
         width: '100%',
         height: '100%',
         position: 'relative',
-        borderRadius: '8px',
         overflow: 'hidden',
         background: '#f5f5f5'
       }}

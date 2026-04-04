@@ -1,210 +1,135 @@
-# REP Wireframe Component Structure
+# Component Structure
 
-This is the high-fidelity interactive wireframe for REP (Rare Renal Equity Project).
+Where We Live — Rare Renal Equity Project
 
 ## File Organization
 
 ```
-components/
-├── REPWireframe.tsx              # Main app component (orchestrates everything)
-├── Navigation.tsx                 # Fixed top navigation
-├── WIREFRAME_STRUCTURE.md         # This file
+rep-web/components/
+├── REPWireframe.tsx              # Root app (page state machine + ZIP state)
+├── Navigation.tsx                # Fixed top nav + language switcher
+├── MapLibreMap.tsx               # Interactive MapLibre GL map
+├── LanguageSwitcher.tsx          # EN/ES toggle
 │
 └── pages/
-    ├── HeroPage.tsx              # Home page with hero section
-    ├── MapPage.tsx               # Interactive map explorer
-    ├── NeighborhoodPage.tsx       # Signature neighborhood profile page
-    ├── StoriesPage.tsx            # Story submission form
-    ├── AboutPage.tsx              # About & commitment
-    └── MethodsPage.tsx            # Methods & transparency
-
-lib/
-└── mockData.ts                    # Mock data (types + sample data)
+    ├── HeroPage.tsx              # Home: mission, CTAs, story previews
+    ├── MapPage.tsx               # Map Explorer: floating panels, layer controls
+    ├── NeighborhoodPage.tsx      # Neighborhood Profile: WWLI + signals + stories
+    ├── StoriesPage.tsx           # Stories: submission form + reading view
+    ├── AboutPage.tsx             # About: editorial chapter layout
+    ├── MethodsPage.tsx           # Methods: data transparency
+    ├── KidneyDiseasePage.tsx     # CKD: CDC stats, SVG charts, stage viz
+    ├── Apol1Page.tsx             # APOL1-mediated kidney disease
+    └── FsgsPage.tsx              # Focal Segmental Glomerulosclerosis
 ```
 
-## Component Architecture
+## Navigation / Page Routing
 
-### REPWireframe (Main App)
-- **Purpose**: Root component that manages page navigation and state
-- **State**:
-  - `currentPage`: Which page to display (home, map, neighborhood, stories, about, methods)
-  - `selectedZip`: Currently selected ZIP code for neighborhood view
-- **Responsibilities**:
-  - Render Navigation
-  - Conditionally render pages based on `currentPage`
-  - Manage page transitions
-  - Handle ZIP code selection
+REPWireframe manages `currentPage` state — no URL routing, all client-side.
+
+Valid page keys: `home`, `map`, `neighborhood`, `stories`, `about`, `methods`, `kidney-disease-overview`, `apol1`, `fsgs`
+
+```tsx
+// REPWireframe.tsx
+const [currentPage, setCurrentPage] = useState('home');
+const [selectedZip, setSelectedZip] = useState<string | null>(null);
+
+const handleNavigate = (page: string) => setCurrentPage(page);
+const handleSelectZip = (zip: string) => setSelectedZip(zip);
+```
+
+## Component Details
+
+### REPWireframe
+- Manages `currentPage` + `selectedZip` state
+- Passes `onNavigate` and `onSelectZip` to children
+- Renders `Navigation` + whichever page is active
 
 ### Navigation
-- **Props**: `currentPage`, `onNavigate(page)`
-- **Features**:
-  - Fixed top navbar
-  - Logo / branding
-  - Navigation buttons for all pages
-  - Active state indicator (underline)
+- Fixed top bar, `z-index: 1000`
+- Dropdown: Kidney Disease → (Kidney Disease, APOL1, FSGS)
+- Language switcher (EN / ES)
+- Props: `currentPage`, `onNavigate`
 
-### HeroPage
-- **Props**: `onNavigate(page)`
-- **Sections**:
-  1. Hero section with headline + CTAs
-  2. "What Makes REP Different" grid
-  3. Pull quote section (dark)
-  4. "How It Works" with visual diagram
+### MapLibreMap
+- MapLibre GL JS, edge-to-edge rendering
+- 5 choropleth layers: Disease Burden, Care Access, Environmental Exposure, Transit, Area Deprivation Index
+- Props: `selectedZip`, `onZipClick`, `visibleLayers`
+- Click ZIP → calls `onZipClick(zip)` → parent navigates to neighborhood
 
 ### MapPage
-- **Props**: `selectedZip`, `onSelectZip(zip)`, `onNavigate(page)`
-- **Features**:
-  - Mock map canvas (placeholder for MapLibre)
-  - ZIP code markers (clickable)
-  - Layer toggle controls
-  - Neighborhood cards in sidebar
-  - Link to neighborhood profile on ZIP click
+- Floating glass Panel UI over full-viewport map
+- Top-left: identity panel
+- Left: collapsible layer toggle panel
+- Bottom-center: selected ZIP bar (or pulsing prompt)
 
 ### NeighborhoodPage
-- **Props**: `selectedZip`, `onNavigate(page)`, `onReturn()`
-- **The Signature Feature**: Shows:
-  1. Header with stats (Burden Index, Travel time, Exposure Index, Story count)
-  2. Data cards (Disease Context, Care Access, Structural Exposure)
-  3. **"What Patients and Caregivers Report"** — The key feature
-     - Top themes display
-     - Story cards with quotes
-     - Role + condition badges
-     - Theme tags + dates
+Fetches from two APIs:
+- `GET /api/geo/neighborhood-profile?zip=` → WWLI, residentialBurden, structuralWeight, tier
+- `GET /api/stories/signals-by-zip?zip=` → 12 AI signal averages + SBI score
+
+Components rendered:
+- `WwliGauge` — SVG arc 0–100
+- `SignalBar` — 12-bar chart with ghost mode when no stories
+- Stories section — fetched from `/api/stories/by-zip`
 
 ### StoriesPage
-- **Props**: `selectedZip`
-- **Features**:
-  - Story submission form
-  - ZIP code field (pre-filled if from map)
-  - Role selector (Patient / Caregiver)
-  - Condition dropdown
-  - Theme multi-select buttons
-  - Text area for story
-  - Consent checkbox
-  - "How stories become evidence" explanation
+- Controlled form: zip, role, condition, storyText, consent
+- `POST /api/stories` on submit
+- `StoryReadingView` — immersive full-screen reading on card click
+- `StoryCard` — featured (large) and standard variants
 
-### AboutPage
-- **Props**: `onNavigate(page)`
-- **Sections**:
-  1. Hero section (dark)
-  2. Commitment + Who it's for
-  3. REP is designed to be (grid)
+### KidneyDiseasePage
+- `DonutChart` — SVG donut for ESKD causes + treatment split
+- `RaceBar` — horizontal bar chart for racial disparity
+- Stage progression: 6 vertical bars, color-coded
+- All CDC data sourced from March 2026 + 2023 Fact Sheets
 
-### MethodsPage
-- **Props**: None
-- **Sections**:
-  1. Data sources
-  2. Safety & suppression rules
-  3. What REP shows / doesn't show
-  4. Governance & oversight
+## Design System
 
-## Usage
-
-### Import in your Next.js app:
+All styles are inline React objects. No Tailwind, no CSS modules.
 
 ```typescript
-// app/page.tsx (or wherever you want the wireframe)
+// Colors
+'#c45a3b'   // Terracotta accent
+'#1a1a1a'   // Near-black text
+'#faf7f3'   // Warm cream (section alternating bg)
+'#fff'      // White (section alternating bg)
 
-import REPWireframe from '@/components/REPWireframe';
+// Typography
+fontFamily: 'Georgia, serif'          // Headings, pull quotes
+fontFamily: 'system-ui, sans-serif'   // Body, labels, UI
 
-export default function Home() {
-  return <REPWireframe />;
-}
+// Chapter labels (terracotta, 11px, 3px letter-spacing, uppercase)
+// Rule dividers (48px wide, 1px height)
+// Section padding: 80px vertical, 32px horizontal
 ```
 
-### Current Implementation Notes
+## Data Flow
 
-- **Styling**: Inline styles (React style objects) for now
-  - Migration to Tailwind or CSS modules can happen later
-  - Color palette: cream background (#faf7f3), dark charcoal (#1a1a1a), terracotta accent (#c45a3b)
-
-- **Mock Data**: All data lives in `lib/mockData.ts`
-  - Replace with real API calls when backend is ready
-  - Types are defined (Neighborhood, Story, etc.)
-
-- **Map**: Currently a placeholder grid
-  - When ready, replace with actual MapLibre GL integration
-  - GeoJSON will come from backend
-
-- **State Management**: Simple React useState for now
-  - When app scales, consider React Context or state management library
-  - No global state needed yet
-
-## Next Steps to Production
-
-1. **Replace mock data** with API calls to your backend
-2. **Integrate MapLibre GL** in place of mock map container
-3. **Connect story form** to submission endpoint
-4. **Add authentication** for role-based access (public, researcher, community partner, admin)
-5. **Migrate styling** to Tailwind CSS or CSS modules
-6. **Add loading states** and error handling
-7. **Optimize images** and add accessibility features
-8. **Test with real data** and community partners
-
-## Styling System
-
-All components use inline React styles for flexibility. Key variables:
-
-```typescript
-const colors = {
-  cream: '#faf7f3',
-  darkCharcoal: '#1a1a1a',
-  terracotta: '#c45a3b',
-  gray600: '#666',
-  gray800: '#888',
-  border: '#e8e4df'
-};
-
-const fonts = {
-  serif: 'Georgia, serif',
-  sans: 'system-ui, sans-serif'
-};
-
-const spacing = {
-  sm: '8px',
-  md: '16px',
-  lg: '32px',
-  xl: '48px',
-  xxl: '80px'
-};
 ```
+User clicks ZIP on map
+  → MapLibreMap.onZipClick(zip)
+  → REPWireframe: setSelectedZip + navigate('neighborhood')
+  → NeighborhoodPage fetches /api/geo/neighborhood-profile + /api/stories/signals-by-zip
+  → Renders WWLI, signals, stories
 
-## Key Design Principles
-
-1. **Editorial Authority**: Typography and spacing suggest journalistic credibility
-2. **Human Warmth**: Color, curves, and imagery feel approachable
-3. **Accessibility**: Sufficient contrast, clear hierarchy, readable font sizes
-4. **Mobile-First**: Responsive grid layouts use `minmax()` for flexibility
-5. **Performance**: No heavy dependencies, clean component structure
-
-## Accessibility Checklist
-
-- [ ] All buttons have clear hover states
-- [ ] Color contrast meets WCAG AA standards
-- [ ] Form labels are properly associated with inputs
-- [ ] Navigation is keyboard accessible
-- [ ] Image alt text (when images added)
-- [ ] Screen reader testing
-- [ ] Mobile touch targets (min 44x44px)
-
-## Testing Recommendations
-
-Test these user flows:
-
-1. **Home → Map**: Click "Explore the Map" CTA
-2. **Map → Neighborhood**: Click a ZIP code marker
-3. **Neighborhood → Stories**: Click "Share a story for [ZIP]"
-4. **Stories form submission**: Fill form, click Submit
-5. **Back button**: Return from neighborhood to map
-6. **Navigation**: Use nav links to jump between pages
+User submits story
+  → StoriesPage POST /api/stories
+  → Next.js API route stores to PostgreSQL
+  → Triggers Python service POST /analyze-story
+  → Claude extracts 12 signals
+  → Signals stored in story_signals table
+  → Aggregated at /api/stories/signals-by-zip
+```
 
 ## Notes for Developers
 
-- This wireframe is **high-fidelity but static**. No backend integration yet.
-- All colors, typography, spacing are **intentional and consistent**.
-- Components are **modular** — easy to swap out pages or refactor styling.
-- The **story cards** on NeighborhoodPage are the **signature feature** — this is where patient voices matter most.
-- **Ethics language** ("anonymous," "aggregated," "threshold") is baked into UI copy, not an afterthought.
+- All components are `'use client'` — this is a client-side SPA within Next.js
+- No router.push() calls — navigation is all `onNavigate(page)` prop callbacks
+- DB pool in `lib/db.ts` is lazy (Proxy pattern) — safe for Vercel build-time imports
+- Translations live in `messages/en.json` and `messages/es.json`
+- When adding a new page: add to REPWireframe state machine + Navigation component + messages files
 
 ---
 

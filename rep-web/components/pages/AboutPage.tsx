@@ -7,332 +7,543 @@ interface AboutPageProps {
   onNavigate?: (page: string) => void;
 }
 
+const ChapterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div style={{
+    fontFamily: 'system-ui, sans-serif',
+    fontSize: '11px',
+    fontWeight: '600',
+    letterSpacing: '3px',
+    textTransform: 'uppercase',
+    color: '#c45a3b',
+    marginBottom: '20px'
+  }}>
+    {children}
+  </div>
+);
+
+const Rule: React.FC = () => (
+  <div style={{
+    width: '48px',
+    height: '2px',
+    background: '#c45a3b',
+    margin: '0 0 32px 0'
+  }} />
+);
+
 export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
   const t = useTranslations('about');
 
   return (
-  <div style={{ paddingTop: '80px' }}>
-    {/* Hero Section */}
-    <section style={{
-      backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/womaninthewindo.webp)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed',
-      color: '#fff',
-      padding: '120px 32px',
-      minHeight: '500px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
-        <h1 style={{
-          fontFamily: 'Georgia, serif',
-          fontSize: 'clamp(44px, 8vw, 72px)',
-          fontWeight: '300',
-          lineHeight: '1.1',
-          letterSpacing: '-1px'
-        }}>
-          {t('heroTitle')}
-        </h1>
-      </div>
-    </section>
+    <div style={{ paddingTop: '80px' }}>
 
-    {/* Main Content */}
-    <section style={{
-      padding: '80px 32px',
-      background: '#fff'
-    }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        {/* Essay Content */}
+      {/* ── Hero ─────────────────────────────────────────────────── */}
+      <section style={{
+        backgroundImage: 'url(/womaninthewindo.webp)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center 30%',
+        backgroundAttachment: 'fixed',
+        minHeight: '90vh',
+        display: 'flex',
+        alignItems: 'flex-end',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* gradient: dark at bottom-left, transparent top-right */}
         <div style={{
-          fontFamily: 'Georgia, serif',
-          fontSize: '18px',
-          lineHeight: '1.8',
-          color: '#333'
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to top, rgba(26,26,26,0.92) 0%, rgba(26,26,26,0.55) 40%, rgba(26,26,26,0.1) 100%)'
+        }} />
+
+        <div style={{
+          position: 'relative',
+          zIndex: 1,
+          padding: '80px 64px',
+          maxWidth: '780px'
         }}>
-          {/* Opening with large artistic drop cap */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '100px 1fr',
-            gap: '12px',
-            alignItems: 'flex-start'
+          <ChapterLabel>The Essay</ChapterLabel>
+          <h1 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: 'clamp(40px, 7vw, 76px)',
+            fontWeight: '300',
+            lineHeight: '1.1',
+            color: '#fff',
+            letterSpacing: '-1px',
+            marginBottom: '28px'
           }}>
-            <div style={{
-              fontSize: '180px',
-              fontWeight: '700',
-              color: '#c45a3b',
-              lineHeight: '0.75',
-              textAlign: 'center',
-              marginTop: '-8px'
-            }}>
-              S
-            </div>
-            <div>
-              <h3 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '32px',
-                fontWeight: '400',
-                color: '#1a1a1a',
-                marginBottom: '18px',
-                marginTop: '0',
-                lineHeight: '1.3'
-              }}>
-                {t('openingHeading')}
-              </h3>
+            {t('heroTitle')}
+          </h1>
+          <div style={{
+            width: '64px',
+            height: '2px',
+            background: '#c45a3b',
+            marginBottom: '28px'
+          }} />
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '20px',
+            fontWeight: '300',
+            color: 'rgba(255,255,255,0.75)',
+            lineHeight: '1.6',
+            maxWidth: '520px'
+          }}>
+            S{t('openingHeading')}
+          </p>
+        </div>
+      </section>
 
-              <p style={{ marginBottom: '18px', marginTop: '0' }}>
-                {t('para1')}
-              </p>
+      {/* ── Opening ──────────────────────────────────────────────── */}
+      <section style={{ background: '#fff', padding: '100px 32px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <ChapterLabel>On Stories</ChapterLabel>
+          <Rule />
 
-              <p style={{ marginBottom: '18px' }}>
-                {t('para2')}
-              </p>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
+            {t('para1')}
+          </p>
 
-              <p style={{ marginBottom: '0', fontWeight: '600' }}>
-                {t('learn')}
-              </p>
-            </div>
-          </div>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
+            {t('para2')}
+          </p>
 
-          <p style={{ marginBottom: '18px', marginTop: '18px' }}>
+          <p style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '15px',
+            fontWeight: '600',
+            letterSpacing: '0.5px',
+            color: '#1a1a1a',
+            marginBottom: '48px'
+          }}>
+            {t('learn')}
+          </p>
+
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
             {t('para3')}
           </p>
 
-          <p style={{ marginBottom: '18px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '0'
+          }}>
             {t('para4')}
           </p>
+        </div>
 
+        {/* Pull Quote */}
+        <div style={{
+          maxWidth: '820px',
+          margin: '80px auto 0',
+          padding: '64px 32px',
+          textAlign: 'center',
+          borderTop: '1px solid #e8e4df',
+          borderBottom: '1px solid #e8e4df'
+        }}>
           <p style={{
-            marginBottom: '24px',
-            fontSize: '20px',
-            fontWeight: '600',
-            color: '#1a1a1a',
-            paddingLeft: '24px',
-            borderLeft: '4px solid #c45a3b',
-            lineHeight: '1.7'
-          }}>
-            {t('quote1a')}
-            <br /><br />
-            {t('quote1b')}
-          </p>
-
-          <p style={{
-            marginBottom: '48px',
             fontFamily: 'Georgia, serif',
-            fontSize: '20px',
-            fontStyle: 'italic',
-            color: '#c45a3b',
-            fontWeight: '500'
+            fontSize: 'clamp(22px, 3.5vw, 32px)',
+            fontWeight: '400',
+            color: '#1a1a1a',
+            lineHeight: '1.5',
+            marginBottom: '16px',
+            fontStyle: 'italic'
+          }}>
+            &ldquo;{t('quote1a')}&rdquo;
+          </p>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: 'clamp(22px, 3.5vw, 32px)',
+            fontWeight: '400',
+            color: '#1a1a1a',
+            lineHeight: '1.5',
+            marginBottom: '32px',
+            fontStyle: 'italic'
+          }}>
+            &ldquo;{t('quote1b')}&rdquo;
+          </p>
+          <p style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '13px',
+            fontWeight: '600',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            color: '#c45a3b'
           }}>
             {t('belief')}
           </p>
+        </div>
+      </section>
+
+      {/* ── Stories in Healthcare ─────────────────────────────────── */}
+      <section style={{ background: '#faf7f3', padding: '100px 32px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <ChapterLabel>Stories in Healthcare</ChapterLabel>
+          <Rule />
 
           <h2 style={{
             fontFamily: 'Georgia, serif',
-            fontSize: '28px',
-            fontWeight: '600',
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontWeight: '400',
             color: '#1a1a1a',
-            marginBottom: '20px',
-            marginTop: '48px'
+            lineHeight: '1.25',
+            marginBottom: '40px'
           }}>
             {t('storiesHealthcareTitle')}
           </h2>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
             {t('storiesHealthcareBody')}
           </p>
 
-          <p style={{ marginBottom: '32px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '64px'
+          }}>
             {t('storiesHealthcareBody2')}
           </p>
 
-          <div style={{
-            background: '#faf7f3',
-            padding: '32px',
-            borderRadius: '8px',
-            marginBottom: '32px',
-            borderLeft: '4px solid #c45a3b'
-          }}>
-            <p style={{ marginBottom: '16px', fontWeight: '600', color: '#1a1a1a' }}>
-              {t('question1')}
-            </p>
-            <p style={{ marginBottom: '16px', fontWeight: '600', color: '#1a1a1a' }}>
-              {t('question2')}
-            </p>
-            <p style={{ fontWeight: '600', color: '#1a1a1a' }}>
-              {t('question3')}
-            </p>
-            <p style={{ marginTop: '16px', color: '#666', fontStyle: 'italic' }}>
-              {t('questionsNote')}
-            </p>
+          {/* Questions as typographic provocations */}
+          <div style={{ borderTop: '1px solid #d8d1c8' }}>
+            {[
+              t('question1'),
+              t('question2'),
+              t('question3')
+            ].map((q, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                gap: '24px',
+                alignItems: 'flex-start',
+                padding: '28px 0',
+                borderBottom: '1px solid #d8d1c8'
+              }}>
+                <span style={{
+                  fontFamily: 'Georgia, serif',
+                  fontSize: '13px',
+                  color: '#c45a3b',
+                  fontWeight: '600',
+                  marginTop: '4px',
+                  flexShrink: 0,
+                  width: '20px'
+                }}>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <p style={{
+                  fontFamily: 'Georgia, serif',
+                  fontSize: '19px',
+                  lineHeight: '1.7',
+                  color: '#1a1a1a',
+                  margin: 0
+                }}>
+                  {q}
+                </p>
+              </div>
+            ))}
           </div>
+
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '17px',
+            fontStyle: 'italic',
+            color: '#888',
+            marginTop: '28px'
+          }}>
+            {t('questionsNote')}
+          </p>
+        </div>
+      </section>
+
+      {/* ── Our Mission ───────────────────────────────────────────── */}
+      <section style={{ background: '#1a1a1a', padding: '100px 32px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <ChapterLabel>Our Mission</ChapterLabel>
+          <div style={{ width: '48px', height: '2px', background: '#c45a3b', marginBottom: '32px' }} />
 
           <h2 style={{
             fontFamily: 'Georgia, serif',
-            fontSize: '28px',
-            fontWeight: '600',
-            color: '#1a1a1a',
-            marginBottom: '20px',
-            marginTop: '48px'
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontWeight: '400',
+            color: '#fff',
+            lineHeight: '1.25',
+            marginBottom: '40px'
           }}>
             {t('missionTitle')}
           </h2>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#bbb',
+            marginBottom: '28px'
+          }}>
             {t('missionBody1')}
           </p>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#bbb',
+            marginBottom: '48px'
+          }}>
             {t('missionBody2')}
           </p>
 
+          {/* Emphasis statement */}
           <p style={{
-            marginBottom: '32px',
             fontFamily: 'Georgia, serif',
-            fontSize: '19px',
-            color: '#c45a3b',
-            fontWeight: '600'
+            fontSize: 'clamp(26px, 3.5vw, 36px)',
+            fontWeight: '400',
+            color: '#fff',
+            lineHeight: '1.35',
+            marginBottom: '48px',
+            paddingLeft: '24px',
+            borderLeft: '3px solid #c45a3b'
           }}>
             {t('missionEmphasis')}
           </p>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#bbb',
+            marginBottom: '28px'
+          }}>
             {t('missionBody3')}
           </p>
 
-          <p style={{ marginBottom: '32px', fontWeight: '600', color: '#1a1a1a' }}>
+          <p style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '15px',
+            fontWeight: '600',
+            color: '#c45a3b',
+            letterSpacing: '0.5px'
+          }}>
             {t('missionGoal')}
           </p>
+        </div>
+      </section>
+
+      {/* ── The Science of Stories ────────────────────────────────── */}
+      <section style={{ background: '#fff', padding: '100px 32px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <ChapterLabel>The Science</ChapterLabel>
+          <Rule />
 
           <h2 style={{
             fontFamily: 'Georgia, serif',
-            fontSize: '28px',
-            fontWeight: '600',
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontWeight: '400',
             color: '#1a1a1a',
-            marginBottom: '20px',
-            marginTop: '48px'
+            lineHeight: '1.25',
+            marginBottom: '40px'
           }}>
             {t('scienceTitle')}
           </h2>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
             {t('scienceBody1')}
           </p>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
             {t('scienceBody2')}
           </p>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '48px'
+          }}>
             {t('scienceBody3')}
           </p>
 
-          <p style={{
-            marginBottom: '32px',
-            fontFamily: 'Georgia, serif',
-            fontSize: '19px',
-            fontStyle: 'italic',
-            color: '#666',
-            borderLeft: '4px solid #c45a3b',
-            paddingLeft: '24px'
+          {/* Science quote */}
+          <div style={{
+            padding: '36px 40px',
+            background: '#faf7f3',
+            borderRadius: '4px',
+            borderLeft: '3px solid #c45a3b'
           }}>
-            {t('scienceQuote')}
-          </p>
+            <p style={{
+              fontFamily: 'Georgia, serif',
+              fontSize: '20px',
+              lineHeight: '1.75',
+              fontStyle: 'italic',
+              color: '#444',
+              margin: 0
+            }}>
+              &ldquo;{t('scienceQuote')}&rdquo;
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Integrating Stories ───────────────────────────────────── */}
+      <section style={{ background: '#faf7f3', padding: '100px 32px 0' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <ChapterLabel>Integration</ChapterLabel>
+          <Rule />
 
           <h2 style={{
             fontFamily: 'Georgia, serif',
-            fontSize: '28px',
-            fontWeight: '600',
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontWeight: '400',
             color: '#1a1a1a',
-            marginBottom: '20px',
-            marginTop: '48px'
+            lineHeight: '1.25',
+            marginBottom: '40px'
           }}>
             {t('integratingTitle')}
           </h2>
 
-          <p style={{ marginBottom: '24px' }}>
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '0'
+          }}>
             {t('integratingBody')}
           </p>
-
-          <div style={{
-            background: '#1a1a1a',
-            color: '#fff',
-            padding: '40px',
-            borderRadius: '8px',
-            marginTop: '48px',
-            fontFamily: 'Georgia, serif',
-            fontSize: '22px',
-            fontWeight: '400',
-            lineHeight: '1.8',
-            textAlign: 'center'
-          }}>
-            <p style={{ marginBottom: '16px' }}>{t('closingLine1')}</p>
-            <p style={{ marginBottom: '16px' }}>{t('closingLine2')}</p>
-            <p>{t('closingLine3')}</p>
-          </div>
         </div>
-      </div>
-    </section>
 
-    {/* CTA Section */}
-    <section style={{
-      padding: '80px 32px',
-      background: '#faf7f3',
-      borderTop: '1px solid #e8e4df'
-    }}>
-      <div style={{
-        maxWidth: '800px',
-        margin: '0 auto',
-        textAlign: 'center'
+        {/* Closing tricolon */}
+        <div style={{
+          maxWidth: '900px',
+          margin: '80px auto 0',
+          padding: '80px 32px',
+          background: '#1a1a1a',
+          textAlign: 'center'
+        }}>
+          {[
+            t('closingLine1'),
+            t('closingLine2'),
+            t('closingLine3')
+          ].map((line, i) => (
+            <React.Fragment key={i}>
+              <p style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: 'clamp(20px, 3vw, 28px)',
+                fontWeight: '300',
+                color: i === 2 ? '#c45a3b' : '#fff',
+                lineHeight: '1.4',
+                margin: 0,
+                letterSpacing: '0.5px'
+              }}>
+                {line}
+              </p>
+              {i < 2 && (
+                <div style={{
+                  width: '1px',
+                  height: '32px',
+                  background: '#444',
+                  margin: '24px auto'
+                }} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA ───────────────────────────────────────────────────── */}
+      <section style={{
+        padding: '100px 32px',
+        background: '#faf7f3',
+        borderTop: '1px solid #e8e4df'
       }}>
-        <h2 style={{
-          fontFamily: 'Georgia, serif',
-          fontSize: 'clamp(28px, 5vw, 44px)',
-          fontWeight: '400',
-          color: '#1a1a1a',
-          marginBottom: '24px'
-        }}>
-          {t('ctaTitle')}
-        </h2>
+        <div style={{ maxWidth: '680px', margin: '0 auto', textAlign: 'center' }}>
+          <ChapterLabel>Join Us</ChapterLabel>
 
-        <p style={{
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '17px',
-          color: '#666',
-          marginBottom: '40px',
-          lineHeight: '1.7'
-        }}>
-          {t('ctaDesc')}
-        </p>
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: 'clamp(28px, 4vw, 44px)',
+            fontWeight: '400',
+            color: '#1a1a1a',
+            lineHeight: '1.2',
+            marginBottom: '24px'
+          }}>
+            {t('ctaTitle')}
+          </h2>
 
-        {onNavigate && (
-          <button
-            onClick={() => onNavigate('stories')}
-            style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '16px',
-              fontWeight: '600',
-              padding: '18px 48px',
-              background: '#c45a3b',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#a84830';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#c45a3b';
-            }}
-          >
-            {t('ctaButton')}
-          </button>
-        )}
-      </div>
-    </section>
-  </div>
+          <p style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '17px',
+            color: '#666',
+            lineHeight: '1.7',
+            marginBottom: '48px',
+            maxWidth: '520px',
+            margin: '0 auto 48px'
+          }}>
+            {t('ctaDesc')}
+          </p>
+
+          {onNavigate && (
+            <button
+              onClick={() => onNavigate('stories')}
+              style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '15px',
+                fontWeight: '600',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                padding: '18px 52px',
+                background: '#c45a3b',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '3px',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#a84830'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#c45a3b'; }}
+            >
+              {t('ctaButton')}
+            </button>
+          )}
+        </div>
+      </section>
+    </div>
   );
 };

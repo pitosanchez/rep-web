@@ -14,6 +14,21 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
   const [selectedThemes, setSelectedThemes] = useState<string[]>(['Travel burden', 'Delayed referrals']);
   const [expandedStory, setExpandedStory] = useState<string | null>(null);
 
+  // Form state
+  const [zipInput, setZipInput] = useState(selectedZip || '');
+  const [role, setRole] = useState<'patient' | 'caregiver'>('patient');
+  const [condition, setCondition] = useState('APOL1-mediated kidney disease');
+  const [storyText, setStoryText] = useState('');
+  const [consent, setConsent] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState('');
+
+  // Sync ZIP input when selectedZip changes (e.g. navigating from map)
+  useEffect(() => {
+    if (selectedZip) setZipInput(selectedZip);
+  }, [selectedZip]);
+
   // Auto-scroll to expanded story
   useEffect(() => {
     if (expandedStory) {
@@ -32,6 +47,56 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
         ? prev.filter(t => t !== theme)
         : [...prev, theme]
     );
+  };
+
+  const handleSubmit = async () => {
+    if (!consent) {
+      setSubmitError('Please check the consent box before submitting.');
+      setSubmitStatus('error');
+      return;
+    }
+    if (!zipInput.trim()) {
+      setSubmitError('Please enter your ZIP code.');
+      setSubmitStatus('error');
+      return;
+    }
+    if (storyText.trim().length < 20) {
+      setSubmitError('Your reflection must be at least 20 characters.');
+      setSubmitStatus('error');
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitStatus('idle');
+    setSubmitError('');
+
+    try {
+      const res = await fetch('/api/stories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          zip_code: zipInput.trim(),
+          role,
+          condition,
+          story_text: storyText.trim(),
+          themes: selectedThemes,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Submission failed. Please try again.');
+      }
+
+      setSubmitStatus('success');
+      setStoryText('');
+      setSelectedThemes([]);
+    } catch (err) {
+      setSubmitStatus('error');
+      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -491,7 +556,8 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 <input
                   type="text"
                   placeholder={t('zipPlaceholder')}
-                  defaultValue={selectedZip || ''}
+                  value={zipInput}
+                  onChange={e => setZipInput(e.target.value)}
                   style={{
                     width: '100%',
                     padding: '14px 16px',
@@ -512,17 +578,21 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                   color: '#1a1a1a',
                   marginBottom: '8px'
                 }}>{t('iAmA')}</label>
-                <select style={{
-                  width: '100%',
-                  padding: '14px 16px',
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '15px',
-                  background: '#fff'
-                }}>
-                  <option>{t('patient')}</option>
-                  <option>{t('caregiver')}</option>
+                <select
+                  value={role}
+                  onChange={e => setRole(e.target.value as 'patient' | 'caregiver')}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    fontFamily: 'system-ui, sans-serif',
+                    fontSize: '15px',
+                    background: '#fff'
+                  }}
+                >
+                  <option value="patient">{t('patient')}</option>
+                  <option value="caregiver">{t('caregiver')}</option>
                 </select>
               </div>
             </div>
@@ -536,18 +606,22 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
                 color: '#1a1a1a',
                 marginBottom: '8px'
               }}>{t('condition')}</label>
-              <select style={{
-                width: '100%',
-                padding: '14px 16px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '15px',
-                background: '#fff'
-              }}>
-                <option>APOL1-mediated kidney disease</option>
-                <option>FSGS</option>
-                <option>CKD (context)</option>
+              <select
+                value={condition}
+                onChange={e => setCondition(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '15px',
+                  background: '#fff'
+                }}
+              >
+                <option value="APOL1-mediated kidney disease">APOL1-mediated kidney disease</option>
+                <option value="FSGS">FSGS</option>
+                <option value="CKD">CKD (context)</option>
               </select>
             </div>
 
@@ -598,6 +672,8 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
               }}>{t('yourReflection')}</label>
               <textarea
                 placeholder={t('reflectionPlaceholder')}
+                value={storyText}
+                onChange={e => setStoryText(e.target.value)}
                 style={{
                   width: '100%',
                   padding: '16px',
@@ -631,7 +707,12 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
               background: '#faf7f3',
               borderRadius: '8px'
             }}>
-              <input type="checkbox" defaultChecked style={{ marginTop: '4px', accentColor: '#c45a3b' }} />
+              <input
+                type="checkbox"
+                checked={consent}
+                onChange={e => setConsent(e.target.checked)}
+                style={{ marginTop: '4px', accentColor: '#c45a3b' }}
+              />
               <span style={{
                 fontFamily: 'system-ui, sans-serif',
                 fontSize: '14px',
@@ -642,20 +723,64 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
               </span>
             </div>
 
-            <button style={{
-              width: '100%',
-              padding: '16px 32px',
-              background: '#1a1a1a',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '16px',
-              fontWeight: '500',
-              cursor: 'pointer'
-            }}>
-              {t('submit')}
-            </button>
+            {submitStatus === 'error' && (
+              <div style={{
+                marginBottom: '16px',
+                padding: '12px 16px',
+                background: '#fff5f5',
+                border: '1px solid #f5c6c6',
+                borderRadius: '8px',
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '14px',
+                color: '#c0392b'
+              }}>
+                {submitError}
+              </div>
+            )}
+
+            {submitStatus === 'success' ? (
+              <div style={{
+                padding: '24px',
+                background: '#f0faf4',
+                border: '1px solid #a8d5b5',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}>
+                <div style={{
+                  fontFamily: 'Georgia, serif',
+                  fontSize: '20px',
+                  color: '#2e7d52',
+                  marginBottom: '8px'
+                }}>Thank you for sharing.</div>
+                <p style={{
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '14px',
+                  color: '#555',
+                  margin: 0
+                }}>
+                  Your story has been received. It will appear anonymously on the neighborhood page for ZIP {zipInput}.
+                </p>
+              </div>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={submitting}
+                style={{
+                  width: '100%',
+                  padding: '16px 32px',
+                  background: submitting ? '#888' : '#1a1a1a',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: submitting ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {submitting ? 'Submitting...' : t('submit')}
+              </button>
+            )}
           </div>
 
           {/* How it works */}

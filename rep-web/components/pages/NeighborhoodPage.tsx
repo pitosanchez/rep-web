@@ -26,10 +26,21 @@ interface NeighborhoodProfile {
   exposureIndex: number;
 }
 
+interface SubmittedStory {
+  id: string;
+  zip_code: string;
+  role: string;
+  condition: string | null;
+  story_text: string;
+  themes: string[];
+  created_at: string;
+}
+
 export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip, onNavigate, onReturn }) => {
   const [neighborhood, setNeighborhood] = useState<NeighborhoodProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [submittedStories, setSubmittedStories] = useState<SubmittedStory[]>([]);
 
   // Fetch neighborhood data from API
   useEffect(() => {
@@ -65,7 +76,21 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
     fetchNeighborhood();
   }, [selectedZip]);
 
-  // Get stories for this neighborhood
+  // Fetch user-submitted stories from DB
+  useEffect(() => {
+    if (!selectedZip) return;
+
+    fetch(`/api/stories/by-zip?zip=${selectedZip}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.stories)) {
+          setSubmittedStories(data.stories);
+        }
+      })
+      .catch(err => console.error('Error fetching submitted stories:', err));
+  }, [selectedZip]);
+
+  // Get curated stories for this neighborhood
   const neighborhoodStories: PatientStory[] = [];
   if (neighborhood) {
     const neighborhood_name = getNeighborhoodForZip(neighborhood.zip);
@@ -75,7 +100,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
     neighborhoodStories.push(...matchingStories);
   }
 
-  // Also include simple mock stories for the ZIP
+  // Mock stories as fallback (only if no curated or submitted stories)
   const mockStoriesForZip = neighborhood
     ? stories.filter(s => s.zip === neighborhood.zip)
     : [];
@@ -336,7 +361,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 fontSize: '15px',
                 color: '#666'
               }}>
-                {neighborhoodStories.length + mockStoriesForZip.length} submission{(neighborhoodStories.length + mockStoriesForZip.length) !== 1 ? 's' : ''} from this neighborhood
+                {neighborhoodStories.length + submittedStories.length} submission{(neighborhoodStories.length + submittedStories.length) !== 1 ? 's' : ''} from this neighborhood
               </p>
             </div>
 
@@ -358,18 +383,61 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
           </div>
 
           {/* Story cards */}
-          <div className="grid-stories">
-            {/* Patient stories (detailed) */}
-            {neighborhoodStories.map(story => (
-              <PatientStoryCard key={story.id} story={story} />
-            ))}
-            {/* Mock stories (simple) */}
-            {mockStoriesForZip.length > 0 && neighborhoodStories.length === 0 &&
-              mockStoriesForZip.map(story => (
-                <StoryCard key={story.id} story={story} />
-              ))
-            }
-          </div>
+          {neighborhoodStories.length === 0 && submittedStories.length === 0 && mockStoriesForZip.length === 0 ? (
+            <div style={{
+              padding: '48px 32px',
+              textAlign: 'center',
+              background: '#faf7f3',
+              borderRadius: '12px',
+              border: '1px dashed #d0c8c0'
+            }}>
+              <p style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '20px',
+                color: '#888',
+                marginBottom: '12px'
+              }}>No stories yet for this neighborhood.</p>
+              <p style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '14px',
+                color: '#aaa',
+                marginBottom: '24px'
+              }}>Be the first to share your experience.</p>
+              <button
+                onClick={() => onNavigate('stories')}
+                style={{
+                  padding: '12px 24px',
+                  background: '#c45a3b',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                Share your story
+              </button>
+            </div>
+          ) : (
+            <div className="grid-stories">
+              {/* Curated patient stories (detailed) */}
+              {neighborhoodStories.map(story => (
+                <PatientStoryCard key={story.id} story={story} />
+              ))}
+              {/* User-submitted stories from DB */}
+              {submittedStories.map(story => (
+                <SubmittedStoryCard key={story.id} story={story} onNavigate={onNavigate} />
+              ))}
+              {/* Mock stories — only shown if no real stories exist */}
+              {neighborhoodStories.length === 0 && submittedStories.length === 0 &&
+                mockStoriesForZip.map(story => (
+                  <StoryCard key={story.id} story={story} />
+                ))
+              }
+            </div>
+          )}
 
           {/* Ethics note */}
           <div style={{
@@ -598,5 +666,97 @@ const PatientStoryCard: React.FC<PatientStoryCardProps> = ({ story }) => (
         Patient story
       </div>
     </div>
+  </div>
+);
+
+interface SubmittedStoryCardProps {
+  story: SubmittedStory;
+  onNavigate: (page: string) => void;
+}
+
+const SubmittedStoryCard: React.FC<SubmittedStoryCardProps> = ({ story }) => (
+  <div style={{
+    background: '#fff',
+    border: '1px solid #e8e4df',
+    borderRadius: '12px',
+    padding: '28px',
+    position: 'relative'
+  }}>
+    <div style={{
+      position: 'absolute',
+      top: '28px',
+      right: '28px',
+      fontFamily: 'Georgia, serif',
+      fontSize: '48px',
+      color: 'rgba(196, 90, 59, 0.15)',
+      lineHeight: 1
+    }}>{`"`}</div>
+
+    <div style={{
+      display: 'flex',
+      gap: '8px',
+      marginBottom: '16px',
+      flexWrap: 'wrap'
+    }}>
+      <span style={{
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '11px',
+        fontWeight: '600',
+        padding: '4px 10px',
+        background: '#f5f5f5',
+        borderRadius: '4px',
+        color: '#666',
+        textTransform: 'capitalize'
+      }}>{story.role}</span>
+      {story.condition && (
+        <span style={{
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '11px',
+          fontWeight: '600',
+          padding: '4px 10px',
+          background: '#c45a3b',
+          borderRadius: '4px',
+          color: '#fff'
+        }}>{story.condition}</span>
+      )}
+      <span style={{
+        fontFamily: 'system-ui, sans-serif',
+        fontSize: '11px',
+        padding: '4px 10px',
+        background: '#eef7f0',
+        borderRadius: '4px',
+        color: '#2e7d52'
+      }}>Community voice</span>
+    </div>
+
+    <p style={{
+      fontFamily: 'Georgia, serif',
+      fontSize: '16px',
+      color: '#1a1a1a',
+      lineHeight: '1.7',
+      marginBottom: '16px'
+    }}>
+      {story.story_text}
+    </p>
+
+    {story.themes && story.themes.length > 0 && (
+      <div style={{
+        display: 'flex',
+        gap: '6px',
+        flexWrap: 'wrap',
+        paddingTop: '16px',
+        borderTop: '1px solid #f0f0f0'
+      }}>
+        {story.themes.map((t, i) => (
+          <span key={i} style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: '11px',
+            color: '#888'
+          }}>
+            {t}{i < story.themes.length - 1 ? ' ·' : ''}
+          </span>
+        ))}
+      </div>
+    )}
   </div>
 );

@@ -7,7 +7,7 @@ interface KidneyDiseasePageProps {
   onNavigate?: (page: string) => void;
 }
 
-// ── SVG donut chart helpers ───────────────────────────────────────────────────
+// ── SVG donut chart ───────────────────────────────────────────────────────────
 function polar(cx: number, cy: number, r: number, deg: number) {
   const rad = (deg * Math.PI) / 180;
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
@@ -55,12 +55,12 @@ const DonutChart: React.FC<{
       ))}
       {label && (
         <>
-          <text x={cx} y={cy - 8} textAnchor="middle" fill="#fff"
+          <text x={cx} y={cy - 8} textAnchor="middle" fill="#1a1a1a"
             style={{ fontFamily: 'Georgia, serif', fontSize: '22px', fontWeight: '300' }}>
             {label}
           </text>
           {sublabel && (
-            <text x={cx} y={cy + 14} textAnchor="middle" fill="rgba(255,255,255,0.4)"
+            <text x={cx} y={cy + 14} textAnchor="middle" fill="#999"
               style={{ fontFamily: 'system-ui, sans-serif', fontSize: '10px', letterSpacing: '1px' }}>
               {sublabel}
             </text>
@@ -71,35 +71,35 @@ const DonutChart: React.FC<{
   );
 };
 
-// ── Legend item ───────────────────────────────────────────────────────────────
+// ── Legend item (light background) ───────────────────────────────────────────
 const LegendItem: React.FC<{ color: string; label: string; pct: number }> = ({ color, label, pct }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
     <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: color, flexShrink: 0 }} />
-    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.7)', flex: 1 }}>
+    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: '#555', flex: 1 }}>
       {label}
     </span>
-    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: '600', color: '#fff' }}>
+    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: '600', color: '#1a1a1a' }}>
       {pct}%
     </span>
   </div>
 );
 
-// ── Horizontal race bar ───────────────────────────────────────────────────────
+// ── Horizontal race bar (light background) ────────────────────────────────────
 const RaceBar: React.FC<{ label: string; pct: number; max: number; color: string; note?: string }> = ({ label, pct, max, color, note }) => (
   <div style={{ marginBottom: '28px' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
-      <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '600', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
+      <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '600', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#666' }}>
         {label}
       </span>
       <span style={{ fontFamily: 'Georgia, serif', fontSize: '26px', fontWeight: '300', color }}>
         {pct}%
       </span>
     </div>
-    <div style={{ height: '8px', background: 'rgba(255,255,255,0.07)', borderRadius: '4px', overflow: 'hidden' }}>
-      <div style={{ height: '100%', width: `${(pct / max) * 100}%`, background: color, borderRadius: '4px', transition: 'width 0.6s ease' }} />
+    <div style={{ height: '8px', background: 'rgba(0,0,0,0.07)', borderRadius: '4px', overflow: 'hidden' }}>
+      <div style={{ height: '100%', width: `${(pct / max) * 100}%`, background: color, borderRadius: '4px' }} />
     </div>
     {note && (
-      <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '5px' }}>
+      <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: '#aaa', marginTop: '5px' }}>
         {note}
       </div>
     )}
@@ -107,20 +107,18 @@ const RaceBar: React.FC<{ label: string; pct: number; max: number; color: string
 );
 
 // ── Typography helpers ────────────────────────────────────────────────────────
-const ChapterLabel: React.FC<{ children: React.ReactNode; light?: boolean }> = ({ children, light }) => (
+const ChapterLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div style={{
     fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600',
-    letterSpacing: '3px', textTransform: 'uppercase',
-    color: light ? 'rgba(255,255,255,0.4)' : '#c45a3b', marginBottom: '20px'
+    letterSpacing: '3px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: '20px'
   }}>
     {children}
   </div>
 );
 
-const SourceCredit: React.FC<{ children: React.ReactNode; light?: boolean }> = ({ children, light }) => (
+const SourceCredit: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div style={{
-    fontFamily: 'system-ui, sans-serif', fontSize: '11px',
-    color: light ? 'rgba(255,255,255,0.25)' : '#aaa',
+    fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: '#bbb',
     marginTop: '24px', letterSpacing: '0.3px'
   }}>
     {children}
@@ -129,12 +127,12 @@ const SourceCredit: React.FC<{ children: React.ReactNode; light?: boolean }> = (
 
 // ── Data constants ────────────────────────────────────────────────────────────
 const ESKD_CAUSES: DonutSlice[] = [
-  { label: 'Diabetes',             value: 37, color: '#c45a3b' },
-  { label: 'High Blood Pressure',  value: 27, color: '#e8926a' },
-  { label: 'Glomerulonephritis',   value: 14, color: '#6b8cba' },
-  { label: 'Cystic Kidney Dis.',   value: 5,  color: '#a0745a' },
-  { label: 'Other',                value: 10, color: '#7a7068' },
-  { label: 'Unknown',              value: 7,  color: '#5a524e' },
+  { label: 'Diabetes',            value: 37, color: '#c45a3b' },
+  { label: 'High Blood Pressure', value: 27, color: '#e8926a' },
+  { label: 'Glomerulonephritis',  value: 14, color: '#6b8cba' },
+  { label: 'Cystic Kidney Dis.',  value: 5,  color: '#a0745a' },
+  { label: 'Other',               value: 10, color: '#b0a89e' },
+  { label: 'Unknown',             value: 7,  color: '#d0c8c0' },
 ];
 
 const ESKD_TREATMENT: DonutSlice[] = [
@@ -150,91 +148,83 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
     <div style={{ paddingTop: '80px' }}>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          HERO — dark, full-bleed statement
+          HERO — warm cream, bold statement
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#111', color: '#fff', padding: '100px 32px 80px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'radial-gradient(ellipse at 80% 50%, rgba(196,90,59,0.08) 0%, transparent 70%)',
-          pointerEvents: 'none'
-        }} />
-        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative' }}>
-          <ChapterLabel light>Understanding Kidney Disease</ChapterLabel>
+      <section style={{ background: '#faf7f3', padding: '100px 32px 80px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel>Understanding Kidney Disease</ChapterLabel>
           <h1 style={{
             fontFamily: 'Georgia, serif',
             fontSize: 'clamp(52px, 9vw, 96px)',
             fontWeight: '300', lineHeight: '0.95', letterSpacing: '-3px',
-            margin: '0 0 40px', color: '#fff'
+            margin: '0 0 40px', color: '#1a1a1a'
           }}>
             37 million<br />
             <span style={{ color: '#c45a3b' }}>Americans.</span>
           </h1>
-          <div style={{ display: 'flex', gap: '48px', flexWrap: 'wrap' }}>
-            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: '24px' }}>
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>87%</div>
-              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '6px' }}>don't know they have it</div>
-            </div>
-            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: '24px' }}>
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>14%</div>
-              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '6px' }}>of all US adults</div>
-            </div>
-            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: '24px' }}>
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>131K</div>
-              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '6px' }}>new kidney failure cases, 2023</div>
-            </div>
+          <div style={{ display: 'flex', gap: '48px', flexWrap: 'wrap', marginBottom: '40px' }}>
+            {[
+              { stat: '87%', label: "don't know they have it" },
+              { stat: '14%', label: 'of all US adults' },
+              { stat: '131K', label: 'new kidney failure cases, 2023' },
+            ].map(({ stat, label }) => (
+              <div key={stat} style={{ borderLeft: '2px solid rgba(0,0,0,0.1)', paddingLeft: '24px' }}>
+                <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontWeight: '300', color: '#1a1a1a', lineHeight: 1 }}>{stat}</div>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: '#888', marginTop: '6px' }}>{label}</div>
+              </div>
+            ))}
           </div>
-          <SourceCredit light>Source: CDC Chronic Kidney Disease Fact Sheet, March 2026</SourceCredit>
+          <SourceCredit>Source: CDC Chronic Kidney Disease Fact Sheet, March 2026</SourceCredit>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          RACIAL DISPARITIES — dark, horizontal bar chart
+          RACIAL DISPARITIES — white, horizontal bar chart
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#1a1a1a', padding: '80px 32px' }}>
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <ChapterLabel light>CKD Prevalence by Race &amp; Ethnicity</ChapterLabel>
+          <ChapterLabel>CKD Prevalence by Race &amp; Ethnicity</ChapterLabel>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
 
-            {/* Left: heading */}
+            {/* Left: heading + 4× callout */}
             <div>
               <h2 style={{
                 fontFamily: 'Georgia, serif',
                 fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: '300',
-                color: '#fff', lineHeight: '1.15', margin: '0 0 24px'
+                color: '#1a1a1a', lineHeight: '1.15', margin: '0 0 24px'
               }}>
                 This disease does not<br />
                 <span style={{ color: '#c45a3b' }}>strike equally.</span>
               </h2>
-              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.8', color: 'rgba(255,255,255,0.5)', margin: '0 0 40px' }}>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.8', color: '#666', margin: '0 0 40px' }}>
                 These are not random numbers. They reflect decades of unequal access
                 to care, housing, food, and economic stability — not genetic destiny.
               </p>
 
-              {/* 4× ESKD rate callout box */}
-              <div style={{ background: 'rgba(196,90,59,0.1)', border: '1px solid rgba(196,90,59,0.3)', padding: '28px' }}>
+              {/* 4× ESKD rate callout */}
+              <div style={{ background: 'rgba(196,90,59,0.06)', border: '2px solid #c45a3b', padding: '28px' }}>
                 <div style={{ fontFamily: 'Georgia, serif', fontSize: '52px', fontWeight: '300', color: '#c45a3b', lineHeight: 1, marginBottom: '10px' }}>
                   4×
                 </div>
-                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#fff', fontWeight: '600', marginBottom: '6px' }}>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#1a1a1a', fontWeight: '600', marginBottom: '8px' }}>
                   higher rate of kidney failure
                 </div>
-                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: '1.6' }}>
-                  Non-Hispanic Black adults develop end-stage kidney disease at 4 times
-                  the rate of non-Hispanic White adults.
-                  Hispanic adults develop ESKD at 2 times the rate.
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: '#666', lineHeight: '1.7' }}>
+                  Non-Hispanic Black adults develop end-stage kidney disease at 4× the rate
+                  of non-Hispanic White adults. Hispanic adults develop ESKD at 2× the rate.
                 </div>
               </div>
-              <SourceCredit light>Source: CDC, March 2026 · USRDS Annual Data Report 2023</SourceCredit>
+              <SourceCredit>Source: CDC, March 2026 · USRDS Annual Data Report 2023</SourceCredit>
             </div>
 
             {/* Right: bar chart */}
             <div style={{ paddingTop: '8px' }}>
               <RaceBar label="Non-Hispanic Black" pct={22} max={36} color="#c45a3b" note="Highest prevalence of any racial/ethnic group" />
-              <RaceBar label="Adults 65 and older" pct={34} max={36} color="#e8926a" note="Age is a major independent risk factor" />
-              <RaceBar label="Non-Hispanic White" pct={13} max={36} color="rgba(255,255,255,0.5)" />
-              <RaceBar label="Hispanic" pct={12} max={36} color="rgba(255,255,255,0.35)" />
-              <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.3px', lineHeight: '1.6' }}>
+              <RaceBar label="Adults 65 and older"  pct={34} max={36} color="#e8926a" note="Age is a major independent risk factor" />
+              <RaceBar label="Non-Hispanic White"   pct={13} max={36} color="#8a8a8a" />
+              <RaceBar label="Hispanic"             pct={12} max={36} color="#b8b0a8" />
+              <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(0,0,0,0.07)' }}>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: '#bbb', letterSpacing: '0.3px', lineHeight: '1.6' }}>
                   CKD prevalence among U.S. adults by race/ethnicity and age group.<br />
                   Bar length proportional to prevalence rate.
                 </div>
@@ -245,27 +235,27 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          ESKD — two donut charts side by side
+          ESKD — two donut charts on cream
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#111', padding: '80px 32px' }}>
+      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <ChapterLabel light>End-Stage Kidney Disease · 2023</ChapterLabel>
+          <ChapterLabel>End-Stage Kidney Disease · 2023</ChapterLabel>
           <h2 style={{
             fontFamily: 'Georgia, serif', fontSize: 'clamp(24px, 3.5vw, 38px)',
-            fontWeight: '300', color: '#fff', margin: '0 0 56px', lineHeight: '1.2'
+            fontWeight: '300', color: '#1a1a1a', margin: '0 0 48px', lineHeight: '1.2'
           }}>
-            831,000 Americans are living with<br />
+            831,000 Americans are living with{' '}
             <span style={{ color: '#c45a3b' }}>kidney failure.</span>
           </h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
 
             {/* Chart 1: Causes */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '40px 36px' }}>
-              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '32px' }}>
+            <div style={{ background: '#fff', padding: '40px 36px' }}>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: '28px' }}>
                 What causes kidney failure
               </div>
-              <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
                 <div style={{ flexShrink: 0 }}>
                   <DonutChart data={ESKD_CAUSES} size={200} innerR={68} label="100%" sublabel="OF CASES" />
                 </div>
@@ -273,45 +263,45 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
                   {ESKD_CAUSES.map(d => <LegendItem key={d.label} color={d.color} label={d.label} pct={d.value} />)}
                 </div>
               </div>
-              <SourceCredit light>Among 131,564 new ESKD cases in 2023 · USRDS / CDC 2026</SourceCredit>
+              <SourceCredit>Among 131,564 new ESKD cases in 2023 · USRDS / CDC 2026</SourceCredit>
             </div>
 
             {/* Chart 2: Treatment split */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '40px 36px' }}>
-              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '32px' }}>
+            <div style={{ background: '#fff', padding: '40px 36px' }}>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: '28px' }}>
                 How patients are treated
               </div>
-              <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
                 <div style={{ flexShrink: 0 }}>
                   <DonutChart data={ESKD_TREATMENT} size={200} innerR={68} label="831K" sublabel="LIVING WITH ESKD" />
                 </div>
                 <div style={{ flex: 1 }}>
                   {ESKD_TREATMENT.map(d => (
-                    <div key={d.label} style={{ marginBottom: '28px' }}>
+                    <div key={d.label} style={{ marginBottom: '24px' }}>
                       <LegendItem color={d.color} label={d.label} pct={d.value} />
-                      <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginTop: '2px', marginLeft: '20px', lineHeight: '1.5' }}>
+                      <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#aaa', marginTop: '2px', marginLeft: '20px', lineHeight: '1.5' }}>
                         {d.label === 'Dialysis'
-                          ? '≈ 557,000 people · requires sessions 3× / week'
-                          : '≈ 274,000 people · kidney transplant recipients'}
+                          ? '≈ 557,000 people · sessions 3× / week'
+                          : '≈ 274,000 people · transplant recipients'}
                       </div>
                     </div>
                   ))}
-                  <div style={{ marginTop: '8px' }}>
-                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '28px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>67%</div>
-                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>depend on dialysis to survive</div>
+                  <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f0ece7' }}>
+                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '28px', fontWeight: '300', color: '#c45a3b', lineHeight: 1 }}>67%</div>
+                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#888', marginTop: '4px' }}>depend on dialysis to survive</div>
                   </div>
                 </div>
               </div>
-              <SourceCredit light>Total prevalent ESKD population 2023 · USRDS / CDC 2026</SourceCredit>
+              <SourceCredit>Total prevalent ESKD population 2023 · USRDS / CDC 2026</SourceCredit>
             </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          WHAT IS CKD — cream, medical intro
+          WHAT IS CKD — white
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <ChapterLabel>{t('whatIsTitle')}</ChapterLabel>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}>
@@ -321,22 +311,20 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
               <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444' }}>{t('whatIsPara3')}</p>
             </div>
             <div>
-              <div style={{ background: '#fff', padding: '0' }}>
-                <div style={{ background: '#c45a3b', padding: '16px 24px' }}>
-                  <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)' }}>
-                    Common risk factors
-                  </div>
+              <div style={{ background: '#c45a3b', padding: '16px 24px' }}>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)' }}>
+                  Common risk factors
                 </div>
-                {[t('whatIsItem1'), t('whatIsItem2'), t('whatIsItem3'), t('whatIsItem4')].map((item, i) => (
-                  <div key={i} style={{ padding: '16px 24px', borderBottom: i < 3 ? '1px solid #f0ece7' : 'none', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0, marginTop: '8px' }} />
-                    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.6', color: '#333' }}>{item}</span>
-                  </div>
-                ))}
               </div>
-              <div style={{ background: '#1a1a1a', padding: '20px 24px', marginTop: '2px' }}>
-                <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
-                  <strong style={{ color: '#fff' }}>{t('whatIsImportant')}</strong>
+              {[t('whatIsItem1'), t('whatIsItem2'), t('whatIsItem3'), t('whatIsItem4')].map((item, i) => (
+                <div key={i} style={{ padding: '16px 24px', borderBottom: i < 3 ? '1px solid #f0ece7' : 'none', background: '#faf7f3', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0, marginTop: '8px' }} />
+                  <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.6', color: '#333' }}>{item}</span>
+                </div>
+              ))}
+              <div style={{ background: 'rgba(196,90,59,0.06)', border: '1px solid rgba(196,90,59,0.2)', padding: '20px 24px', marginTop: '2px' }}>
+                <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: '#333', margin: 0 }}>
+                  <strong style={{ color: '#1a1a1a' }}>{t('whatIsImportant')}</strong>
                 </p>
               </div>
             </div>
@@ -345,34 +333,32 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          THE FIVE STAGES — white, table with visual eGFR bars
+          THE FIVE STAGES — cream, visual bar chart
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
+      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <ChapterLabel>{t('stagesTitle')}</ChapterLabel>
           <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: '#666', maxWidth: '600px', marginBottom: '40px' }}>
             {t('stagesPara1')}
           </p>
 
-          {/* Visual stage progression */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '2px', marginBottom: '40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '2px', marginBottom: '32px' }}>
             {[
-              { stage: '1', egfr: '90+', pct: 100, label: 'Normal or high', color: '#4a8a4a' },
-              { stage: '2', egfr: '60–89', pct: 75, label: 'Mildly decreased', color: '#8ab04a' },
-              { stage: '3a', egfr: '45–59', pct: 55, label: 'Mild–moderate', color: '#d4a020' },
-              { stage: '3b', egfr: '30–44', pct: 40, label: 'Moderate–severe', color: '#d97020' },
-              { stage: '4', egfr: '15–29', pct: 24, label: 'Severely decreased', color: '#c45a3b' },
-              { stage: '5', egfr: '<15', pct: 10, label: 'Kidney failure', color: '#8b1a1a' },
+              { stage: '1',  egfr: '90+',   pct: 100, label: 'Normal or high',     color: '#4a8a4a' },
+              { stage: '2',  egfr: '60–89',  pct: 75,  label: 'Mildly decreased',   color: '#8ab04a' },
+              { stage: '3a', egfr: '45–59',  pct: 55,  label: 'Mild–moderate',      color: '#d4a020' },
+              { stage: '3b', egfr: '30–44',  pct: 40,  label: 'Moderate–severe',    color: '#d97020' },
+              { stage: '4',  egfr: '15–29',  pct: 24,  label: 'Severely decreased', color: '#c45a3b' },
+              { stage: '5',  egfr: '<15',    pct: 10,  label: 'Kidney failure',      color: '#8b1a1a' },
             ].map(({ stage, egfr, pct, label, color }) => (
-              <div key={stage} style={{ background: '#faf7f3', padding: '20px 16px', textAlign: 'center' }}>
-                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', marginBottom: '12px' }}>
+              <div key={stage} style={{ background: '#fff', padding: '20px 16px', textAlign: 'center' }}>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#aaa', marginBottom: '12px' }}>
                   Stage {stage}
                 </div>
-                {/* eGFR bar */}
                 <div style={{ height: '80px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '12px' }}>
                   <div style={{ width: '36px', height: `${pct}%`, background: color, borderRadius: '2px 2px 0 0', minHeight: '8px' }} />
                 </div>
-                <div style={{ fontFamily: 'Georgia, serif', fontSize: '13px', fontWeight: '400', color: '#1a1a1a', marginBottom: '4px' }}>
+                <div style={{ fontFamily: 'Georgia, serif', fontSize: '13px', color: '#1a1a1a', marginBottom: '4px' }}>
                   eGFR {egfr}
                 </div>
                 <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: '#888', lineHeight: '1.3' }}>
@@ -382,20 +368,19 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
             ))}
           </div>
 
-          <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#999', lineHeight: '1.7', maxWidth: '600px' }}>
+          <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#aaa', lineHeight: '1.7', maxWidth: '600px' }}>
             {t('stagesPara2')}
           </p>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          HOW DOCTORS FIND IT + SYMPTOMS — two-column, cream
+          HOW DOCTORS FIND IT + SYMPTOMS — white, two-column
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px' }}>
 
-            {/* How doctors find it */}
             <div>
               <ChapterLabel>{t('howFoundTitle')}</ChapterLabel>
               <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: '#444', marginBottom: '24px' }}>{t('howFoundPara1')}</p>
@@ -408,30 +393,23 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
                 </div>
               ))}
               <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.8', color: '#555', marginTop: '20px', marginBottom: '12px' }}>{t('howFoundPara2')}</p>
-              <div style={{ paddingLeft: '20px' }}>
-                {[t('howFoundItem4'), t('howFoundItem5')].map((item, i) => (
-                  <div key={i} style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.7', color: '#555', marginBottom: '8px', display: 'flex', gap: '10px' }}>
-                    <span style={{ color: '#c45a3b', fontWeight: '700' }}>—</span>
-                    {item}
-                  </div>
-                ))}
-              </div>
+              {[t('howFoundItem4'), t('howFoundItem5')].map((item, i) => (
+                <div key={i} style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.7', color: '#555', marginBottom: '8px', display: 'flex', gap: '10px' }}>
+                  <span style={{ color: '#c45a3b', fontWeight: '700' }}>—</span>
+                  {item}
+                </div>
+              ))}
             </div>
 
-            {/* Symptoms */}
             <div>
               <ChapterLabel>{t('symptomsTitle')}</ChapterLabel>
               <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: '#444', marginBottom: '8px' }}>{t('symptomsPara1')}</p>
-              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: '#888', marginBottom: '24px', fontStyle: 'italic' }}>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: '#aaa', marginBottom: '24px', fontStyle: 'italic' }}>
                 {t('symptomsWhy')}
               </p>
-              <div style={{ background: '#fff', padding: '4px 0' }}>
+              <div style={{ background: '#faf7f3', padding: '4px 0' }}>
                 {(['symptomItem1','symptomItem2','symptomItem3','symptomItem4','symptomItem5','symptomItem6','symptomItem7'] as const).map((key, i) => (
-                  <div key={key} style={{
-                    display: 'flex', gap: '14px', alignItems: 'center',
-                    padding: '13px 20px',
-                    borderBottom: i < 6 ? '1px solid #f0ece7' : 'none'
-                  }}>
+                  <div key={key} style={{ display: 'flex', gap: '14px', alignItems: 'center', padding: '13px 20px', borderBottom: i < 6 ? '1px solid #ece8e3' : 'none' }}>
                     <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0 }} />
                     <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#444', lineHeight: '1.5' }}>{t(key)}</span>
                   </div>
@@ -443,16 +421,16 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          TREATMENT — white
+          TREATMENT — cream
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
+      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <ChapterLabel>{t('treatmentTitle')}</ChapterLabel>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}>
             <div>
               <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '20px' }}>{t('treatmentPara1')}</p>
               <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '28px' }}>{t('treatmentPara2')}</p>
-              {(['treatItem1','treatItem2','treatItem3','treatItem4','treatItem5'] as const).map((key, i) => (
+              {(['treatItem1','treatItem2','treatItem3','treatItem4','treatItem5'] as const).map((key) => (
                 <div key={key} style={{ display: 'flex', gap: '14px', marginBottom: '14px' }}>
                   <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0, marginTop: '10px' }} />
                   <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.7', color: '#444' }}>{t(key)}</span>
@@ -460,21 +438,21 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
               ))}
             </div>
             <div>
-              <div style={{ background: '#1a1a1a', padding: '32px' }}>
+              <div style={{ background: '#fff', padding: '32px', borderTop: '3px solid #c45a3b' }}>
                 <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: '16px' }}>
                   {t('eskdTitle')}
                 </div>
-                <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: 'rgba(255,255,255,0.75)', margin: '0 0 24px' }}>
+                <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.8', color: '#555', margin: '0 0 28px' }}>
                   {t('eskdDesc')}
                 </p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                  <div style={{ background: 'rgba(196,90,59,0.15)', padding: '20px' }}>
+                  <div style={{ background: 'rgba(196,90,59,0.08)', padding: '20px', borderTop: '2px solid #c45a3b' }}>
                     <div style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '300', color: '#c45a3b', lineHeight: 1 }}>67%</div>
-                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '6px' }}>on dialysis</div>
+                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#888', marginTop: '6px' }}>on dialysis</div>
                   </div>
-                  <div style={{ background: 'rgba(107,140,186,0.15)', padding: '20px' }}>
+                  <div style={{ background: 'rgba(107,140,186,0.08)', padding: '20px', borderTop: '2px solid #6b8cba' }}>
                     <div style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '300', color: '#6b8cba', lineHeight: 1 }}>33%</div>
-                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '6px' }}>transplant</div>
+                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: '#888', marginTop: '6px' }}>transplant</div>
                   </div>
                 </div>
               </div>
@@ -484,16 +462,16 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          WHEN TO SEE A DOCTOR — cream
+          WHEN TO SEE A DOCTOR — white
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <ChapterLabel>{t('whenSeeTitle')}</ChapterLabel>
           <div style={{ maxWidth: '680px' }}>
             <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '32px' }}>{t('whenSeePara1')}</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '32px' }}>
-              {(['riskItem1','riskItem2','riskItem3','riskItem4','riskItem5'] as const).map((key, i) => (
-                <div key={key} style={{ background: '#fff', padding: '20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              {(['riskItem1','riskItem2','riskItem3','riskItem4','riskItem5'] as const).map((key) => (
+                <div key={key} style={{ background: '#faf7f3', padding: '20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                   <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0, marginTop: '8px' }} />
                   <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.6', color: '#333' }}>{t(key)}</span>
                 </div>
@@ -505,9 +483,9 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          TYPES — white, APOL1 + FSGS cards
+          TYPES — cream, APOL1 + FSGS cards
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
+      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <ChapterLabel>{t('typesTitle')}</ChapterLabel>
           <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#555', maxWidth: '600px', marginBottom: '40px' }}>
@@ -518,7 +496,7 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
               { titleKey: 'apol1TypeTitle' as const, descKey: 'apol1TypeDesc' as const, ctaKey: 'learnApol1' as const, page: 'apol1', accent: '#c45a3b' },
               { titleKey: 'fsgsTypeTitle' as const, descKey: 'fsgsTypeDesc' as const, ctaKey: 'learnFsgs' as const, page: 'fsgs', accent: '#6b8cba' },
             ].map(({ titleKey, descKey, ctaKey, page, accent }) => (
-              <div key={page} style={{ background: '#faf7f3', padding: '32px', borderTop: `3px solid ${accent}` }}>
+              <div key={page} style={{ background: '#fff', padding: '32px', borderTop: `3px solid ${accent}` }}>
                 <div style={{ fontFamily: 'Georgia, serif', fontSize: '19px', fontWeight: '400', color: '#1a1a1a', marginBottom: '12px', lineHeight: '1.3' }}>
                   {t(titleKey)}
                 </div>
@@ -541,7 +519,7 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
                 </button>
               </div>
             ))}
-            <div style={{ background: '#faf7f3', padding: '32px', borderTop: '3px solid #a0745a' }}>
+            <div style={{ background: '#fff', padding: '32px', borderTop: '3px solid #a0745a' }}>
               <div style={{ fontFamily: 'Georgia, serif', fontSize: '19px', fontWeight: '400', color: '#1a1a1a', marginBottom: '12px', lineHeight: '1.3' }}>
                 {t('otherTypesTitle')}
               </div>
@@ -554,16 +532,16 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════
-          CLOSING — dark CTA
+          CLOSING — white with terracotta accent border
       ══════════════════════════════════════════════════════════════════════════ */}
-      <section style={{ background: '#1a1a1a', padding: '100px 32px', color: '#fff' }}>
+      <section style={{ background: '#fff', padding: '100px 32px', borderTop: '4px solid #c45a3b' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ maxWidth: '640px' }}>
-            <ChapterLabel light>{t('bottomLineTitle')}</ChapterLabel>
+            <ChapterLabel>{t('bottomLineTitle')}</ChapterLabel>
             <h2 style={{
               fontFamily: 'Georgia, serif',
               fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: '300',
-              color: '#fff', lineHeight: '1.15', margin: '0 0 32px'
+              color: '#1a1a1a', lineHeight: '1.15', margin: '0 0 32px'
             }}>
               {t('bottomLineDesc')}
             </h2>
@@ -592,14 +570,14 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
               <button
                 onClick={() => onNavigate && onNavigate('stories')}
                 style={{
-                  background: 'none', color: 'rgba(255,255,255,0.6)',
-                  border: '1px solid rgba(255,255,255,0.2)', padding: '14px 32px',
+                  background: 'none', color: '#555',
+                  border: '1px solid rgba(0,0,0,0.2)', padding: '14px 32px',
                   cursor: 'pointer', fontFamily: 'system-ui, sans-serif', fontSize: '12px',
                   fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase',
                   transition: 'all 0.2s ease'
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#1a1a1a'; e.currentTarget.style.color = '#1a1a1a'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.2)'; e.currentTarget.style.color = '#555'; }}
               >
                 Read Community Stories
               </button>

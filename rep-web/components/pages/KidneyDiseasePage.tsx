@@ -7,672 +7,336 @@ interface KidneyDiseasePageProps {
   onNavigate?: (page: string) => void;
 }
 
-// ── Shared typography helpers ─────────────────────────────────────────────────
+// ── SVG donut chart helpers ───────────────────────────────────────────────────
+function polar(cx: number, cy: number, r: number, deg: number) {
+  const rad = (deg * Math.PI) / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+interface DonutSlice { label: string; value: number; color: string; }
+
+const DonutChart: React.FC<{
+  data: DonutSlice[];
+  size?: number;
+  innerR?: number;
+  label?: string;
+  sublabel?: string;
+}> = ({ data, size = 220, innerR = 72, label, sublabel }) => {
+  const cx = size / 2, cy = size / 2;
+  const outerR = size / 2 - 6;
+  const total = data.reduce((s, d) => s + d.value, 0);
+  const GAP = 2.5;
+  let current = -90;
+
+  const segments = data.map(d => {
+    const sweep = (d.value / total) * 360 - GAP;
+    const start = current + GAP / 2;
+    const end = start + sweep;
+    current += (d.value / total) * 360;
+    const large = sweep > 180 ? 1 : 0;
+    const s1 = polar(cx, cy, outerR, start);
+    const e1 = polar(cx, cy, outerR, end);
+    const s2 = polar(cx, cy, innerR, end);
+    const e2 = polar(cx, cy, innerR, start);
+    const pathD = [
+      `M ${s1.x.toFixed(1)} ${s1.y.toFixed(1)}`,
+      `A ${outerR} ${outerR} 0 ${large} 1 ${e1.x.toFixed(1)} ${e1.y.toFixed(1)}`,
+      `L ${s2.x.toFixed(1)} ${s2.y.toFixed(1)}`,
+      `A ${innerR} ${innerR} 0 ${large} 0 ${e2.x.toFixed(1)} ${e2.y.toFixed(1)}`,
+      'Z'
+    ].join(' ');
+    return { ...d, pathD };
+  });
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {segments.map(seg => (
+        <path key={seg.label} d={seg.pathD} fill={seg.color} />
+      ))}
+      {label && (
+        <>
+          <text x={cx} y={cy - 8} textAnchor="middle" fill="#fff"
+            style={{ fontFamily: 'Georgia, serif', fontSize: '22px', fontWeight: '300' }}>
+            {label}
+          </text>
+          {sublabel && (
+            <text x={cx} y={cy + 14} textAnchor="middle" fill="rgba(255,255,255,0.4)"
+              style={{ fontFamily: 'system-ui, sans-serif', fontSize: '10px', letterSpacing: '1px' }}>
+              {sublabel}
+            </text>
+          )}
+        </>
+      )}
+    </svg>
+  );
+};
+
+// ── Legend item ───────────────────────────────────────────────────────────────
+const LegendItem: React.FC<{ color: string; label: string; pct: number }> = ({ color, label, pct }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+    <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: color, flexShrink: 0 }} />
+    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.7)', flex: 1 }}>
+      {label}
+    </span>
+    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', fontWeight: '600', color: '#fff' }}>
+      {pct}%
+    </span>
+  </div>
+);
+
+// ── Horizontal race bar ───────────────────────────────────────────────────────
+const RaceBar: React.FC<{ label: string; pct: number; max: number; color: string; note?: string }> = ({ label, pct, max, color, note }) => (
+  <div style={{ marginBottom: '28px' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+      <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '600', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>
+        {label}
+      </span>
+      <span style={{ fontFamily: 'Georgia, serif', fontSize: '26px', fontWeight: '300', color }}>
+        {pct}%
+      </span>
+    </div>
+    <div style={{ height: '8px', background: 'rgba(255,255,255,0.07)', borderRadius: '4px', overflow: 'hidden' }}>
+      <div style={{ height: '100%', width: `${(pct / max) * 100}%`, background: color, borderRadius: '4px', transition: 'width 0.6s ease' }} />
+    </div>
+    {note && (
+      <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '5px' }}>
+        {note}
+      </div>
+    )}
+  </div>
+);
+
+// ── Typography helpers ────────────────────────────────────────────────────────
 const ChapterLabel: React.FC<{ children: React.ReactNode; light?: boolean }> = ({ children, light }) => (
   <div style={{
-    fontFamily: 'system-ui, sans-serif',
-    fontSize: '11px',
-    fontWeight: '600',
-    letterSpacing: '3px',
-    textTransform: 'uppercase',
-    color: light ? 'rgba(255,255,255,0.5)' : '#c45a3b',
-    marginBottom: '20px'
+    fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600',
+    letterSpacing: '3px', textTransform: 'uppercase',
+    color: light ? 'rgba(255,255,255,0.4)' : '#c45a3b', marginBottom: '20px'
   }}>
     {children}
   </div>
 );
 
-const Rule: React.FC<{ light?: boolean }> = ({ light }) => (
+const SourceCredit: React.FC<{ children: React.ReactNode; light?: boolean }> = ({ children, light }) => (
   <div style={{
-    width: '48px',
-    height: '1px',
-    background: light ? 'rgba(255,255,255,0.25)' : '#c45a3b',
-    margin: '24px 0'
-  }} />
-);
-
-// ── ESKD cause bar component ──────────────────────────────────────────────────
-const CauseBar: React.FC<{ label: string; pct: number; accent?: boolean }> = ({ label, pct, accent }) => (
-  <div style={{ marginBottom: '20px' }}>
-    <div style={{
-      display: 'flex',
-      justifyContent: 'space-between',
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: '13px',
-      color: accent ? '#fff' : 'rgba(255,255,255,0.7)',
-      marginBottom: '8px',
-      fontWeight: accent ? '600' : '400'
-    }}>
-      <span>{label}</span>
-      <span style={{ color: accent ? '#c45a3b' : 'rgba(255,255,255,0.5)' }}>{pct}%</span>
-    </div>
-    <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
-      <div style={{
-        height: '100%',
-        width: `${pct}%`,
-        background: accent ? '#c45a3b' : 'rgba(196,90,59,0.45)',
-        borderRadius: '3px',
-        transition: 'width 0.6s ease'
-      }} />
-    </div>
+    fontFamily: 'system-ui, sans-serif', fontSize: '11px',
+    color: light ? 'rgba(255,255,255,0.25)' : '#aaa',
+    marginTop: '24px', letterSpacing: '0.3px'
+  }}>
+    {children}
   </div>
 );
 
+// ── Data constants ────────────────────────────────────────────────────────────
+const ESKD_CAUSES: DonutSlice[] = [
+  { label: 'Diabetes',             value: 37, color: '#c45a3b' },
+  { label: 'High Blood Pressure',  value: 27, color: '#e8926a' },
+  { label: 'Glomerulonephritis',   value: 14, color: '#6b8cba' },
+  { label: 'Cystic Kidney Dis.',   value: 5,  color: '#a0745a' },
+  { label: 'Other',                value: 10, color: '#7a7068' },
+  { label: 'Unknown',              value: 7,  color: '#5a524e' },
+];
+
+const ESKD_TREATMENT: DonutSlice[] = [
+  { label: 'Dialysis',   value: 67, color: '#c45a3b' },
+  { label: 'Transplant', value: 33, color: '#6b8cba' },
+];
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate }) => {
   const t = useTranslations('kidney');
 
   return (
     <div style={{ paddingTop: '80px' }}>
 
-      {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section style={{
-        background: '#1a1a1a',
-        color: '#fff',
-        padding: '100px 32px 80px',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Background texture accent */}
+      {/* ═══════════════════════════════════════════════════════════════════════
+          HERO — dark, full-bleed statement
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#111', color: '#fff', padding: '100px 32px 80px', position: 'relative', overflow: 'hidden' }}>
         <div style={{
-          position: 'absolute',
-          top: 0, right: 0,
-          width: '40%',
-          height: '100%',
-          background: 'linear-gradient(135deg, transparent 60%, rgba(196,90,59,0.06) 100%)',
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'radial-gradient(ellipse at 80% 50%, rgba(196,90,59,0.08) 0%, transparent 70%)',
           pointerEvents: 'none'
         }} />
-        <div style={{ maxWidth: '860px', margin: '0 auto', position: 'relative' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative' }}>
           <ChapterLabel light>Understanding Kidney Disease</ChapterLabel>
           <h1 style={{
             fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(48px, 8vw, 80px)',
-            fontWeight: '300',
-            lineHeight: '1.05',
-            letterSpacing: '-2px',
-            margin: '0 0 32px',
-            color: '#fff'
+            fontSize: 'clamp(52px, 9vw, 96px)',
+            fontWeight: '300', lineHeight: '0.95', letterSpacing: '-3px',
+            margin: '0 0 40px', color: '#fff'
           }}>
             37 million<br />
-            <span style={{ color: '#c45a3b' }}>people.</span>
+            <span style={{ color: '#c45a3b' }}>Americans.</span>
           </h1>
-          <p style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '18px',
-            lineHeight: '1.7',
-            color: 'rgba(255,255,255,0.6)',
-            maxWidth: '560px',
-            margin: 0
-          }}>
-            That is how many Americans are living with chronic kidney disease right now.
-            Most do not know it. Many will not find out until it is too late to change course.
-          </p>
+          <div style={{ display: 'flex', gap: '48px', flexWrap: 'wrap' }}>
+            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: '24px' }}>
+              <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>87%</div>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '6px' }}>don't know they have it</div>
+            </div>
+            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: '24px' }}>
+              <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>14%</div>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '6px' }}>of all US adults</div>
+            </div>
+            <div style={{ borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: '24px' }}>
+              <div style={{ fontFamily: 'Georgia, serif', fontSize: '40px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>131K</div>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '6px' }}>new kidney failure cases, 2023</div>
+            </div>
+          </div>
+          <SourceCredit light>Source: CDC Chronic Kidney Disease Fact Sheet, March 2026</SourceCredit>
         </div>
       </section>
 
-      {/* ── BY THE NUMBERS ───────────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>By the Numbers · CDC, 2026</ChapterLabel>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(28px, 4vw, 40px)',
-            fontWeight: '300',
-            color: '#1a1a1a',
-            margin: '0 0 48px',
-            lineHeight: '1.2'
-          }}>
-            The scale of the crisis.
-          </h2>
+      {/* ═══════════════════════════════════════════════════════════════════════
+          RACIAL DISPARITIES — dark, horizontal bar chart
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#1a1a1a', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel light>CKD Prevalence by Race &amp; Ethnicity</ChapterLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
 
-          {/* Stat grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '2px',
-            marginBottom: '60px'
-          }}>
-            {[
-              { stat: '37M', label: 'Americans living with CKD', source: '14% of all US adults' },
-              { stat: '87%', label: 'don\'t know they have it', source: 'CKD is largely symptom-free until late stages' },
-              { stat: '131K', label: 'new ESKD cases in 2023', source: '131,564 people started treatment that year' },
-              { stat: '831K', label: 'living with kidney failure', source: '67% on dialysis · 33% transplant' },
-            ].map(({ stat, label, source }) => (
-              <div key={stat} style={{
-                background: '#faf7f3',
-                padding: '32px 28px',
-              }}>
-                <div style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: 'clamp(36px, 5vw, 52px)',
-                  fontWeight: '300',
-                  color: '#c45a3b',
-                  lineHeight: 1,
-                  marginBottom: '10px'
-                }}>
-                  {stat}
-                </div>
-                <div style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  color: '#1a1a1a',
-                  marginBottom: '6px',
-                  lineHeight: '1.3'
-                }}>
-                  {label}
-                </div>
-                <div style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '12px',
-                  color: '#888',
-                  lineHeight: '1.4'
-                }}>
-                  {source}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Rule />
-          <p style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '16px',
-            lineHeight: '1.8',
-            color: '#555',
-            maxWidth: '680px'
-          }}>
-            Chronic Kidney Disease is a condition in which the kidneys lose their ability to filter
-            waste and excess fluid from the blood. It progresses through five stages, defined by how
-            much filtering capacity remains. By the time most people notice symptoms, significant
-            damage has already occurred.
-          </p>
-        </div>
-      </section>
-
-      {/* ── RACIAL DISPARITY ─────────────────────────────────────────────────── */}
-      <section style={{ background: '#1a1a1a', padding: '80px 32px', color: '#fff' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel light>Who Bears the Burden</ChapterLabel>
-          <h2 style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: 'clamp(28px, 4vw, 40px)',
-            fontWeight: '300',
-            color: '#fff',
-            margin: '0 0 16px',
-            lineHeight: '1.2'
-          }}>
-            This disease does not strike equally.
-          </h2>
-          <p style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '16px',
-            lineHeight: '1.8',
-            color: 'rgba(255,255,255,0.55)',
-            maxWidth: '600px',
-            marginBottom: '56px'
-          }}>
-            Geography, race, and income shape who gets sick, who gets tested, and who survives.
-            The numbers below are not biology — they are the result of structural inequity.
-          </p>
-
-          {/* CKD Prevalence by race */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '2px',
-            marginBottom: '56px'
-          }}>
-            {[
-              { group: 'Non-Hispanic Black', pct: '22%', note: 'CKD prevalence', highlight: true },
-              { group: 'Non-Hispanic White', pct: '13%', note: 'CKD prevalence', highlight: false },
-              { group: 'Hispanic', pct: '12%', note: 'CKD prevalence', highlight: false },
-              { group: 'Adults 65+', pct: '34%', note: 'CKD prevalence', highlight: false },
-            ].map(({ group, pct, note, highlight }) => (
-              <div key={group} style={{
-                background: highlight ? 'rgba(196,90,59,0.12)' : 'rgba(255,255,255,0.04)',
-                borderTop: highlight ? '2px solid #c45a3b' : '2px solid rgba(255,255,255,0.08)',
-                padding: '28px 24px'
-              }}>
-                <div style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: '40px',
-                  fontWeight: '300',
-                  color: highlight ? '#c45a3b' : 'rgba(255,255,255,0.8)',
-                  lineHeight: 1,
-                  marginBottom: '10px'
-                }}>
-                  {pct}
-                </div>
-                <div style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  color: '#fff',
-                  marginBottom: '4px'
-                }}>
-                  {group}
-                </div>
-                <div style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '12px',
-                  color: 'rgba(255,255,255,0.35)'
-                }}>
-                  {note}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* ESKD disparity callout */}
-          <div style={{
-            borderLeft: '3px solid #c45a3b',
-            paddingLeft: '32px',
-            maxWidth: '640px'
-          }}>
-            <p style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(18px, 2.5vw, 24px)',
-              fontWeight: '300',
-              color: '#fff',
-              lineHeight: '1.5',
-              margin: '0 0 16px'
-            }}>
-              Non-Hispanic Black adults develop kidney failure at <strong style={{ color: '#c45a3b', fontWeight: '400' }}>4 times the rate</strong> of
-              non-Hispanic White adults.
-            </p>
-            <p style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '14px',
-              color: 'rgba(255,255,255,0.4)',
-              margin: 0
-            }}>
-              Hispanic adults develop ESKD at twice the rate of non-Hispanic White adults. · Source: CDC, March 2026
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── ESKD CAUSES ──────────────────────────────────────────────────────── */}
-      <section style={{ background: '#111', padding: '80px 32px', color: '#fff' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel light>What Drives Kidney Failure</ChapterLabel>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px' }}>
+            {/* Left: heading */}
             <div>
               <h2 style={{
                 fontFamily: 'Georgia, serif',
-                fontSize: 'clamp(24px, 3.5vw, 36px)',
-                fontWeight: '300',
-                color: '#fff',
-                margin: '0 0 16px',
-                lineHeight: '1.25'
+                fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: '300',
+                color: '#fff', lineHeight: '1.15', margin: '0 0 24px'
               }}>
-                End-stage kidney disease<br />
-                <span style={{ color: '#c45a3b' }}>by cause.</span>
+                This disease does not<br />
+                <span style={{ color: '#c45a3b' }}>strike equally.</span>
               </h2>
-              <p style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '14px',
-                lineHeight: '1.7',
-                color: 'rgba(255,255,255,0.45)',
-                margin: '0 0 8px'
-              }}>
-                Among the 131,564 people who began ESKD treatment in 2023,
-                the leading causes were conditions deeply tied to social determinants of health.
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.8', color: 'rgba(255,255,255,0.5)', margin: '0 0 40px' }}>
+                These are not random numbers. They reflect decades of unequal access
+                to care, housing, food, and economic stability — not genetic destiny.
               </p>
-              <p style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '12px',
-                color: 'rgba(255,255,255,0.25)'
-              }}>
-                Source: USRDS via CDC, 2026
-              </p>
-            </div>
-            <div style={{ paddingTop: '4px' }}>
-              <CauseBar label="Diabetes" pct={37} accent />
-              <CauseBar label="High Blood Pressure" pct={27} accent />
-              <CauseBar label="Glomerulonephritis" pct={14} />
-              <CauseBar label="Cystic Kidney Disease" pct={5} />
-              <CauseBar label="Other / Unknown" pct={17} />
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── WHAT IS CKD ──────────────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>{t('whatIsTitle')}</ChapterLabel>
-          <div style={{ maxWidth: '680px' }}>
-            <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
-              <p style={{ marginBottom: '20px' }}>{t('whatIsPara1')}</p>
-              <p style={{ marginBottom: '24px' }}>{t('whatIsPara2')}</p>
-              <ul style={{ marginLeft: '20px', marginBottom: '24px', color: '#555' }}>
-                <li style={{ marginBottom: '12px' }}>{t('whatIsItem1')}</li>
-                <li style={{ marginBottom: '12px' }}>{t('whatIsItem2')}</li>
-                <li style={{ marginBottom: '12px' }}>{t('whatIsItem3')}</li>
-                <li>{t('whatIsItem4')}</li>
-              </ul>
-              <p style={{ marginBottom: '20px' }}>{t('whatIsPara3')}</p>
-            </div>
-            <div style={{ background: '#faf7f3', padding: '24px 28px', borderLeft: '4px solid #c45a3b' }}>
-              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.7', color: '#1a1a1a', margin: 0 }}>
-                <strong>{t('whatIsImportant')}</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── HOW DOCTORS FIND IT ──────────────────────────────────────────────── */}
-      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>{t('howFoundTitle')}</ChapterLabel>
-          <div style={{ maxWidth: '680px' }}>
-            <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
-              <p style={{ marginBottom: '20px' }}>{t('howFoundPara1')}</p>
-              <ul style={{ marginLeft: '20px', marginBottom: '24px', color: '#555' }}>
-                <li style={{ marginBottom: '12px' }}>{t('howFoundItem1')}</li>
-                <li style={{ marginBottom: '12px' }}>{t('howFoundItem2')}</li>
-                <li>{t('howFoundItem3')}</li>
-              </ul>
-              <p style={{ marginBottom: '20px' }}>{t('howFoundPara2')}</p>
-              <ul style={{ marginLeft: '20px', color: '#555' }}>
-                <li style={{ marginBottom: '12px' }}>{t('howFoundItem4')}</li>
-                <li>{t('howFoundItem5')}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── THE FIVE STAGES ──────────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>{t('stagesTitle')}</ChapterLabel>
-          <p style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '17px',
-            lineHeight: '1.9',
-            color: '#555',
-            maxWidth: '680px',
-            marginBottom: '40px'
-          }}>
-            {t('stagesPara1')}
-          </p>
-          <div style={{ overflowX: 'auto', marginBottom: '32px' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{
-                    padding: '14px 20px',
-                    textAlign: 'left',
-                    fontFamily: 'system-ui, sans-serif',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    color: '#fff',
-                    background: '#1a1a1a',
-                    borderRight: '1px solid #333'
-                  }}>{t('stageCol1')}</th>
-                  <th style={{
-                    padding: '14px 20px',
-                    textAlign: 'left',
-                    fontFamily: 'system-ui, sans-serif',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    color: '#fff',
-                    background: '#1a1a1a',
-                    borderRight: '1px solid #333'
-                  }}>{t('stageCol2')}</th>
-                  <th style={{
-                    padding: '14px 20px',
-                    textAlign: 'left',
-                    fontFamily: 'system-ui, sans-serif',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    color: '#fff',
-                    background: '#1a1a1a'
-                  }}>{t('stageCol3')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['stage1', 'stage1Egfr', 'stage1Func'],
-                  ['stage2', 'stage2Egfr', 'stage2Func'],
-                  ['stage3a', 'stage3aEgfr', 'stage3aFunc'],
-                  ['stage3b', 'stage3bEgfr', 'stage3bFunc'],
-                  ['stage4', 'stage4Egfr', 'stage4Func'],
-                  ['stage5', 'stage5Egfr', 'stage5Func'],
-                ].map(([stageKey, egfrKey, funcKey], i) => (
-                  <tr key={stageKey} style={{
-                    background: i % 2 === 0 ? '#fff' : '#faf7f3',
-                    borderBottom: '1px solid #e8e4df'
-                  }}>
-                    <td style={{
-                      padding: '16px 20px',
-                      borderRight: '1px solid #e8e4df',
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      color: '#1a1a1a'
-                    }}>
-                      {t(stageKey as Parameters<typeof t>[0])}
-                    </td>
-                    <td style={{
-                      padding: '16px 20px',
-                      borderRight: '1px solid #e8e4df',
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '14px',
-                      color: '#c45a3b',
-                      fontWeight: '500'
-                    }}>
-                      {t(egfrKey as Parameters<typeof t>[0])}
-                    </td>
-                    <td style={{
-                      padding: '16px 20px',
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '14px',
-                      color: '#555'
-                    }}>
-                      {t(funcKey as Parameters<typeof t>[0])}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.8', color: '#888', maxWidth: '680px' }}>
-            {t('stagesPara2')}
-          </p>
-        </div>
-      </section>
-
-      {/* ── SYMPTOMS ─────────────────────────────────────────────────────────── */}
-      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>{t('symptomsTitle')}</ChapterLabel>
-          <div style={{ maxWidth: '680px' }}>
-            <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
-              <p style={{ marginBottom: '20px' }}>{t('symptomsPara1')}</p>
-              <p style={{ marginBottom: '20px', color: '#555' }}><strong style={{ color: '#1a1a1a' }}>{t('symptomsWhy')}</strong></p>
-              <p style={{ marginBottom: '20px', color: '#555' }}><strong style={{ color: '#1a1a1a' }}>{t('symptomsWhen')}</strong></p>
-              <p style={{ marginBottom: '20px', color: '#555' }}><strong style={{ color: '#1a1a1a' }}>{t('symptomsAdvanced')}</strong></p>
-              <ul style={{ marginLeft: '20px', color: '#555' }}>
-                {(['symptomItem1','symptomItem2','symptomItem3','symptomItem4','symptomItem5','symptomItem6','symptomItem7'] as const).map((key, i, arr) => (
-                  <li key={key} style={{ marginBottom: i < arr.length - 1 ? '12px' : 0 }}>{t(key)}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── TREATMENT ────────────────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>{t('treatmentTitle')}</ChapterLabel>
-          <div style={{ maxWidth: '680px' }}>
-            <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
-              <p style={{ marginBottom: '20px' }}>{t('treatmentPara1')}</p>
-              <p style={{ marginBottom: '24px' }}>{t('treatmentPara2')}</p>
-              <ul style={{ marginLeft: '20px', marginBottom: '32px', color: '#555' }}>
-                {(['treatItem1','treatItem2','treatItem3','treatItem4','treatItem5'] as const).map((key, i, arr) => (
-                  <li key={key} style={{ marginBottom: i < arr.length - 1 ? '12px' : 0 }}>{t(key)}</li>
-                ))}
-              </ul>
-            </div>
-            <div style={{ background: '#faf7f3', padding: '28px 32px', borderLeft: '4px solid #1a1a1a' }}>
-              <div style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '11px',
-                fontWeight: '600',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                color: '#c45a3b',
-                marginBottom: '12px'
-              }}>
-                {t('eskdTitle')}
+              {/* 4× ESKD rate callout box */}
+              <div style={{ background: 'rgba(196,90,59,0.1)', border: '1px solid rgba(196,90,59,0.3)', padding: '28px' }}>
+                <div style={{ fontFamily: 'Georgia, serif', fontSize: '52px', fontWeight: '300', color: '#c45a3b', lineHeight: 1, marginBottom: '10px' }}>
+                  4×
+                </div>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#fff', fontWeight: '600', marginBottom: '6px' }}>
+                  higher rate of kidney failure
+                </div>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: '1.6' }}>
+                  Non-Hispanic Black adults develop end-stage kidney disease at 4 times
+                  the rate of non-Hispanic White adults.
+                  Hispanic adults develop ESKD at 2 times the rate.
+                </div>
               </div>
-              <p style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '16px',
-                lineHeight: '1.7',
-                color: '#1a1a1a',
-                margin: 0
-              }}>
-                {t('eskdDesc')}
-              </p>
-              <p style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '13px',
-                color: '#888',
-                marginTop: '12px',
-                marginBottom: 0
-              }}>
-                As of 2023, 831,000 Americans are living with ESKD — 67% on dialysis, 33% with a transplant.
-              </p>
+              <SourceCredit light>Source: CDC, March 2026 · USRDS Annual Data Report 2023</SourceCredit>
+            </div>
+
+            {/* Right: bar chart */}
+            <div style={{ paddingTop: '8px' }}>
+              <RaceBar label="Non-Hispanic Black" pct={22} max={36} color="#c45a3b" note="Highest prevalence of any racial/ethnic group" />
+              <RaceBar label="Adults 65 and older" pct={34} max={36} color="#e8926a" note="Age is a major independent risk factor" />
+              <RaceBar label="Non-Hispanic White" pct={13} max={36} color="rgba(255,255,255,0.5)" />
+              <RaceBar label="Hispanic" pct={12} max={36} color="rgba(255,255,255,0.35)" />
+              <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.3px', lineHeight: '1.6' }}>
+                  CKD prevalence among U.S. adults by race/ethnicity and age group.<br />
+                  Bar length proportional to prevalence rate.
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── WHEN TO SEE A DOCTOR ─────────────────────────────────────────────── */}
-      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>{t('whenSeeTitle')}</ChapterLabel>
-          <div style={{ maxWidth: '680px' }}>
-            <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#333' }}>
-              <p style={{ marginBottom: '20px' }}>{t('whenSeePara1')}</p>
-              <ul style={{ marginLeft: '20px', marginBottom: '24px', color: '#555' }}>
-                {(['riskItem1','riskItem2','riskItem3','riskItem4','riskItem5'] as const).map((key, i, arr) => (
-                  <li key={key} style={{ marginBottom: i < arr.length - 1 ? '12px' : 0 }}>{t(key)}</li>
-                ))}
-              </ul>
-              <p style={{ marginBottom: '20px' }}><strong style={{ color: '#1a1a1a' }}>{t('monitoringNote')}</strong></p>
-              <ul style={{ marginLeft: '20px', marginBottom: '24px', color: '#555' }}>
-                <li style={{ marginBottom: '12px' }}>{t('monitorItem1')}</li>
-                <li>{t('monitorItem2')}</li>
-              </ul>
-              <p>{t('whenSeePara2')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ═══════════════════════════════════════════════════════════════════════
+          ESKD — two donut charts side by side
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#111', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel light>End-Stage Kidney Disease · 2023</ChapterLabel>
+          <h2 style={{
+            fontFamily: 'Georgia, serif', fontSize: 'clamp(24px, 3.5vw, 38px)',
+            fontWeight: '300', color: '#fff', margin: '0 0 56px', lineHeight: '1.2'
+          }}>
+            831,000 Americans are living with<br />
+            <span style={{ color: '#c45a3b' }}>kidney failure.</span>
+          </h2>
 
-      {/* ── TYPES ─────────────────────────────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: '80px 32px' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
-          <ChapterLabel>{t('typesTitle')}</ChapterLabel>
-          <div style={{ maxWidth: '680px' }}>
-            <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#555', marginBottom: '40px' }}>
-              {t('typesPara1')}
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              {[
-                { titleKey: 'apol1TypeTitle' as const, descKey: 'apol1TypeDesc' as const, ctaKey: 'learnApol1' as const, page: 'apol1' },
-                { titleKey: 'fsgsTypeTitle' as const, descKey: 'fsgsTypeDesc' as const, ctaKey: 'learnFsgs' as const, page: 'fsgs' },
-              ].map(({ titleKey, descKey, ctaKey, page }) => (
-                <div key={page} style={{
-                  background: '#faf7f3',
-                  padding: '32px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  gap: '32px'
-                }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{
-                      fontFamily: 'Georgia, serif',
-                      fontSize: '20px',
-                      fontWeight: '400',
-                      color: '#1a1a1a',
-                      marginBottom: '10px'
-                    }}>
-                      {t(titleKey)}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
+
+            {/* Chart 1: Causes */}
+            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '40px 36px' }}>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '32px' }}>
+                What causes kidney failure
+              </div>
+              <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+                <div style={{ flexShrink: 0 }}>
+                  <DonutChart data={ESKD_CAUSES} size={200} innerR={68} label="100%" sublabel="OF CASES" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  {ESKD_CAUSES.map(d => <LegendItem key={d.label} color={d.color} label={d.label} pct={d.value} />)}
+                </div>
+              </div>
+              <SourceCredit light>Among 131,564 new ESKD cases in 2023 · USRDS / CDC 2026</SourceCredit>
+            </div>
+
+            {/* Chart 2: Treatment split */}
+            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '40px 36px' }}>
+              <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '32px' }}>
+                How patients are treated
+              </div>
+              <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+                <div style={{ flexShrink: 0 }}>
+                  <DonutChart data={ESKD_TREATMENT} size={200} innerR={68} label="831K" sublabel="LIVING WITH ESKD" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  {ESKD_TREATMENT.map(d => (
+                    <div key={d.label} style={{ marginBottom: '28px' }}>
+                      <LegendItem color={d.color} label={d.label} pct={d.value} />
+                      <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.3)', marginTop: '2px', marginLeft: '20px', lineHeight: '1.5' }}>
+                        {d.label === 'Dialysis'
+                          ? '≈ 557,000 people · requires sessions 3× / week'
+                          : '≈ 274,000 people · kidney transplant recipients'}
+                      </div>
                     </div>
-                    <p style={{
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '15px',
-                      lineHeight: '1.7',
-                      color: '#555',
-                      margin: 0
-                    }}>
-                      {t(descKey)}
-                    </p>
+                  ))}
+                  <div style={{ marginTop: '8px' }}>
+                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '28px', fontWeight: '300', color: '#fff', lineHeight: 1 }}>67%</div>
+                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>depend on dialysis to survive</div>
                   </div>
-                  <button
-                    onClick={() => onNavigate && onNavigate(page)}
-                    style={{
-                      background: 'none',
-                      color: '#c45a3b',
-                      border: '1px solid #c45a3b',
-                      padding: '10px 20px',
-                      cursor: 'pointer',
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      letterSpacing: '1.5px',
-                      textTransform: 'uppercase',
-                      whiteSpace: 'nowrap',
-                      flexShrink: 0,
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.background = '#c45a3b';
-                      e.currentTarget.style.color = '#fff';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.background = 'none';
-                      e.currentTarget.style.color = '#c45a3b';
-                    }}
-                  >
-                    {t(ctaKey)} →
-                  </button>
                 </div>
-              ))}
-              <div style={{ background: '#faf7f3', padding: '32px' }}>
-                <div style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: '20px',
-                  fontWeight: '400',
-                  color: '#1a1a1a',
-                  marginBottom: '10px'
-                }}>
-                  {t('otherTypesTitle')}
+              </div>
+              <SourceCredit light>Total prevalent ESKD population 2023 · USRDS / CDC 2026</SourceCredit>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          WHAT IS CKD — cream, medical intro
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel>{t('whatIsTitle')}</ChapterLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}>
+            <div>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '20px' }}>{t('whatIsPara1')}</p>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '20px' }}>{t('whatIsPara2')}</p>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444' }}>{t('whatIsPara3')}</p>
+            </div>
+            <div>
+              <div style={{ background: '#fff', padding: '0' }}>
+                <div style={{ background: '#c45a3b', padding: '16px 24px' }}>
+                  <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)' }}>
+                    Common risk factors
+                  </div>
                 </div>
-                <p style={{
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '15px',
-                  lineHeight: '1.7',
-                  color: '#555',
-                  margin: 0
-                }}>
-                  {t('otherTypesDesc')}
+                {[t('whatIsItem1'), t('whatIsItem2'), t('whatIsItem3'), t('whatIsItem4')].map((item, i) => (
+                  <div key={i} style={{ padding: '16px 24px', borderBottom: i < 3 ? '1px solid #f0ece7' : 'none', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0, marginTop: '8px' }} />
+                    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.6', color: '#333' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: '#1a1a1a', padding: '20px 24px', marginTop: '2px' }}>
+                <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+                  <strong style={{ color: '#fff' }}>{t('whatIsImportant')}</strong>
                 </p>
               </div>
             </div>
@@ -680,39 +344,233 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
         </div>
       </section>
 
-      {/* ── CLOSING ──────────────────────────────────────────────────────────── */}
+      {/* ═══════════════════════════════════════════════════════════════════════
+          THE FIVE STAGES — white, table with visual eGFR bars
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel>{t('stagesTitle')}</ChapterLabel>
+          <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: '#666', maxWidth: '600px', marginBottom: '40px' }}>
+            {t('stagesPara1')}
+          </p>
+
+          {/* Visual stage progression */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '2px', marginBottom: '40px' }}>
+            {[
+              { stage: '1', egfr: '90+', pct: 100, label: 'Normal or high', color: '#4a8a4a' },
+              { stage: '2', egfr: '60–89', pct: 75, label: 'Mildly decreased', color: '#8ab04a' },
+              { stage: '3a', egfr: '45–59', pct: 55, label: 'Mild–moderate', color: '#d4a020' },
+              { stage: '3b', egfr: '30–44', pct: 40, label: 'Moderate–severe', color: '#d97020' },
+              { stage: '4', egfr: '15–29', pct: 24, label: 'Severely decreased', color: '#c45a3b' },
+              { stage: '5', egfr: '<15', pct: 10, label: 'Kidney failure', color: '#8b1a1a' },
+            ].map(({ stage, egfr, pct, label, color }) => (
+              <div key={stage} style={{ background: '#faf7f3', padding: '20px 16px', textAlign: 'center' }}>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '10px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(0,0,0,0.35)', marginBottom: '12px' }}>
+                  Stage {stage}
+                </div>
+                {/* eGFR bar */}
+                <div style={{ height: '80px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', marginBottom: '12px' }}>
+                  <div style={{ width: '36px', height: `${pct}%`, background: color, borderRadius: '2px 2px 0 0', minHeight: '8px' }} />
+                </div>
+                <div style={{ fontFamily: 'Georgia, serif', fontSize: '13px', fontWeight: '400', color: '#1a1a1a', marginBottom: '4px' }}>
+                  eGFR {egfr}
+                </div>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', color: '#888', lineHeight: '1.3' }}>
+                  {label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#999', lineHeight: '1.7', maxWidth: '600px' }}>
+            {t('stagesPara2')}
+          </p>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          HOW DOCTORS FIND IT + SYMPTOMS — two-column, cream
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px' }}>
+
+            {/* How doctors find it */}
+            <div>
+              <ChapterLabel>{t('howFoundTitle')}</ChapterLabel>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: '#444', marginBottom: '24px' }}>{t('howFoundPara1')}</p>
+              {[t('howFoundItem1'), t('howFoundItem2'), t('howFoundItem3')].map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: '14px', marginBottom: '16px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#c45a3b', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontWeight: '700', flexShrink: 0 }}>
+                    {i + 1}
+                  </div>
+                  <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.7', color: '#333', paddingTop: '4px' }}>{item}</span>
+                </div>
+              ))}
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.8', color: '#555', marginTop: '20px', marginBottom: '12px' }}>{t('howFoundPara2')}</p>
+              <div style={{ paddingLeft: '20px' }}>
+                {[t('howFoundItem4'), t('howFoundItem5')].map((item, i) => (
+                  <div key={i} style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.7', color: '#555', marginBottom: '8px', display: 'flex', gap: '10px' }}>
+                    <span style={{ color: '#c45a3b', fontWeight: '700' }}>—</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Symptoms */}
+            <div>
+              <ChapterLabel>{t('symptomsTitle')}</ChapterLabel>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: '#444', marginBottom: '8px' }}>{t('symptomsPara1')}</p>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: '#888', marginBottom: '24px', fontStyle: 'italic' }}>
+                {t('symptomsWhy')}
+              </p>
+              <div style={{ background: '#fff', padding: '4px 0' }}>
+                {(['symptomItem1','symptomItem2','symptomItem3','symptomItem4','symptomItem5','symptomItem6','symptomItem7'] as const).map((key, i) => (
+                  <div key={key} style={{
+                    display: 'flex', gap: '14px', alignItems: 'center',
+                    padding: '13px 20px',
+                    borderBottom: i < 6 ? '1px solid #f0ece7' : 'none'
+                  }}>
+                    <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0 }} />
+                    <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', color: '#444', lineHeight: '1.5' }}>{t(key)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          TREATMENT — white
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel>{t('treatmentTitle')}</ChapterLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}>
+            <div>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '20px' }}>{t('treatmentPara1')}</p>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '28px' }}>{t('treatmentPara2')}</p>
+              {(['treatItem1','treatItem2','treatItem3','treatItem4','treatItem5'] as const).map((key, i) => (
+                <div key={key} style={{ display: 'flex', gap: '14px', marginBottom: '14px' }}>
+                  <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0, marginTop: '10px' }} />
+                  <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '15px', lineHeight: '1.7', color: '#444' }}>{t(key)}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{ background: '#1a1a1a', padding: '32px' }}>
+                <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: '16px' }}>
+                  {t('eskdTitle')}
+                </div>
+                <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: 'rgba(255,255,255,0.75)', margin: '0 0 24px' }}>
+                  {t('eskdDesc')}
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
+                  <div style={{ background: 'rgba(196,90,59,0.15)', padding: '20px' }}>
+                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '300', color: '#c45a3b', lineHeight: 1 }}>67%</div>
+                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '6px' }}>on dialysis</div>
+                  </div>
+                  <div style={{ background: 'rgba(107,140,186,0.15)', padding: '20px' }}>
+                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '32px', fontWeight: '300', color: '#6b8cba', lineHeight: 1 }}>33%</div>
+                    <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '6px' }}>transplant</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          WHEN TO SEE A DOCTOR — cream
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#faf7f3', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel>{t('whenSeeTitle')}</ChapterLabel>
+          <div style={{ maxWidth: '680px' }}>
+            <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#444', marginBottom: '32px' }}>{t('whenSeePara1')}</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px', marginBottom: '32px' }}>
+              {(['riskItem1','riskItem2','riskItem3','riskItem4','riskItem5'] as const).map((key, i) => (
+                <div key={key} style={{ background: '#fff', padding: '20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c45a3b', flexShrink: 0, marginTop: '8px' }} />
+                  <span style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.6', color: '#333' }}>{t(key)}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '16px', lineHeight: '1.8', color: '#444' }}>{t('whenSeePara2')}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          TYPES — white, APOL1 + FSGS cards
+      ══════════════════════════════════════════════════════════════════════════ */}
+      <section style={{ background: '#fff', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <ChapterLabel>{t('typesTitle')}</ChapterLabel>
+          <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '17px', lineHeight: '1.9', color: '#555', maxWidth: '600px', marginBottom: '40px' }}>
+            {t('typesPara1')}
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2px' }}>
+            {[
+              { titleKey: 'apol1TypeTitle' as const, descKey: 'apol1TypeDesc' as const, ctaKey: 'learnApol1' as const, page: 'apol1', accent: '#c45a3b' },
+              { titleKey: 'fsgsTypeTitle' as const, descKey: 'fsgsTypeDesc' as const, ctaKey: 'learnFsgs' as const, page: 'fsgs', accent: '#6b8cba' },
+            ].map(({ titleKey, descKey, ctaKey, page, accent }) => (
+              <div key={page} style={{ background: '#faf7f3', padding: '32px', borderTop: `3px solid ${accent}` }}>
+                <div style={{ fontFamily: 'Georgia, serif', fontSize: '19px', fontWeight: '400', color: '#1a1a1a', marginBottom: '12px', lineHeight: '1.3' }}>
+                  {t(titleKey)}
+                </div>
+                <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: '#666', margin: '0 0 24px' }}>
+                  {t(descKey)}
+                </p>
+                <button
+                  onClick={() => onNavigate && onNavigate(page)}
+                  style={{
+                    background: 'none', color: accent, border: `1px solid ${accent}`,
+                    padding: '10px 18px', cursor: 'pointer',
+                    fontFamily: 'system-ui, sans-serif', fontSize: '11px',
+                    fontWeight: '600', letterSpacing: '1.5px', textTransform: 'uppercase',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = accent; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = accent; }}
+                >
+                  {t(ctaKey)} →
+                </button>
+              </div>
+            ))}
+            <div style={{ background: '#faf7f3', padding: '32px', borderTop: '3px solid #a0745a' }}>
+              <div style={{ fontFamily: 'Georgia, serif', fontSize: '19px', fontWeight: '400', color: '#1a1a1a', marginBottom: '12px', lineHeight: '1.3' }}>
+                {t('otherTypesTitle')}
+              </div>
+              <p style={{ fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '1.7', color: '#666', margin: 0 }}>
+                {t('otherTypesDesc')}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          CLOSING — dark CTA
+      ══════════════════════════════════════════════════════════════════════════ */}
       <section style={{ background: '#1a1a1a', padding: '100px 32px', color: '#fff' }}>
-        <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ maxWidth: '640px' }}>
-            <ChapterLabel light>The Bottom Line</ChapterLabel>
+            <ChapterLabel light>{t('bottomLineTitle')}</ChapterLabel>
             <h2 style={{
               fontFamily: 'Georgia, serif',
-              fontSize: 'clamp(28px, 4.5vw, 48px)',
-              fontWeight: '300',
-              color: '#fff',
-              lineHeight: '1.2',
-              margin: '0 0 32px'
-            }}>
-              {t('bottomLineTitle')}
-            </h2>
-            <p style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '17px',
-              lineHeight: '1.8',
-              color: 'rgba(255,255,255,0.55)',
-              marginBottom: '40px'
+              fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: '300',
+              color: '#fff', lineHeight: '1.15', margin: '0 0 32px'
             }}>
               {t('bottomLineDesc')}
-            </p>
+            </h2>
             <p style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: '18px',
-              fontStyle: 'italic',
-              color: '#c45a3b',
-              lineHeight: '1.6',
-              marginBottom: '48px',
-              borderLeft: '3px solid #c45a3b',
-              paddingLeft: '24px'
+              fontFamily: 'Georgia, serif', fontSize: '18px', fontStyle: 'italic',
+              color: '#c45a3b', lineHeight: '1.6', margin: '0 0 48px',
+              borderLeft: '3px solid #c45a3b', paddingLeft: '24px'
             }}>
               In the Bronx, where kidney disease rates are among the highest in the country,
               knowing your numbers is not just health advice. It is survival.
@@ -721,16 +579,9 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
               <button
                 onClick={() => onNavigate && onNavigate('map')}
                 style={{
-                  background: '#c45a3b',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '14px 32px',
-                  cursor: 'pointer',
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  letterSpacing: '2px',
-                  textTransform: 'uppercase',
+                  background: '#c45a3b', color: '#fff', border: 'none', padding: '14px 32px',
+                  cursor: 'pointer', fontFamily: 'system-ui, sans-serif', fontSize: '12px',
+                  fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase',
                   transition: 'background 0.2s ease'
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#a84830'; }}
@@ -741,26 +592,14 @@ export const KidneyDiseasePage: React.FC<KidneyDiseasePageProps> = ({ onNavigate
               <button
                 onClick={() => onNavigate && onNavigate('stories')}
                 style={{
-                  background: 'none',
-                  color: 'rgba(255,255,255,0.6)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  padding: '14px 32px',
-                  cursor: 'pointer',
-                  fontFamily: 'system-ui, sans-serif',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  letterSpacing: '2px',
-                  textTransform: 'uppercase',
+                  background: 'none', color: 'rgba(255,255,255,0.6)',
+                  border: '1px solid rgba(255,255,255,0.2)', padding: '14px 32px',
+                  cursor: 'pointer', fontFamily: 'system-ui, sans-serif', fontSize: '12px',
+                  fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase',
                   transition: 'all 0.2s ease'
                 }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)';
-                  e.currentTarget.style.color = '#fff';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
-                  e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
-                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
               >
                 Read Community Stories
               </button>

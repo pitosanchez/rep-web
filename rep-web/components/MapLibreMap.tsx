@@ -7,6 +7,8 @@ interface MapLibreMapProps {
   selectedZip: string | null;
   onZipClick: (zip: string) => void;
   visibleLayers: {
+    /** Cost of Living Burden (TCOL ratio) — default ON, primary structural equity layer */
+    costBurden: boolean;
     diseaseBurden: boolean;
     careAccess: boolean;
     environmentalExposure: boolean;
@@ -92,8 +94,33 @@ export default function MapLibreMap({
         if (!geoJson.success || !geoJson.data) {
           throw new Error('Invalid Bronx ZIP response');
         }
+
+        // Enrich features with cost_burden_ratio from /api/cost-of-living
+        let enrichedFeatures = geoJson.data.features;
+        try {
+          const costRes = await fetch('/api/cost-of-living');
+          if (costRes.ok) {
+            const costJson = await costRes.json();
+            if (costJson.success && Array.isArray(costJson.data)) {
+              const costMap: Record<string, number> = {};
+              for (const entry of costJson.data) {
+                costMap[entry.zip] = entry.cost_burden_ratio;
+              }
+              enrichedFeatures = geoJson.data.features.map((f: any) => ({
+                ...f,
+                properties: {
+                  ...f.properties,
+                  cost_burden_ratio: costMap[f.properties.zip] ?? 1.0,
+                },
+              }));
+            }
+          }
+        } catch {
+          // Cost data unavailable — map still works without it
+        }
+
         if (!cancelled) {
-          setGeoData(geoJson.data);
+          setGeoData({ ...geoJson.data, features: enrichedFeatures });
         }
 
         const adiRes = await fetch('/api/adi/blockgroups');
@@ -149,6 +176,37 @@ export default function MapLibreMap({
       });
 
       // ADI layers are added by separate useEffect when ready and style is loaded
+
+      // Cost Burden layer — TCOL cost_burden_ratio (default ON, primary layer)
+      map.current.addLayer({
+        id: 'bronx-cost-burden',
+        type: 'circle',
+        source: 'bronx-zips',
+        paint: {
+          'circle-radius': [
+            'interpolate', ['linear'], ['get', 'cost_burden_ratio'],
+            0.7, 10,
+            2.5, 28,
+          ],
+          'circle-color': [
+            'interpolate', ['linear'], ['get', 'cost_burden_ratio'],
+            0.7, '#3b82f6',   // blue — low burden
+            1.0, '#f59e0b',   // amber — at threshold
+            1.5, '#ef4444',   // red — high burden
+            2.5, '#7f1d1d',   // dark red — severe burden
+          ],
+          'circle-opacity': [
+            'case',
+            ['boolean', ['feature-state', 'hover'], false], 0.95, 0.85,
+          ],
+          'circle-stroke-color': '#1a1a1a',
+          'circle-stroke-width': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 3, 2,
+          ],
+          'circle-stroke-opacity': 0.9,
+        },
+      });
 
       // Disease Burden layer - based on weight_tot (proxy for burden)
       map.current.addLayer({
@@ -282,7 +340,7 @@ export default function MapLibreMap({
       });
 
       // Layer IDs for interaction
-      const interactiveLayers = ['bronx-zips-fill', 'bronx-care-access', 'bronx-exposure', 'bronx-transit'];
+      const interactiveLayers = ['bronx-cost-burden', 'bronx-zips-fill', 'bronx-care-access', 'bronx-exposure', 'bronx-transit'];
 
       // Handle clicks on all layers
       interactiveLayers.forEach(layerId => {
@@ -354,11 +412,10 @@ export default function MapLibreMap({
                 <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">${properties.zip}</div>
                 <div style="font-size: 11px; color: #666; margin-bottom: 6px;">${properties.nta_name || 'Unassigned'}</div>
                 <div style="border-top: 1px solid #e8e4df; padding-top: 6px; margin-top: 6px; font-size: 11px;">
-                  <div>NTA Code: <strong>${properties.nta_code || '—'}</strong></div>
+                  ${properties.cost_burden_ratio != null ? `<div style="margin-bottom:4px;padding:3px 6px;background:${properties.cost_burden_ratio > 1.5 ? '#fef2f2' : properties.cost_burden_ratio > 1.0 ? '#fffbeb' : '#f0fdf4'};border-radius:3px;">Cost Burden: <strong>${properties.cost_burden_ratio.toFixed(2)}×</strong></div>` : ''}
                   <div>Residential Weight: <strong>${(properties.weight_res * 100).toFixed(1)}%</strong></div>
                   <div>Total Weight: <strong>${(properties.weight_tot * 100).toFixed(1)}%</strong></div>
                   <div>Exposure Index: <strong>${(properties.exposure_index * 100).toFixed(0)}%</strong></div>
-                  <div>Transit Burden: <strong>${(properties.transit_burden * 100).toFixed(0)}%</strong></div>
                 </div>
               </div>
             `;
@@ -475,6 +532,7 @@ export default function MapLibreMap({
 
     // Count how many ZIP-level layers are visible for opacity adjustment
     const visibleZipLayers = [
+      visibleLayers.costBurden,
       visibleLayers.diseaseBurden,
       visibleLayers.careAccess,
       visibleLayers.environmentalExposure,
@@ -496,6 +554,20 @@ export default function MapLibreMap({
     } else {
       layerOpacity = 0.45;
       strokeWidth = 1;
+    }
+
+    // Cost Burden layer
+    const costBurdenLayerId = 'bronx-cost-burden';
+    if (map.current.getLayer(costBurdenLayerId)) {
+      map.current.setLayoutProperty(
+        costBurdenLayerId, 'visibility',
+        visibleLayers.costBurden ? 'visible' : 'none'
+      );
+      map.current.setPaintProperty(
+        costBurdenLayerId, 'circle-opacity',
+        ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, layerOpacity]
+      );
+      map.current.setPaintProperty(costBurdenLayerId, 'circle-stroke-width', strokeWidth);
     }
 
     // Disease Burden layer
@@ -587,7 +659,7 @@ export default function MapLibreMap({
         visibleLayers.areaDeprivationIndex ? 'visible' : 'none'
       );
       // Adjust ADI opacity when other layers are visible
-      const adiOpacity = (visibleLayers.diseaseBurden || visibleLayers.careAccess || visibleLayers.environmentalExposure || visibleLayers.transit) ? 0.35 : 0.55;
+      const adiOpacity = (visibleLayers.costBurden || visibleLayers.diseaseBurden || visibleLayers.careAccess || visibleLayers.environmentalExposure || visibleLayers.transit) ? 0.35 : 0.55;
       map.current.setPaintProperty(
         adiFillId,
         'fill-opacity',

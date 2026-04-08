@@ -21,6 +21,13 @@ interface MapPageProps {
 
 const layers = [
   {
+    key: 'costBurden' as const,
+    labelKey: 'costBurden' as const,
+    descKey: 'costBurdenDesc' as const,
+    accent: '#dc2626',
+    gradient: 'linear-gradient(to right, #3b82f6, #f59e0b, #dc2626)'
+  },
+  {
     key: 'diseaseBurden' as const,
     labelKey: 'diseaseBurden' as const,
     descKey: 'diseaseBurdenDesc' as const,
@@ -74,7 +81,8 @@ const Panel: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }
 export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNavigate }) => {
   const t = useTranslations('map');
   const [visibleLayers, setVisibleLayers] = useState({
-    diseaseBurden: true,
+    costBurden: true,
+    diseaseBurden: false,
     careAccess: false,
     environmentalExposure: false,
     transit: false,

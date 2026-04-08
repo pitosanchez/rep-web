@@ -4,6 +4,276 @@ import React, { useState, useEffect } from 'react';
 import { stories as patientStories, PatientStory } from '@/lib/stories';
 import { getNeighborhoodForZip } from '@/lib/storyZipMapping';
 
+// ── Cost of living comparison benchmarks ─────────────────────────────────────
+// Source: MIT Living Wage Calculator 2024 (1 adult + 1 child) + ACS 2022 5-yr
+const NYC_BENCH = { label: 'NYC Average', monthly_cost: 6583, median_income: 70745 };
+const US_BENCH  = { label: 'U.S. Average', monthly_cost: 5167, median_income: 74580 };
+
+interface CostEntry {
+  zip: string;
+  neighborhood: string;
+  costs: { housing:number; food:number; transport:number; healthcare:number; childcare:number; other:number };
+  required_income: number;
+  median_income: number;
+  income_gap: number;
+  cost_burden_ratio: number;
+}
+
+// ── What It Costs — plain-language cost section ───────────────────────────────
+
+const COST_COLORS = {
+  housing: '#dc2626', food: '#d97706', transport: '#2563eb',
+  healthcare: '#16a34a', childcare: '#7c3aed', other: '#6b7280',
+} as const;
+
+const COST_LABELS = {
+  housing: 'Rent', food: 'Food', transport: 'Getting Around',
+  healthcare: 'Healthcare', childcare: 'Childcare', other: 'Other Basics',
+} as const;
+
+type CostKey = keyof typeof COST_COLORS;
+const COST_ORDER: CostKey[] = ['housing','childcare','food','healthcare','transport','other'];
+
+function fmt$(n: number) {
+  return '$' + n.toLocaleString();
+}
+
+const CompareCard: React.FC<{
+  label: string;
+  sublabel?: string;
+  monthly_cost: number;
+  median_income: number;
+  isThis?: boolean;
+}> = ({ label, sublabel, monthly_cost, median_income, isThis }) => {
+  const monthly_income = Math.round(median_income / 12);
+  const monthly_gap = monthly_income - monthly_cost;
+  const income_pct = Math.min(100, Math.round((monthly_income / monthly_cost) * 100));
+  const hasGap = monthly_gap < 0;
+  const gapColor = hasGap
+    ? (Math.abs(monthly_gap) > 2000 ? '#dc2626' : '#d97706')
+    : '#16a34a';
+
+  return (
+    <div style={{
+      background: isThis ? '#faf7f3' : '#fff',
+      border: isThis ? `2px solid #c45a3b` : '1px solid #e8e4df',
+      borderRadius: 8,
+      padding: '24px',
+      flex: 1,
+      minWidth: 0,
+    }}>
+      {isThis && (
+        <div style={{
+          fontFamily: 'system-ui', fontSize: 10, fontWeight: 700,
+          letterSpacing: '2px', textTransform: 'uppercase',
+          color: '#c45a3b', marginBottom: 6,
+        }}>
+          This Neighborhood
+        </div>
+      )}
+      <div style={{ fontFamily: 'system-ui', fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>
+        {label}
+      </div>
+      {sublabel && (
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', marginBottom: 16 }}>
+          {sublabel}
+        </div>
+      )}
+      {!sublabel && <div style={{ marginBottom: 16 }} />}
+
+      {/* Monthly cost — big number */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Monthly basics cost
+        </div>
+        <div style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 300, color: '#1a1a1a', lineHeight: 1 }}>
+          {fmt$(monthly_cost)}
+        </div>
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#aaa' }}>per month</div>
+      </div>
+
+      {/* Income bar — how far it stretches */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            Typical monthly income
+          </span>
+          <span style={{ fontFamily: 'system-ui', fontSize: 12, fontWeight: 700, color: '#1a1a1a' }}>
+            {fmt$(monthly_income)}
+          </span>
+        </div>
+        {/* Full bar = what's needed; colored portion = what families have */}
+        <div style={{ height: 12, background: '#f0ece6', borderRadius: 6, overflow: 'hidden' }}>
+          <div style={{
+            height: '100%',
+            width: `${income_pct}%`,
+            background: hasGap
+              ? (income_pct < 60 ? '#dc2626' : '#d97706')
+              : '#16a34a',
+            borderRadius: 6,
+            transition: 'width 0.6s ease',
+          }} />
+        </div>
+        <div style={{ fontFamily: 'system-ui', fontSize: 10, color: '#bbb', marginTop: 3 }}>
+          Income covers {income_pct}% of monthly costs
+        </div>
+      </div>
+
+      {/* Gap callout */}
+      <div style={{
+        padding: '10px 12px',
+        background: hasGap ? (income_pct < 60 ? '#fef2f2' : '#fffbeb') : '#f0fdf4',
+        borderRadius: 6,
+        borderLeft: `3px solid ${gapColor}`,
+      }}>
+        <div style={{ fontFamily: 'system-ui', fontSize: 13, fontWeight: 700, color: gapColor }}>
+          {hasGap
+            ? `${fmt$(Math.abs(monthly_gap))} short every month`
+            : `${fmt$(monthly_gap)} left over each month`}
+        </div>
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#666', marginTop: 2 }}>
+          {hasGap
+            ? `${fmt$(Math.abs(monthly_gap * 12))} shortfall per year`
+            : 'Costs are covered'}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const WhatItCosts: React.FC<{ cost: CostEntry; neighborhoodName: string }> = ({ cost, neighborhoodName }) => {
+  const monthly_total = Object.values(cost.costs).reduce((a, b) => a + b, 0);
+  const monthly_income = Math.round(cost.median_income / 12);
+
+  return (
+    <section style={{ background: '#fff', padding: '64px 48px', borderBottom: '1px solid #e8e4df' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 48 }}>
+          <div style={{
+            fontFamily: 'system-ui', fontSize: 11, fontWeight: 700,
+            letterSpacing: '3px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: 12,
+          }}>
+            Cost of Living
+          </div>
+          <h2 style={{
+            fontFamily: 'Georgia, serif', fontSize: 'clamp(24px,3vw,36px)',
+            fontWeight: 300, color: '#1a1a1a', lineHeight: 1.2, marginBottom: 16,
+          }}>
+            What it actually costs to live in {neighborhoodName}
+          </h2>
+          <p style={{
+            fontFamily: 'system-ui', fontSize: 16, color: '#555',
+            lineHeight: 1.7, maxWidth: 680, margin: 0,
+          }}>
+            To cover the basics — rent, food, getting to the doctor, childcare — a family here
+            needs <strong style={{ color: '#1a1a1a' }}>{fmt$(monthly_total)} every month</strong>.
+            The typical household in this neighborhood earns <strong style={{ color: monthly_income < monthly_total ? '#dc2626' : '#16a34a' }}>{fmt$(monthly_income)} a month</strong>.
+            Here's how that compares.
+          </p>
+        </div>
+
+        {/* Three-way comparison cards */}
+        <div style={{ display: 'flex', gap: 16, marginBottom: 48, flexWrap: 'wrap' }}>
+          <CompareCard
+            label={neighborhoodName}
+            sublabel={`ZIP ${cost.zip}`}
+            monthly_cost={monthly_total}
+            median_income={cost.median_income}
+            isThis
+          />
+          <CompareCard
+            label={NYC_BENCH.label}
+            sublabel="All five boroughs"
+            monthly_cost={NYC_BENCH.monthly_cost}
+            median_income={NYC_BENCH.median_income}
+          />
+          <CompareCard
+            label={US_BENCH.label}
+            sublabel="Across the country"
+            monthly_cost={US_BENCH.monthly_cost}
+            median_income={US_BENCH.median_income}
+          />
+        </div>
+
+        {/* Where the money goes */}
+        <div style={{ marginBottom: 48 }}>
+          <div style={{
+            fontFamily: 'system-ui', fontSize: 11, fontWeight: 700,
+            letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: 20,
+          }}>
+            Where the money goes — {fmt$(monthly_total)}/month breakdown
+          </div>
+          {/* Stacked bar */}
+          <div style={{ display: 'flex', height: 36, borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
+            {COST_ORDER.map(k => {
+              const pct = (cost.costs[k] / monthly_total) * 100;
+              return (
+                <div key={k} title={`${COST_LABELS[k]}: ${fmt$(cost.costs[k])}/mo`}
+                  style={{ width: `${pct}%`, background: COST_COLORS[k], position: 'relative' }}
+                />
+              );
+            })}
+          </div>
+          {/* Legend + dollar amounts */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px,1fr))', gap: '12px 24px' }}>
+            {COST_ORDER.map(k => {
+              const pct = Math.round((cost.costs[k] / monthly_total) * 100);
+              return (
+                <div key={k} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <div style={{ width: 12, height: 12, borderRadius: 3, background: COST_COLORS[k], flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <div style={{ fontFamily: 'system-ui', fontSize: 13, color: '#1a1a1a', fontWeight: 600 }}>
+                      {fmt$(cost.costs[k])}<span style={{ fontWeight: 400, color: '#888', fontSize: 11 }}>/mo</span>
+                    </div>
+                    <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888' }}>
+                      {COST_LABELS[k]} · {pct}%
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Plain-language callout */}
+        {cost.income_gap > 0 && (
+          <div style={{
+            padding: '28px 32px',
+            background: '#fef2f2',
+            borderRadius: 8,
+            borderLeft: '4px solid #dc2626',
+          }}>
+            <div style={{
+              fontFamily: 'Georgia, serif', fontSize: 'clamp(16px,2vw,20px)',
+              fontWeight: 400, color: '#1a1a1a', lineHeight: 1.5, marginBottom: 12,
+            }}>
+              In {neighborhoodName}, a family earning the neighborhood's typical income
+              is <strong style={{ color: '#dc2626' }}>{fmt$(Math.round(cost.income_gap / 12))} short
+              every single month</strong> — just to cover the basics.
+            </div>
+            <p style={{ fontFamily: 'system-ui', fontSize: 14, color: '#555', lineHeight: 1.7, margin: 0 }}>
+              That's not because people aren't working. It's because rent, childcare, food, and healthcare
+              together cost more than this neighborhood's wages were designed to cover.
+              The gap between what things cost and what families earn
+              is <strong>{fmt$(cost.income_gap)} every year</strong>.
+            </p>
+          </div>
+        )}
+
+        {/* Source note */}
+        <div style={{ marginTop: 24 }}>
+          <p style={{ fontFamily: 'system-ui', fontSize: 11, color: '#bbb', lineHeight: 1.6, margin: 0 }}>
+            Costs reflect a reference household (1 adult, 1 child) using local housing costs + USDA food plan + MTA transportation + ACA healthcare + licensed childcare estimates.
+            NYC and U.S. averages from MIT Living Wage Calculator 2024. Median income from ACS 2022 5-year estimates.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 interface NeighborhoodPageProps {
   selectedZip: string | null;
   onNavigate: (page: string) => void;
@@ -70,122 +340,396 @@ const WWLI_LABEL = {
   high:     'High structural burden',
 };
 
-// ── Signal groups ─────────────────────────────────────────────────────────────
-const SIGNAL_GROUPS = [
-  {
-    label: 'Economic Pressure',
-    signals: [
-      { key: 'economic_instability',  label: 'Economic instability',  weight: 0.200 },
-      { key: 'insurance_instability', label: 'Insurance instability', weight: 0.150 },
-      { key: 'food_environment',      label: 'Food environment',      weight: 0.100 },
-    ]
-  },
-  {
-    label: 'Healthcare Access',
-    signals: [
-      { key: 'healthcare_access',   label: 'Access barriers',      weight: 0.200 },
-      { key: 'structural_barriers', label: 'Structural barriers',   weight: 0.100 },
-    ]
-  },
-  {
-    label: 'Environment & Safety',
-    signals: [
-      { key: 'environmental_exposure', label: 'Environmental exposure', weight: 0.100 },
-      { key: 'neighborhood_safety',    label: 'Neighborhood safety',    weight: 0.050 },
-    ]
-  },
-  {
-    label: 'Social Systems',
-    signals: [
-      { key: 'education_literacy', label: 'Education & literacy',   weight: 0.050 },
-      { key: 'justice_system',     label: 'Justice system contact', weight: 0.050 },
-      { key: 'mental_health',      label: 'Mental health signals',  weight: 0.050 },
-      { key: 'social_support',     label: 'Social support',         weight: 0.025 },
-      { key: 'substance_use',      label: 'Substance use context',  weight: 0.025 },
-    ]
-  },
-];
+// ── Structural burden — plain-language signal categories ──────────────────────
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+const SB_CATEGORIES = [
+  {
+    key: 'economic',
+    label: 'Money & Stability',
+    color: '#c45a3b',
+    bg: '#fef5f2',
+    borderColor: '#f5c2b2',
+    description: 'Financial stress people mention day-to-day',
+    signals: [
+      { key: 'economic_instability',  plainName: 'Money stress & job insecurity',  desc: 'Not having enough for rent, bills, or food — or living in fear of losing work',           weight: 0.200 },
+      { key: 'insurance_instability', plainName: 'Losing or lacking insurance',     desc: 'Coverage gaps, dropped plans, can\'t afford premiums, care denied',                      weight: 0.150 },
+      { key: 'food_environment',      plainName: 'Hard to find healthy food',        desc: 'Food deserts, corner stores only, fresh produce too far or too expensive',               weight: 0.100 },
+    ],
+  },
+  {
+    key: 'healthcare',
+    label: 'Getting Medical Care',
+    color: '#2563eb',
+    bg: '#eff6ff',
+    borderColor: '#bfdbfe',
+    description: 'What gets in the way of seeing a doctor',
+    signals: [
+      { key: 'healthcare_access',   plainName: 'Can\'t reach a doctor',     desc: 'No nearby specialists, no transportation, months-long waits for an appointment',        weight: 0.200 },
+      { key: 'structural_barriers', plainName: 'Systems blocking care',      desc: 'Paperwork, language barriers, prior authorizations, insurance denials stopping treatment', weight: 0.100 },
+    ],
+  },
+  {
+    key: 'environment',
+    label: 'Where You Live',
+    color: '#16a34a',
+    bg: '#f0fdf4',
+    borderColor: '#bbf7d0',
+    description: 'The physical conditions of home and neighborhood',
+    signals: [
+      { key: 'environmental_exposure', plainName: 'Pollution & unsafe housing',  desc: 'Lead paint, mold, industrial pollution, living near highways or waste sites',          weight: 0.100 },
+      { key: 'neighborhood_safety',    plainName: 'Safety concerns outside',      desc: 'Avoiding going out, stress from violence exposure, fear affecting daily health choices', weight: 0.050 },
+    ],
+  },
+  {
+    key: 'social',
+    label: 'Life Circumstances',
+    color: '#7c3aed',
+    bg: '#faf5ff',
+    borderColor: '#ddd6fe',
+    description: 'Social, mental, and systemic pressures',
+    signals: [
+      { key: 'mental_health',      plainName: 'Mental health struggles',         desc: 'Depression, anxiety, or trauma that intersect with managing a chronic illness',        weight: 0.050 },
+      { key: 'education_literacy', plainName: 'Understanding the health system',  desc: 'Difficulty grasping diagnoses, navigating paperwork, or communicating with providers', weight: 0.050 },
+      { key: 'justice_system',     plainName: 'Contact with police or courts',    desc: 'Incarceration history or immigration fears that stop people from seeking care',        weight: 0.050 },
+      { key: 'social_support',     plainName: 'Feeling alone',                    desc: 'No family nearby, no one to drive to appointments, isolated from support',             weight: 0.025 },
+      { key: 'substance_use',      plainName: 'Substance use context',            desc: 'Patterns that intersect with health — not judgment, just context the stories share',   weight: 0.025 },
+    ],
+  },
+] as const;
 
-const SignalBar: React.FC<{
-  label: string;
-  value: number | null;
-  weight: number;
-  ghost?: boolean;
-}> = ({ label, value, weight, ghost = false }) => {
-  const pct = value !== null ? Math.round(value * 100) : null;
-  const color =
-    value === null ? '#555' :
-    value < 0.34  ? '#4a7c59' :
-    value < 0.67  ? '#c89a54' : '#c45a3b';
+// ── Donut chart helpers ───────────────────────────────────────────────────────
+
+function ptOnCircle(cx: number, cy: number, r: number, angleDeg: number) {
+  const rad = (angleDeg - 90) * (Math.PI / 180);
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function donutArc(
+  cx: number, cy: number,
+  outerR: number, innerR: number,
+  startDeg: number, endDeg: number
+): string {
+  const sweep = endDeg - startDeg;
+  if (sweep <= 0) return '';
+  const large = sweep > 180 ? 1 : 0;
+  const o1 = ptOnCircle(cx, cy, outerR, startDeg);
+  const o2 = ptOnCircle(cx, cy, outerR, endDeg);
+  const i1 = ptOnCircle(cx, cy, innerR, endDeg);
+  const i2 = ptOnCircle(cx, cy, innerR, startDeg);
+  return [
+    `M ${o1.x.toFixed(2)} ${o1.y.toFixed(2)}`,
+    `A ${outerR} ${outerR} 0 ${large} 1 ${o2.x.toFixed(2)} ${o2.y.toFixed(2)}`,
+    `L ${i1.x.toFixed(2)} ${i1.y.toFixed(2)}`,
+    `A ${innerR} ${innerR} 0 ${large} 0 ${i2.x.toFixed(2)} ${i2.y.toFixed(2)}`,
+    'Z',
+  ].join(' ');
+}
+
+// Category weight totals (normalized to 100% for the ghost donut)
+const CAT_WEIGHTS = { economic: 0.45, healthcare: 0.30, environment: 0.15, social: 0.20 };
+const CAT_WEIGHT_TOTAL = Object.values(CAT_WEIGHTS).reduce((a, b) => a + b, 0);
+
+type SignalKey = keyof NonNullable<SignalData['signals']>;
+
+function categoryScore(
+  catKey: string,
+  signals: NonNullable<SignalData['signals']>
+): number {
+  const cat = SB_CATEGORIES.find(c => c.key === catKey);
+  if (!cat) return 0;
+  let weightedSum = 0;
+  let totalWeight = 0;
+  for (const sig of cat.signals) {
+    const v = signals[sig.key as SignalKey];
+    if (v !== null && v !== undefined) {
+      weightedSum += v * sig.weight;
+      totalWeight += sig.weight;
+    }
+  }
+  return totalWeight > 0 ? weightedSum / totalWeight : 0;
+}
+
+interface DonutProps {
+  signalData: SignalData | null;
+}
+
+const BurdenDonut: React.FC<DonutProps> = ({ signalData }) => {
+  const hasData = signalData && signalData.story_count > 0 && signalData.signals;
+  const cx = 95; const cy = 95; const outerR = 80; const innerR = 55; const GAP = 3;
+
+  let segments: { key: string; startDeg: number; endDeg: number; color: string; ghost: boolean }[] = [];
+
+  if (hasData && signalData.signals) {
+    const sigs = signalData.signals;
+    const scores = SB_CATEGORIES.map(c => ({
+      key: c.key,
+      color: c.color,
+      score: categoryScore(c.key, sigs),
+    }));
+    const total = scores.reduce((s, c) => s + c.score, 0) || 1;
+    let cursor = 0;
+    scores.forEach((cat, i) => {
+      const sweep = (cat.score / total) * (360 - GAP * SB_CATEGORIES.length);
+      const start = cursor + (i > 0 ? GAP : 0);
+      segments.push({ key: cat.key, startDeg: start, endDeg: start + sweep, color: cat.color, ghost: false });
+      cursor = start + sweep;
+    });
+  } else {
+    // Ghost donut — proportional to category weights
+    let cursor = 0;
+    SB_CATEGORIES.forEach((cat, i) => {
+      const pct = CAT_WEIGHTS[cat.key as keyof typeof CAT_WEIGHTS] / CAT_WEIGHT_TOTAL;
+      const sweep = pct * (360 - GAP * SB_CATEGORIES.length);
+      const start = cursor + (i > 0 ? GAP : 0);
+      segments.push({ key: cat.key, startDeg: start, endDeg: start + sweep, color: cat.color, ghost: true });
+      cursor = start + sweep;
+    });
+  }
+
+  const sbi = hasData && signalData.sbi_score !== null
+    ? Math.round(signalData.sbi_score * 100)
+    : null;
 
   return (
-    <div style={{ marginBottom: '14px' }}>
+    <div style={{ position: 'relative', width: 190, height: 190, flexShrink: 0 }}>
+      <svg width="190" height="190" viewBox="0 0 190 190">
+        {segments.map(seg => (
+          <path
+            key={seg.key}
+            d={donutArc(cx, cy, outerR, innerR, seg.startDeg, seg.endDeg)}
+            fill={seg.ghost ? seg.color : seg.color}
+            opacity={seg.ghost ? 0.15 : 0.9}
+          />
+        ))}
+      </svg>
+      {/* Center text */}
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-        marginBottom: '5px'
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        pointerEvents: 'none',
       }}>
-        <span style={{
-          fontFamily: 'system-ui, sans-serif',
-          fontSize: '12px',
-          color: ghost ? '#aaa' : '#444'
-        }}>
-          {label}
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: '10px',
-            color: '#aaa'
-          }}>
-            {Math.round(weight * 100)}% weight
-          </span>
-          {pct !== null && (
-            <span style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: '13px',
-              color,
-              fontWeight: '400',
-              minWidth: '32px',
-              textAlign: 'right'
-            }}>
-              {pct}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Track */}
-      <div style={{
-        height: '5px',
-        background: 'rgba(0,0,0,0.07)',
-        borderRadius: '3px',
-        overflow: 'hidden'
-      }}>
-        {ghost ? (
-          // Ghost bar — shows the weight as a faint placeholder
-          <div style={{
-            height: '100%',
-            width: `${Math.round(weight * 100 * 5)}%`,
-            background: 'rgba(0,0,0,0.10)',
-            borderRadius: '3px'
-          }} />
-        ) : pct !== null ? (
-          <div style={{
-            height: '100%',
-            width: `${pct}%`,
-            background: color,
-            borderRadius: '3px',
-            transition: 'width 0.6s ease'
-          }} />
-        ) : null}
+        {sbi !== null ? (
+          <>
+            <span style={{ fontFamily: 'Georgia, serif', fontSize: 34, fontWeight: 300, color: '#1a1a1a', lineHeight: 1 }}>{sbi}</span>
+            <span style={{ fontFamily: 'system-ui', fontSize: 9, color: '#aaa', letterSpacing: '1px', textTransform: 'uppercase', marginTop: 3 }}>/ 100</span>
+            <span style={{ fontFamily: 'system-ui', fontSize: 9, color: '#888', marginTop: 4, textAlign: 'center', maxWidth: 64 }}>overall burden score</span>
+          </>
+        ) : (
+          <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#ccc', textAlign: 'center', maxWidth: 60 }}>No stories yet</span>
+        )}
       </div>
     </div>
   );
 };
+
+// ── StructuralBurdenSection ───────────────────────────────────────────────────
+
+interface StructuralBurdenProps {
+  signalData: SignalData | null;
+  neighborhoodName: string;
+  onNavigate: (page: string) => void;
+}
+
+const StructuralBurdenSection: React.FC<StructuralBurdenProps> = ({ signalData, neighborhoodName, onNavigate }) => {
+  const hasData = signalData && signalData.story_count > 0 && signalData.signals;
+
+  return (
+    <section style={{ background: '#faf7f3', padding: '64px 48px', borderBottom: '1px solid #e8e4df' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 48 }}>
+          <div style={{
+            fontFamily: 'system-ui', fontSize: 11, fontWeight: 700,
+            letterSpacing: '3px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: 12,
+          }}>
+            What People Here Are Dealing With
+          </div>
+          <h2 style={{
+            fontFamily: 'Georgia, serif', fontSize: 'clamp(24px,3vw,36px)',
+            fontWeight: 300, color: '#1a1a1a', lineHeight: 1.2, marginBottom: 16,
+          }}>
+            {hasData
+              ? `The pressures that show up in stories from ${neighborhoodName}`
+              : `12 things that shape health in every neighborhood`}
+          </h2>
+          <p style={{
+            fontFamily: 'system-ui', fontSize: 15, color: '#555',
+            lineHeight: 1.75, maxWidth: 700, margin: 0,
+          }}>
+            {hasData
+              ? `When community members share stories, we quietly read them for 12 kinds of pressure — things like money stress, trouble getting to a doctor, or feeling unsafe at home. The charts below show what comes up most often in ${neighborhoodName}.`
+              : `When someone submits a story from this neighborhood, we read it for 12 kinds of structural pressure. Not to judge anyone — but to see patterns. Because when the same walls show up in story after story, that's a system problem, not a personal one.`}
+          </p>
+        </div>
+
+        {/* Donut + category legend row */}
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 40, marginBottom: 48, flexWrap: 'wrap',
+        }}>
+          <BurdenDonut signalData={signalData} />
+
+          {/* Category legend */}
+          <div style={{ flex: 1, minWidth: 240 }}>
+            <div style={{
+              fontFamily: 'system-ui', fontSize: 10, fontWeight: 700,
+              letterSpacing: '2px', textTransform: 'uppercase', color: '#999', marginBottom: 16,
+            }}>
+              {hasData ? 'How the burden breaks down' : 'The four areas we track'}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {SB_CATEGORIES.map(cat => {
+                const score = hasData && signalData.signals
+                  ? Math.round(categoryScore(cat.key, signalData.signals) * 100)
+                  : null;
+                const pct = score !== null ? score : null;
+                return (
+                  <div key={cat.key} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 12, height: 12, borderRadius: 3, background: cat.color, flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                        <span style={{ fontFamily: 'system-ui', fontSize: 12, fontWeight: 600, color: '#1a1a1a' }}>{cat.label}</span>
+                        {pct !== null && (
+                          <span style={{ fontFamily: 'Georgia, serif', fontSize: 13, color: cat.color }}>{pct}</span>
+                        )}
+                      </div>
+                      <div style={{ height: 6, background: '#e8e4df', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{
+                          height: '100%',
+                          width: pct !== null ? `${pct}%` : '100%',
+                          background: pct !== null ? cat.color : 'transparent',
+                          borderRadius: 3,
+                          transition: 'width 0.7s ease',
+                          opacity: pct !== null ? 1 : 0.12,
+                        }} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {!hasData && (
+              <div style={{ marginTop: 20 }}>
+                <button
+                  onClick={() => onNavigate('stories')}
+                  style={{
+                    fontFamily: 'system-ui', fontSize: 12, fontWeight: 600,
+                    letterSpacing: '1px', textTransform: 'uppercase',
+                    padding: '10px 20px', background: '#c45a3b', color: '#fff',
+                    border: 'none', borderRadius: 4, cursor: 'pointer',
+                  }}
+                >
+                  Be the first to share a story →
+                </button>
+                <p style={{ fontFamily: 'system-ui', fontSize: 11, color: '#aaa', marginTop: 8 }}>
+                  Every story adds signal to this chart.
+                </p>
+              </div>
+            )}
+            {hasData && (
+              <div style={{ marginTop: 12 }}>
+                <p style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', lineHeight: 1.6, margin: 0 }}>
+                  Based on <strong>{signalData.story_count}</strong> {signalData.story_count === 1 ? 'story' : 'stories'} from this neighborhood.
+                  Each story is read by AI for these 12 patterns — nothing is identified or stored about who wrote it.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Category signal cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 20 }}>
+          {SB_CATEGORIES.map(cat => (
+            <div key={cat.key} style={{
+              background: '#fff',
+              border: `1px solid ${cat.borderColor}`,
+              borderTop: `4px solid ${cat.color}`,
+              borderRadius: 8,
+              overflow: 'hidden',
+            }}>
+              {/* Category header */}
+              <div style={{ padding: '16px 20px 12px', borderBottom: `1px solid ${cat.borderColor}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color }} />
+                  <span style={{
+                    fontFamily: 'system-ui', fontSize: 11, fontWeight: 700,
+                    letterSpacing: '1.5px', textTransform: 'uppercase', color: cat.color,
+                  }}>
+                    {cat.label}
+                  </span>
+                </div>
+                <p style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', margin: '4px 0 0', lineHeight: 1.5 }}>
+                  {cat.description}
+                </p>
+              </div>
+
+              {/* Signals */}
+              <div style={{ padding: '12px 20px 16px' }}>
+                {cat.signals.map((sig, i) => {
+                  const raw = hasData && signalData.signals
+                    ? signalData.signals[sig.key as SignalKey]
+                    : null;
+                  const pct = raw !== null && raw !== undefined ? Math.round(raw * 100) : null;
+                  const barColor = pct === null ? cat.color
+                    : pct >= 67 ? '#dc2626'
+                    : pct >= 34 ? '#d97706'
+                    : '#16a34a';
+
+                  return (
+                    <div key={sig.key} style={{ marginTop: i === 0 ? 0 : 14 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+                        <span style={{ fontFamily: 'system-ui', fontSize: 12, fontWeight: 600, color: '#1a1a1a', lineHeight: 1.3 }}>
+                          {sig.plainName}
+                        </span>
+                        {pct !== null && (
+                          <span style={{
+                            fontFamily: 'Georgia, serif', fontSize: 14, fontWeight: 400,
+                            color: barColor, marginLeft: 8, flexShrink: 0,
+                          }}>
+                            {pct}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ height: 6, background: '#f0ece6', borderRadius: 3, overflow: 'hidden', marginBottom: 4 }}>
+                        <div style={{
+                          height: '100%',
+                          width: pct !== null ? `${pct}%` : `${sig.weight * 100 * 3}%`,
+                          background: pct !== null ? barColor : '#e0dbd5',
+                          borderRadius: 3,
+                          transition: 'width 0.6s ease',
+                          opacity: pct !== null ? 1 : 0.4,
+                        }} />
+                      </div>
+                      <p style={{ fontFamily: 'system-ui', fontSize: 10, color: '#aaa', lineHeight: 1.5, margin: 0 }}>
+                        {pct !== null
+                          ? (pct >= 67 ? 'Comes up often in stories from here'
+                             : pct >= 34 ? 'Mentioned in some stories from here'
+                             : 'Rarely mentioned in stories from here')
+                          : sig.desc}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom note */}
+        <div style={{ marginTop: 32 }}>
+          <p style={{ fontFamily: 'system-ui', fontSize: 11, color: '#bbb', lineHeight: 1.7, margin: 0 }}>
+            Bar values show how strongly each pattern appeared across stories (0 = not present, 100 = present in nearly every story).
+            The overall burden score is a weighted average across all 12 signals.
+            No individual story is shown or scored on its own — only patterns across the whole neighborhood.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
 
 const WwliGauge: React.FC<{ score: number; tier: 'low' | 'moderate' | 'high' }> = ({ score, tier }) => {
   const color = WWLI_COLOR[tier];
@@ -362,6 +906,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
   const [error, setError] = useState<string | null>(null);
   const [signalData, setSignalData] = useState<SignalData | null>(null);
   const [submittedStories, setSubmittedStories] = useState<SubmittedStory[]>([]);
+  const [costData, setCostData] = useState<CostEntry | null>(null);
 
   // Fetch neighborhood geo profile
   useEffect(() => {
@@ -387,6 +932,15 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
     fetch(`/api/stories/signals-by-zip?zip=${selectedZip}`)
       .then(r => r.json())
       .then(data => { if (data.success) setSignalData(data); })
+      .catch(console.error);
+  }, [selectedZip]);
+
+  // Fetch cost of living data
+  useEffect(() => {
+    if (!selectedZip) return;
+    fetch(`/api/cost-of-living?geo_id=${selectedZip}`)
+      .then(r => r.json())
+      .then(data => { if (data.success) setCostData(data.data); })
       .catch(console.error);
   }, [selectedZip]);
 
@@ -658,207 +1212,17 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
         </div>
       </section>
 
-      {/* ── AI SIGNAL PANEL ───────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: '64px 48px', borderBottom: '1px solid #e8e4df' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '48px',
-            alignItems: 'flex-start'
-          }}>
+      {/* ── COST OF LIVING ────────────────────────────────────────── */}
+      {costData && (
+        <WhatItCosts cost={costData} neighborhoodName={neighborhood.nta_name} />
+      )}
 
-            {/* Left: header + explanation */}
-            <div>
-              <div style={{
-                fontFamily: 'system-ui, sans-serif',
-                fontSize: '11px',
-                fontWeight: '600',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                color: '#c45a3b',
-                marginBottom: '20px'
-              }}>
-                AI Signal Extraction
-              </div>
-
-              <h2 style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: 'clamp(22px, 3vw, 32px)',
-                fontWeight: '300',
-                color: '#1a1a1a',
-                lineHeight: '1.3',
-                marginBottom: '20px'
-              }}>
-                Structural Burden Index
-              </h2>
-
-              {signalData && signalData.story_count > 0 ? (
-                <>
-                  <div style={{
-                    display: 'flex',
-                    gap: '24px',
-                    marginBottom: '24px',
-                    flexWrap: 'wrap'
-                  }}>
-                    <div>
-                      <div style={{
-                        fontFamily: 'Georgia, serif',
-                        fontSize: '40px',
-                        fontWeight: '300',
-                        color: '#1a1a1a',
-                        lineHeight: 1
-                      }}>
-                        {signalData.sbi_score !== null
-                          ? Math.round(signalData.sbi_score * 100)
-                          : '—'}
-                      </div>
-                      <div style={{
-                        fontFamily: 'system-ui, sans-serif',
-                        fontSize: '11px',
-                        color: '#888',
-                        marginTop: '4px'
-                      }}>SBI Score / 100</div>
-                    </div>
-                    <div>
-                      <div style={{
-                        fontFamily: 'Georgia, serif',
-                        fontSize: '40px',
-                        fontWeight: '300',
-                        color: '#1a1a1a',
-                        lineHeight: 1
-                      }}>
-                        {signalData.story_count}
-                      </div>
-                      <div style={{
-                        fontFamily: 'system-ui, sans-serif',
-                        fontSize: '11px',
-                        color: '#888',
-                        marginTop: '4px'
-                      }}>Stories analyzed</div>
-                    </div>
-                    {signalData.avg_confidence !== null && (
-                      <div>
-                        <div style={{
-                          fontFamily: 'Georgia, serif',
-                          fontSize: '40px',
-                          fontWeight: '300',
-                          color: '#fff',
-                          lineHeight: 1
-                        }}>
-                          {Math.round(signalData.avg_confidence * 100)}%
-                        </div>
-                        <div style={{
-                          fontFamily: 'system-ui, sans-serif',
-                          fontSize: '11px',
-                          color: '#888',
-                          marginTop: '4px'
-                        }}>Avg AI confidence</div>
-                      </div>
-                    )}
-                  </div>
-                  <p style={{
-                    fontFamily: 'Georgia, serif',
-                    fontSize: '15px',
-                    fontStyle: 'italic',
-                    color: '#666',
-                    lineHeight: '1.65'
-                  }}>
-                    Each story submitted from this neighborhood is scanned by AI across 12 structural
-                    dimensions. Scores reflect how prominently each factor appears in patient and caregiver accounts.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p style={{
-                    fontFamily: 'Georgia, serif',
-                    fontSize: '16px',
-                    fontStyle: 'italic',
-                    color: '#666',
-                    lineHeight: '1.7',
-                    marginBottom: '24px'
-                  }}>
-                    As community members submit stories from this neighborhood, AI scans each one
-                    for 12 structural dimensions — economic, healthcare, environmental, and social.
-                    The bars below show what the methodology tracks.
-                  </p>
-                  <button
-                    onClick={() => onNavigate('stories')}
-                    style={{
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      letterSpacing: '1px',
-                      textTransform: 'uppercase',
-                      padding: '12px 24px',
-                      background: 'transparent',
-                      color: '#c45a3b',
-                      border: '1px solid #c45a3b',
-                      borderRadius: '3px',
-                      cursor: 'pointer'
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#c45a3b'; e.currentTarget.style.color = '#fff'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c45a3b'; }}
-                  >
-                    Be the first to share a story
-                  </button>
-                </>
-              )}
-
-              {/* Scale legend */}
-              <div style={{
-                marginTop: '32px',
-                display: 'flex',
-                gap: '16px',
-                flexWrap: 'wrap'
-              }}>
-                {[
-                  { color: '#4a7c59', label: 'Not present (0–33)' },
-                  { color: '#c89a54', label: 'Possible (34–66)' },
-                  { color: '#c45a3b', label: 'Present (67–100)' },
-                ].map(({ color, label }) => (
-                  <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: color, flexShrink: 0 }} />
-                    <span style={{ fontFamily: 'system-ui', fontSize: '11px', color: '#666' }}>{label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right: signal bars grouped */}
-            <div>
-              {SIGNAL_GROUPS.map(group => (
-                <div key={group.label} style={{ marginBottom: '28px' }}>
-                  <div style={{
-                    fontFamily: 'system-ui, sans-serif',
-                    fontSize: '10px',
-                    fontWeight: '600',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    color: '#888',
-                    marginBottom: '12px',
-                    paddingBottom: '8px',
-                    borderBottom: '1px solid #e8e4df'
-                  }}>
-                    {group.label}
-                  </div>
-                  {group.signals.map(sig => (
-                    <SignalBar
-                      key={sig.key}
-                      label={sig.label}
-                      value={signalData?.signals
-                        ? (signalData.signals[sig.key as keyof typeof signalData.signals] ?? null)
-                        : null}
-                      weight={sig.weight}
-                      ghost={!signalData || signalData.story_count === 0}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── STRUCTURAL BURDEN ─────────────────────────────────────── */}
+      <StructuralBurdenSection
+        signalData={signalData}
+        neighborhoodName={neighborhood.nta_name}
+        onNavigate={onNavigate}
+      />
 
       {/* ── STORIES ───────────────────────────────────────────────── */}
       <section style={{ padding: '64px 48px 80px', background: '#faf7f3' }}>

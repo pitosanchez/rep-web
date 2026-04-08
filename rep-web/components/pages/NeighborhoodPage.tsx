@@ -4,6 +4,276 @@ import React, { useState, useEffect } from 'react';
 import { stories as patientStories, PatientStory } from '@/lib/stories';
 import { getNeighborhoodForZip } from '@/lib/storyZipMapping';
 
+// ── Cost of living comparison benchmarks ─────────────────────────────────────
+// Source: MIT Living Wage Calculator 2024 (1 adult + 1 child) + ACS 2022 5-yr
+const NYC_BENCH = { label: 'NYC Average', monthly_cost: 6583, median_income: 70745 };
+const US_BENCH  = { label: 'U.S. Average', monthly_cost: 5167, median_income: 74580 };
+
+interface CostEntry {
+  zip: string;
+  neighborhood: string;
+  costs: { housing:number; food:number; transport:number; healthcare:number; childcare:number; other:number };
+  required_income: number;
+  median_income: number;
+  income_gap: number;
+  cost_burden_ratio: number;
+}
+
+// ── What It Costs — plain-language cost section ───────────────────────────────
+
+const COST_COLORS = {
+  housing: '#dc2626', food: '#d97706', transport: '#2563eb',
+  healthcare: '#16a34a', childcare: '#7c3aed', other: '#6b7280',
+} as const;
+
+const COST_LABELS = {
+  housing: 'Rent', food: 'Food', transport: 'Getting Around',
+  healthcare: 'Healthcare', childcare: 'Childcare', other: 'Other Basics',
+} as const;
+
+type CostKey = keyof typeof COST_COLORS;
+const COST_ORDER: CostKey[] = ['housing','childcare','food','healthcare','transport','other'];
+
+function fmt$(n: number) {
+  return '$' + n.toLocaleString();
+}
+
+const CompareCard: React.FC<{
+  label: string;
+  sublabel?: string;
+  monthly_cost: number;
+  median_income: number;
+  isThis?: boolean;
+}> = ({ label, sublabel, monthly_cost, median_income, isThis }) => {
+  const monthly_income = Math.round(median_income / 12);
+  const monthly_gap = monthly_income - monthly_cost;
+  const income_pct = Math.min(100, Math.round((monthly_income / monthly_cost) * 100));
+  const hasGap = monthly_gap < 0;
+  const gapColor = hasGap
+    ? (Math.abs(monthly_gap) > 2000 ? '#dc2626' : '#d97706')
+    : '#16a34a';
+
+  return (
+    <div style={{
+      background: isThis ? '#faf7f3' : '#fff',
+      border: isThis ? `2px solid #c45a3b` : '1px solid #e8e4df',
+      borderRadius: 8,
+      padding: '24px',
+      flex: 1,
+      minWidth: 0,
+    }}>
+      {isThis && (
+        <div style={{
+          fontFamily: 'system-ui', fontSize: 10, fontWeight: 700,
+          letterSpacing: '2px', textTransform: 'uppercase',
+          color: '#c45a3b', marginBottom: 6,
+        }}>
+          This Neighborhood
+        </div>
+      )}
+      <div style={{ fontFamily: 'system-ui', fontSize: 13, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>
+        {label}
+      </div>
+      {sublabel && (
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', marginBottom: 16 }}>
+          {sublabel}
+        </div>
+      )}
+      {!sublabel && <div style={{ marginBottom: 16 }} />}
+
+      {/* Monthly cost — big number */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Monthly basics cost
+        </div>
+        <div style={{ fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 300, color: '#1a1a1a', lineHeight: 1 }}>
+          {fmt$(monthly_cost)}
+        </div>
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#aaa' }}>per month</div>
+      </div>
+
+      {/* Income bar — how far it stretches */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            Typical monthly income
+          </span>
+          <span style={{ fontFamily: 'system-ui', fontSize: 12, fontWeight: 700, color: '#1a1a1a' }}>
+            {fmt$(monthly_income)}
+          </span>
+        </div>
+        {/* Full bar = what's needed; colored portion = what families have */}
+        <div style={{ height: 12, background: '#f0ece6', borderRadius: 6, overflow: 'hidden' }}>
+          <div style={{
+            height: '100%',
+            width: `${income_pct}%`,
+            background: hasGap
+              ? (income_pct < 60 ? '#dc2626' : '#d97706')
+              : '#16a34a',
+            borderRadius: 6,
+            transition: 'width 0.6s ease',
+          }} />
+        </div>
+        <div style={{ fontFamily: 'system-ui', fontSize: 10, color: '#bbb', marginTop: 3 }}>
+          Income covers {income_pct}% of monthly costs
+        </div>
+      </div>
+
+      {/* Gap callout */}
+      <div style={{
+        padding: '10px 12px',
+        background: hasGap ? (income_pct < 60 ? '#fef2f2' : '#fffbeb') : '#f0fdf4',
+        borderRadius: 6,
+        borderLeft: `3px solid ${gapColor}`,
+      }}>
+        <div style={{ fontFamily: 'system-ui', fontSize: 13, fontWeight: 700, color: gapColor }}>
+          {hasGap
+            ? `${fmt$(Math.abs(monthly_gap))} short every month`
+            : `${fmt$(monthly_gap)} left over each month`}
+        </div>
+        <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#666', marginTop: 2 }}>
+          {hasGap
+            ? `${fmt$(Math.abs(monthly_gap * 12))} shortfall per year`
+            : 'Costs are covered'}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const WhatItCosts: React.FC<{ cost: CostEntry; neighborhoodName: string }> = ({ cost, neighborhoodName }) => {
+  const monthly_total = Object.values(cost.costs).reduce((a, b) => a + b, 0);
+  const monthly_income = Math.round(cost.median_income / 12);
+
+  return (
+    <section style={{ background: '#fff', padding: '64px 48px', borderBottom: '1px solid #e8e4df' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 48 }}>
+          <div style={{
+            fontFamily: 'system-ui', fontSize: 11, fontWeight: 700,
+            letterSpacing: '3px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: 12,
+          }}>
+            Cost of Living
+          </div>
+          <h2 style={{
+            fontFamily: 'Georgia, serif', fontSize: 'clamp(24px,3vw,36px)',
+            fontWeight: 300, color: '#1a1a1a', lineHeight: 1.2, marginBottom: 16,
+          }}>
+            What it actually costs to live in {neighborhoodName}
+          </h2>
+          <p style={{
+            fontFamily: 'system-ui', fontSize: 16, color: '#555',
+            lineHeight: 1.7, maxWidth: 680, margin: 0,
+          }}>
+            To cover the basics — rent, food, getting to the doctor, childcare — a family here
+            needs <strong style={{ color: '#1a1a1a' }}>{fmt$(monthly_total)} every month</strong>.
+            The typical household in this neighborhood earns <strong style={{ color: monthly_income < monthly_total ? '#dc2626' : '#16a34a' }}>{fmt$(monthly_income)} a month</strong>.
+            Here's how that compares.
+          </p>
+        </div>
+
+        {/* Three-way comparison cards */}
+        <div style={{ display: 'flex', gap: 16, marginBottom: 48, flexWrap: 'wrap' }}>
+          <CompareCard
+            label={neighborhoodName}
+            sublabel={`ZIP ${cost.zip}`}
+            monthly_cost={monthly_total}
+            median_income={cost.median_income}
+            isThis
+          />
+          <CompareCard
+            label={NYC_BENCH.label}
+            sublabel="All five boroughs"
+            monthly_cost={NYC_BENCH.monthly_cost}
+            median_income={NYC_BENCH.median_income}
+          />
+          <CompareCard
+            label={US_BENCH.label}
+            sublabel="Across the country"
+            monthly_cost={US_BENCH.monthly_cost}
+            median_income={US_BENCH.median_income}
+          />
+        </div>
+
+        {/* Where the money goes */}
+        <div style={{ marginBottom: 48 }}>
+          <div style={{
+            fontFamily: 'system-ui', fontSize: 11, fontWeight: 700,
+            letterSpacing: '2px', textTransform: 'uppercase', color: '#888', marginBottom: 20,
+          }}>
+            Where the money goes — {fmt$(monthly_total)}/month breakdown
+          </div>
+          {/* Stacked bar */}
+          <div style={{ display: 'flex', height: 36, borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
+            {COST_ORDER.map(k => {
+              const pct = (cost.costs[k] / monthly_total) * 100;
+              return (
+                <div key={k} title={`${COST_LABELS[k]}: ${fmt$(cost.costs[k])}/mo`}
+                  style={{ width: `${pct}%`, background: COST_COLORS[k], position: 'relative' }}
+                />
+              );
+            })}
+          </div>
+          {/* Legend + dollar amounts */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px,1fr))', gap: '12px 24px' }}>
+            {COST_ORDER.map(k => {
+              const pct = Math.round((cost.costs[k] / monthly_total) * 100);
+              return (
+                <div key={k} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <div style={{ width: 12, height: 12, borderRadius: 3, background: COST_COLORS[k], flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <div style={{ fontFamily: 'system-ui', fontSize: 13, color: '#1a1a1a', fontWeight: 600 }}>
+                      {fmt$(cost.costs[k])}<span style={{ fontWeight: 400, color: '#888', fontSize: 11 }}>/mo</span>
+                    </div>
+                    <div style={{ fontFamily: 'system-ui', fontSize: 11, color: '#888' }}>
+                      {COST_LABELS[k]} · {pct}%
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Plain-language callout */}
+        {cost.income_gap > 0 && (
+          <div style={{
+            padding: '28px 32px',
+            background: '#fef2f2',
+            borderRadius: 8,
+            borderLeft: '4px solid #dc2626',
+          }}>
+            <div style={{
+              fontFamily: 'Georgia, serif', fontSize: 'clamp(16px,2vw,20px)',
+              fontWeight: 400, color: '#1a1a1a', lineHeight: 1.5, marginBottom: 12,
+            }}>
+              In {neighborhoodName}, a family earning the neighborhood's typical income
+              is <strong style={{ color: '#dc2626' }}>{fmt$(Math.round(cost.income_gap / 12))} short
+              every single month</strong> — just to cover the basics.
+            </div>
+            <p style={{ fontFamily: 'system-ui', fontSize: 14, color: '#555', lineHeight: 1.7, margin: 0 }}>
+              That's not because people aren't working. It's because rent, childcare, food, and healthcare
+              together cost more than this neighborhood's wages were designed to cover.
+              The gap between what things cost and what families earn
+              is <strong>{fmt$(cost.income_gap)} every year</strong>.
+            </p>
+          </div>
+        )}
+
+        {/* Source note */}
+        <div style={{ marginTop: 24 }}>
+          <p style={{ fontFamily: 'system-ui', fontSize: 11, color: '#bbb', lineHeight: 1.6, margin: 0 }}>
+            Costs reflect a reference household (1 adult, 1 child) using local housing costs + USDA food plan + MTA transportation + ACA healthcare + licensed childcare estimates.
+            NYC and U.S. averages from MIT Living Wage Calculator 2024. Median income from ACS 2022 5-year estimates.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 interface NeighborhoodPageProps {
   selectedZip: string | null;
   onNavigate: (page: string) => void;
@@ -362,6 +632,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
   const [error, setError] = useState<string | null>(null);
   const [signalData, setSignalData] = useState<SignalData | null>(null);
   const [submittedStories, setSubmittedStories] = useState<SubmittedStory[]>([]);
+  const [costData, setCostData] = useState<CostEntry | null>(null);
 
   // Fetch neighborhood geo profile
   useEffect(() => {
@@ -387,6 +658,15 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
     fetch(`/api/stories/signals-by-zip?zip=${selectedZip}`)
       .then(r => r.json())
       .then(data => { if (data.success) setSignalData(data); })
+      .catch(console.error);
+  }, [selectedZip]);
+
+  // Fetch cost of living data
+  useEffect(() => {
+    if (!selectedZip) return;
+    fetch(`/api/cost-of-living?geo_id=${selectedZip}`)
+      .then(r => r.json())
+      .then(data => { if (data.success) setCostData(data.data); })
       .catch(console.error);
   }, [selectedZip]);
 
@@ -657,6 +937,11 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
           </div>
         </div>
       </section>
+
+      {/* ── COST OF LIVING ────────────────────────────────────────── */}
+      {costData && (
+        <WhatItCosts cost={costData} neighborhoodName={neighborhood.nta_name} />
+      )}
 
       {/* ── AI SIGNAL PANEL ───────────────────────────────────────── */}
       <section style={{ background: '#fff', padding: '64px 48px', borderBottom: '1px solid #e8e4df' }}>

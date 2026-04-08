@@ -14,7 +14,7 @@ This project uses **next-intl** for production-grade English/Spanish internation
 
 ```
 rep-web/
-├── middleware.ts                 # Route-based locale detection
+├── proxy.ts                     # Route-based locale detection (Next.js 16+)
 ├── messages/
 │   ├── en.json                  # English translations
 │   └── es.json                  # Spanish translations
@@ -40,7 +40,7 @@ rep-web/
 
 ## How It Works
 
-### 1. **Middleware** (`middleware.ts`)
+### 1. **Proxy** (`proxy.ts`)
 - Intercepts all requests except `/api` and `/_next`
 - Detects locale from URL and sets it
 - Automatically redirects `/` to `/en`
@@ -131,7 +131,7 @@ console.log(t('myComponent.title')); // "My Title" (English) or Spanish version
 
 | File | Purpose |
 |------|---------|
-| `middleware.ts` | Route-based locale detection |
+| `proxy.ts` | Route-based locale detection (Next.js 16+) |
 | `messages/en.json` | English translations |
 | `messages/es.json` | Spanish translations |
 | `lib/i18n.ts` | i18n configuration |

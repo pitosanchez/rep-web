@@ -98,6 +98,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           <ChapterLabel>On Stories</ChapterLabel>
           <Rule />
 
+          {/* Universal frame — new */}
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
+            {t('universalPara')}
+          </p>
+
           <p style={{
             fontFamily: 'Georgia, serif',
             fontSize: '19px',
@@ -194,8 +205,103 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* ── Stories in Healthcare ─────────────────────────────────── */}
+      {/* ── The Act of Sharing (new) ──────────────────────────────── */}
       <section style={{ background: '#faf7f3', padding: '100px 32px' }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <ChapterLabel>{t('sharingChapterLabel')}</ChapterLabel>
+          <Rule />
+
+          <h2 style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            fontWeight: '400',
+            color: '#1a1a1a',
+            lineHeight: '1.25',
+            marginBottom: '40px'
+          }}>
+            {t('sharingTitle')}
+          </h2>
+
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
+            {t('sharingBody1')}
+          </p>
+
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
+            {t('sharingBody2')}
+          </p>
+
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
+            {t('sharingBody3')}
+          </p>
+
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '0'
+          }}>
+            {t('sharingBody4')}
+          </p>
+        </div>
+      </section>
+
+      {/* ── Workshop Interlude (new, dark) ────────────────────────── */}
+      <section style={{
+        background: '#1a1a1a',
+        padding: '80px 32px',
+        borderTop: '3px solid #c45a3b'
+      }}>
+        <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+          <ChapterLabel>{t('workshopChapterLabel')}</ChapterLabel>
+
+          {/* Large italic quote */}
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: 'clamp(20px, 2.8vw, 28px)',
+            fontWeight: '300',
+            fontStyle: 'italic',
+            color: 'rgba(255,255,255,0.88)',
+            lineHeight: '1.65',
+            marginBottom: '40px',
+            paddingLeft: '28px',
+            borderLeft: '2px solid #c45a3b'
+          }}>
+            &ldquo;{t('workshopQuote')}&rdquo;
+          </p>
+
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '17px',
+            lineHeight: '1.85',
+            color: '#999',
+            marginBottom: '0'
+          }}>
+            {t('workshopContinuation')}
+          </p>
+        </div>
+      </section>
+
+      {/* ── Stories in Healthcare ─────────────────────────────────── */}
+      <section style={{ background: '#fff', padding: '100px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
           <ChapterLabel>Stories in Healthcare</ChapterLabel>
           <Rule />
@@ -219,6 +325,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             marginBottom: '28px'
           }}>
             {t('storiesHealthcareBody')}
+          </p>
+
+          {/* Cultural preservation — new */}
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '28px'
+          }}>
+            {t('culturalBody')}
           </p>
 
           <p style={{
@@ -396,9 +513,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             fontSize: '19px',
             lineHeight: '1.85',
             color: '#333',
-            marginBottom: '48px'
+            marginBottom: '28px'
           }}>
             {t('scienceBody3')}
+          </p>
+
+          {/* Exploration / discovery — new */}
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '48px'
+          }}>
+            {t('scienceDiscoveryBody')}
           </p>
 
           {/* Science quote */}
@@ -444,9 +572,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             fontSize: '19px',
             lineHeight: '1.85',
             color: '#333',
-            marginBottom: '0'
+            marginBottom: '28px'
           }}>
             {t('integratingBody')}
+          </p>
+
+          {/* Voice and confidence — new */}
+          <p style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: '19px',
+            lineHeight: '1.85',
+            color: '#333',
+            marginBottom: '0'
+          }}>
+            {t('integratingVoiceBody')}
           </p>
         </div>
 

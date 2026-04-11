@@ -22,8 +22,19 @@ import { ShareStoryPage } from './pages/ShareStoryPage';
  * This is the main app component that orchestrates page navigation
  * and state management for the entire platform.
  */
+const VALID_PAGES = new Set([
+  'home','map','neighborhood','stories','about','methods',
+  'kidney-disease-overview','apol1','fsgs','admin','share-story'
+]);
+
 export const REPWireframe: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<string>('home');
+  const [currentPage, setCurrentPage] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('page');
+      if (p && VALID_PAGES.has(p)) return p;
+    }
+    return 'home';
+  });
   const [selectedZip, setSelectedZip] = useState<string | null>(null);
   const tFooter = useTranslations('footer');
   const tNav = useTranslations('nav');

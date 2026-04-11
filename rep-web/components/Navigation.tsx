@@ -204,7 +204,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
             <span />
             <span />
           </button>
-          <LanguageSwitcher />
+          <LanguageSwitcher currentPage={currentPage} />
         </div>
       </div>
     </nav>

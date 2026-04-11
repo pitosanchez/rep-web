@@ -3,12 +3,17 @@
 import { useLocale } from 'next-intl';
 import React from 'react';
 
-export function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  currentPage?: string;
+}
+
+export function LanguageSwitcher({ currentPage }: LanguageSwitcherProps) {
   const locale = useLocale();
 
   const switchTo = (newLocale: string) => {
     if (newLocale === locale) return;
-    window.location.href = `/${newLocale}`;
+    const pageParam = currentPage && currentPage !== 'home' ? `?page=${encodeURIComponent(currentPage)}` : '';
+    window.location.href = `/${newLocale}${pageParam}`;
   };
 
   return (

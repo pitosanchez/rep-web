@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import MapLibreMap from '@/components/MapLibreMap';
+import DataDisclaimer from '@/components/DataDisclaimer';
 
 interface ZipToTractRow {
   zip: string;
@@ -19,49 +20,48 @@ interface MapPageProps {
   onNavigate: (page: string) => void;
 }
 
+// Transit removed — duplicate data source (same weight_tot as Structural Risk Proxy)
 const layers = [
   {
     key: 'costBurden' as const,
     labelKey: 'costBurden' as const,
     descKey: 'costBurdenDesc' as const,
     accent: '#dc2626',
-    gradient: 'linear-gradient(to right, #3b82f6, #f59e0b, #dc2626)'
-  },
-  {
-    key: 'diseaseBurden' as const,
-    labelKey: 'diseaseBurden' as const,
-    descKey: 'diseaseBurdenDesc' as const,
-    accent: '#a83d25',
-    gradient: 'linear-gradient(to right, #6ab576, #c89a54, #a83d25)'
-  },
-  {
-    key: 'careAccess' as const,
-    labelKey: 'careAccess' as const,
-    descKey: 'careAccessDesc' as const,
-    accent: '#b8334d',
-    gradient: 'linear-gradient(to right, #1a5aa0, #4a7ec8, #b8334d)'
-  },
-  {
-    key: 'environmentalExposure' as const,
-    labelKey: 'environmentalExposure' as const,
-    descKey: 'environmentalDesc' as const,
-    accent: '#5c2e1f',
-    gradient: 'linear-gradient(to right, #3d6b41, #a08050, #5c2e1f)'
-  },
-  {
-    key: 'transit' as const,
-    labelKey: 'transit' as const,
-    descKey: 'transitDesc' as const,
-    accent: '#c41e3a',
-    gradient: 'linear-gradient(to right, #b39f00, #d97706, #c41e3a)'
+    gradient: 'linear-gradient(to right, #3b82f6, #f59e0b, #dc2626)',
+    isReal: true,
   },
   {
     key: 'areaDeprivationIndex' as const,
     labelKey: 'areaDeprivation' as const,
     descKey: 'adiDesc' as const,
     accent: '#5c1fa2',
-    gradient: 'linear-gradient(to right, #d0e8d0, #fce8a1, #f5a623, #e84c3d, #5c1fa2)'
-  }
+    gradient: 'linear-gradient(to right, #d0e8d0, #fce8a1, #f5a623, #e84c3d, #5c1fa2)',
+    isReal: true,
+  },
+  {
+    key: 'diseaseBurden' as const,
+    labelKey: 'diseaseBurden' as const,
+    descKey: 'diseaseBurdenDesc' as const,
+    accent: '#a83d25',
+    gradient: 'linear-gradient(to right, #6ab576, #c89a54, #a83d25)',
+    isReal: false,
+  },
+  {
+    key: 'careAccess' as const,
+    labelKey: 'careAccess' as const,
+    descKey: 'careAccessDesc' as const,
+    accent: '#b8334d',
+    gradient: 'linear-gradient(to right, #1a5aa0, #4a7ec8, #b8334d)',
+    isReal: false,
+  },
+  {
+    key: 'environmentalExposure' as const,
+    labelKey: 'environmentalExposure' as const,
+    descKey: 'environmentalDesc' as const,
+    accent: '#5c2e1f',
+    gradient: 'linear-gradient(to right, #3d6b41, #a08050, #5c2e1f)',
+    isReal: false,
+  },
 ];
 
 // ── Floating panel shell ───────────────────────────────────────────────────
@@ -256,17 +256,44 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
                         </svg>
                       )}
                     </div>
-                    <span style={{
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '12px',
-                      color: visibleLayers[layer.key] ? '#fff' : 'rgba(255,255,255,0.55)',
-                      lineHeight: '1.3',
-                      transition: 'color 0.15s ease'
-                    }}>
-                      {t(layer.labelKey)}
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <span style={{
+                        fontFamily: 'system-ui, sans-serif',
+                        fontSize: '12px',
+                        color: visibleLayers[layer.key] ? '#fff' : 'rgba(255,255,255,0.55)',
+                        lineHeight: '1.3',
+                        transition: 'color 0.15s ease'
+                      }}>
+                        {t(layer.labelKey)}
+                      </span>
+                      {!layer.isReal && (
+                        <span style={{
+                          fontFamily: 'system-ui, sans-serif',
+                          fontSize: '9px',
+                          color: '#f59e0b',
+                          letterSpacing: '0.5px',
+                          textTransform: 'uppercase',
+                        }}>
+                          ⚠ Proxy data
+                        </span>
+                      )}
+                    </div>
                   </label>
                 ))}
+              </div>
+
+              {/* Data disclaimer inside panel */}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '10px 16px' }}>
+                <p style={{
+                  fontFamily: 'system-ui, sans-serif',
+                  fontSize: '10px',
+                  color: '#f59e0b',
+                  lineHeight: '1.5',
+                  margin: 0,
+                }}>
+                  ⚠ Layers marked "Proxy data" use modeled approximations, not direct measurements.
+                  They show structural patterns, not clinical outcomes.
+                </p>
               </div>
 
               {/* Active layer description */}

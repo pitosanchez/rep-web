@@ -42,12 +42,14 @@ export async function GET() {
     const fileContent = await fs.readFile(dataPath, 'utf-8');
     const data = JSON.parse(fileContent);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data,
       count: data.length,
       timestamp: new Date().toISOString()
     });
+    response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    return response;
   } catch (error) {
     console.error('Error reading neighborhood clusters data:', error);
     return NextResponse.json(

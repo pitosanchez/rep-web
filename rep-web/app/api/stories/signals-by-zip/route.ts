@@ -1,9 +1,9 @@
 /**
  * GET /api/stories/signals-by-zip?zip=10456
  *
- * Returns AI-extracted signal averages for all stories submitted from a ZIP code.
- * No governance threshold is applied — this is a raw read for the neighborhood profile.
- * Returns null signal values when fewer than 2 stories exist.
+ * Returns AI-extracted signal averages for stories submitted from a ZIP code.
+ * Governance threshold: only includes signals where overall_confidence >= 0.6.
+ * Returns null signal values when fewer than 2 qualifying stories exist.
  */
 
 import { NextResponse } from 'next/server';
@@ -50,7 +50,9 @@ export async function GET(request: Request) {
          ss.overall_confidence
        FROM story_signals ss
        JOIN stories s ON s.id = ss.story_id
-       WHERE s.zip_code = $1`,
+       WHERE s.zip_code = $1
+         AND (ss.overall_confidence IS NULL OR ss.overall_confidence >= 0.6)
+         AND (s.status = 'approved' OR s.status IS NULL)`,
       [zip]
     );
 

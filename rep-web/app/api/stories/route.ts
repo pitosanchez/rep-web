@@ -35,13 +35,16 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 1. Store raw story ──────────────────────────────────────────────────────
+  // ── Auto-filter before storage ─────────────────────────────────────────────
+  const autoFlag = autoFilterStory(story_text);
+
   let storyId: string;
   try {
     const result = await pool.query<{ id: string }>(
-      `INSERT INTO stories (zip_code, role, condition, story_text, themes)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO stories (zip_code, role, condition, story_text, themes, status)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING id`,
-      [zip_code, role, condition ?? null, story_text, themes ?? []]
+      [zip_code, role, condition ?? null, story_text, themes ?? [], autoFlag.status]
     );
     storyId = result.rows[0].id;
   } catch (err) {
@@ -129,6 +132,34 @@ export async function POST(req: NextRequest) {
     signals: 'extracted',
     overall_confidence: overallConfidence,
   });
+}
+
+// ── Auto-filter ────────────────────────────────────────────────────────────────
+const PII_PATTERNS = [
+  /\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/,           // phone
+  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,  // email
+  /\b\d{3}-\d{2}-\d{4}\b/,                         // SSN pattern
+];
+
+const PROFANITY = ['fuck', 'shit', 'asshole', 'bitch', 'cunt', 'nigger', 'faggot'];
+
+function autoFilterStory(text: string): { status: string; flags: string[] } {
+  const flags: string[] = [];
+  const lower = text.toLowerCase();
+
+  if (text.trim().length < 50) flags.push('too_short');
+  if (text.trim().length > 10000) flags.push('too_long');
+
+  for (const pattern of PII_PATTERNS) {
+    if (pattern.test(text)) { flags.push('possible_pii'); break; }
+  }
+
+  for (const word of PROFANITY) {
+    if (lower.includes(word)) { flags.push('profanity'); break; }
+  }
+
+  const status = flags.length > 0 ? 'flagged' : 'pending';
+  return { status, flags };
 }
 
 async function triggerAggregation(zip_code: string) {

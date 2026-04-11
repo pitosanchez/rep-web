@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { stories as patientStories, PatientStory } from '@/lib/stories';
 import { getNeighborhoodForZip } from '@/lib/storyZipMapping';
+import ActionPanel from '@/components/ActionPanel';
+import ResourcesPanel from '@/components/ResourcesPanel';
+import DataDisclaimer from '@/components/DataDisclaimer';
 
 // ── Cost of living comparison benchmarks ─────────────────────────────────────
 // Source: MIT Living Wage Calculator 2024 (1 adult + 1 child) + ACS 2022 5-yr
@@ -335,9 +338,9 @@ const WWLI_COLOR = {
 };
 
 const WWLI_LABEL = {
-  low:      'Lower relative burden',
-  moderate: 'Moderate structural burden',
-  high:     'High structural burden',
+  low:      'Lower geographic concentration',
+  moderate: 'Moderate geographic concentration',
+  high:     'High geographic concentration',
 };
 
 // ── Structural burden — plain-language signal categories ──────────────────────
@@ -1109,8 +1112,8 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                 flexWrap: 'wrap'
               }}>
                 {[
-                  { label: 'Structural Weight', value: neighborhood.structuralWeight, note: '60% of WWLI' },
-                  { label: 'Residential Burden', value: neighborhood.residentialBurden, note: '40% of WWLI' },
+                  { label: 'Structural Weight', value: neighborhood.structuralWeight, note: '60% of GCI' },
+                  { label: 'Residential Burden', value: neighborhood.residentialBurden, note: '40% of GCI' },
                 ].map(({ label, value, note }) => (
                   <div key={label} style={{
                     background: '#fff',
@@ -1161,7 +1164,7 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
                   color: wwliColor,
                   marginBottom: '2px'
                 }}>
-                  Where We Live Index
+                  Geographic Concentration Index (GCI)
                 </div>
                 <div style={{
                   fontFamily: 'system-ui, sans-serif',
@@ -1176,38 +1179,29 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
         </div>
       </section>
 
-      {/* ── WWLI Methodology ──────────────────────────────────────── */}
-      <section style={{ background: '#fff', padding: '20px 48px', borderBottom: '1px solid #e8e4df' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            alignItems: 'flex-start',
-            flexWrap: 'wrap'
-          }}>
+      {/* ── GCI Methodology note ──────────────────────────────────── */}
+      <section style={{ background: '#fff', padding: '16px 48px', borderBottom: '1px solid #e8e4df' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
             <span style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '11px',
-              fontWeight: '600',
-              color: '#c45a3b',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              paddingTop: '2px',
-              flexShrink: 0
+              fontFamily: 'system-ui, sans-serif', fontSize: '11px', fontWeight: '600',
+              color: '#c45a3b', letterSpacing: '1px', textTransform: 'uppercase',
+              paddingTop: '2px', flexShrink: 0,
             }}>
-              WWLI Formula:
+              GCI Formula:
             </span>
-            <span style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: '13px',
-              color: '#666',
-              fontStyle: 'italic',
-              lineHeight: '1.6'
-            }}>
+            <span style={{ fontFamily: 'Georgia, serif', fontSize: '13px', color: '#666', fontStyle: 'italic', lineHeight: '1.6' }}>
               (Structural Weight × 0.60) + (Residential Burden × 0.40) — derived from census tract geographic weights.
-              Higher scores indicate greater concentration of structural burden in this ZIP code.
+              Reflects how population and structural weight are distributed geographically.
               Tiers: 0–33 lower · 34–66 moderate · 67–100 high.
             </span>
+          </div>
+          <div style={{
+            padding: '8px 12px', background: '#fffbeb', border: '1px solid #fde68a',
+            borderLeft: '3px solid #f59e0b', borderRadius: '0 4px 4px 0',
+            fontFamily: 'system-ui', fontSize: 11, color: '#78350f', lineHeight: 1.5,
+          }}>
+            ⚠ This index reflects geographic concentration of structural weight — it is not a direct measure of disease risk or clinical outcomes.
           </div>
         </div>
       </section>
@@ -1348,6 +1342,30 @@ export const NeighborhoodPage: React.FC<NeighborhoodPageProps> = ({ selectedZip,
           </div>
         </div>
       </section>
+
+      {/* ── ACTION PANEL ─────────────────────────────────────────── */}
+      <ActionPanel
+        zip={neighborhood.zip}
+        neighborhoodName={neighborhood.nta_name}
+        costBurdenRatio={costData?.cost_burden_ratio ?? 1.5}
+        topSignal={
+          signalData?.signals
+            ? Object.entries(signalData.signals)
+                .filter(([, v]) => v !== null)
+                .sort(([, a], [, b]) => (b as number) - (a as number))[0]?.[0]
+                ?.replace(/_/g, ' ')
+            : ''
+        }
+        hasHealthcareBarrier={
+          (signalData?.signals?.healthcare_access ?? 0) > 0.5 ||
+          (signalData?.signals?.structural_barriers ?? 0) > 0.5
+        }
+        hasFoodInsecurity={(signalData?.signals?.food_environment ?? 0) > 0.4}
+        onNavigateStories={() => onNavigate('stories')}
+      />
+
+      {/* ── RESOURCES PANEL ───────────────────────────────────────── */}
+      <ResourcesPanel zip={neighborhood.zip} neighborhoodName={neighborhood.nta_name} />
     </div>
   );
 };

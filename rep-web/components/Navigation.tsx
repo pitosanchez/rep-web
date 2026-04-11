@@ -171,8 +171,30 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
           })}
         </div>
 
-        {/* Right side — hamburger (mobile) + language switcher (always) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+        {/* Right side — share CTA + hamburger (mobile) + language switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <button
+            onClick={() => handleNavClick('share-story')}
+            style={{
+              background: '#c45a3b',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              fontFamily: 'system-ui, sans-serif',
+              fontSize: '13px',
+              fontWeight: '600',
+              letterSpacing: '0.3px',
+              padding: '8px 16px',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'background 0.15s ease',
+              flexShrink: 0,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#a84832'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#c45a3b'; }}
+          >
+            Share Your Story
+          </button>
           <button
             className="hamburger-btn"
             onClick={toggle}

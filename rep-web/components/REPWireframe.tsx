@@ -68,7 +68,7 @@ export const REPWireframe: React.FC = () => {
           onReturn={handleReturn}
         />
       )}
-      {currentPage === 'stories' && <StoriesPage selectedZip={selectedZip} />}
+      {currentPage === 'stories' && <StoriesPage selectedZip={selectedZip} onNavigate={handleNavigate} />}
       {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
       {currentPage === 'methods' && <MethodsPage />}
       {currentPage === 'kidney-disease-overview' && <KidneyDiseasePage onNavigate={handleNavigate} />}

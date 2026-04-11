@@ -170,12 +170,15 @@ export async function GET() {
       features
     };
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: geojson,
       count: features.length,
       timestamp: new Date().toISOString()
     });
+    // Cache GeoJSON for 1 hour at CDN edge; revalidate in background (stale-while-revalidate)
+    response.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    return response;
   } catch (error) {
     console.error('Error generating Bronx ZIPs GeoJSON:', error);
     return NextResponse.json(

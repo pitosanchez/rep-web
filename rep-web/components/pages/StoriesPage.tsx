@@ -556,10 +556,13 @@ const StoryCard: React.FC<{
 
 // ── Main Page ───────────────────────────────────────────────────────────────
 
+const STORIES_PER_PAGE = 6;
+
 export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
   const t = useTranslations('stories');
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
   const [expandedStory, setExpandedStory] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(STORIES_PER_PAGE);
 
   // Form state
   const [zipInput, setZipInput] = useState(selectedZip || '');
@@ -715,7 +718,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
             gap: '20px'
           }}>
-            {patientStories.slice(1).map(story => (
+            {patientStories.slice(1, visibleCount).map(story => (
               <StoryCard
                 key={story.id}
                 story={story}
@@ -723,6 +726,23 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip }) => {
               />
             ))}
           </div>
+
+          {/* Load More */}
+          {visibleCount < patientStories.length && (
+            <div style={{ textAlign: 'center', marginTop: 32 }}>
+              <button
+                onClick={() => setVisibleCount(n => n + STORIES_PER_PAGE)}
+                style={{
+                  padding: '12px 32px', background: '#fff', color: '#c45a3b',
+                  border: '2px solid #c45a3b', borderRadius: 4, fontFamily: 'system-ui',
+                  fontSize: 13, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase',
+                  cursor: 'pointer',
+                }}
+              >
+                Load More Stories ({patientStories.length - visibleCount} remaining)
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

@@ -294,6 +294,64 @@ export const HeroPage: React.FC<HeroPageProps> = ({ onNavigate }) => {
         )}
       </section>
 
+      {/* ── APOL1 / FSGS one-line explainer + Bronx-first + Who it's for ── */}
+      <section style={{ padding: isMobile ? '40px 16px' : '56px 48px', background: '#fff', borderTop: '3px solid #c45a3b' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
+          {/* Quick science explainer */}
+          <div style={{
+            padding: '16px 24px',
+            background: '#faf7f3',
+            borderLeft: '4px solid #c45a3b',
+            borderRadius: '0 8px 8px 0',
+            marginBottom: 48,
+          }}>
+            <p style={{ fontFamily: 'system-ui', fontSize: 14, color: '#555', lineHeight: 1.7, margin: 0 }}>
+              <strong style={{ color: '#1a1a1a' }}>APOL1</strong> is a gene variant linked to higher kidney disease risk in people with West African ancestry.
+              <strong style={{ color: '#1a1a1a' }}> FSGS</strong> (focal segmental glomerulosclerosis) is a serious kidney condition affecting the organ's filtering system.
+              Most people with these variants never develop disease —
+              <strong style={{ color: '#c45a3b' }}> structural factors like poverty, pollution, and limited care access are what tip the balance.</strong>
+              {' '}<span style={{ color: '#888', fontSize: 12 }}>Starting in the Bronx. Building a model for other communities.</span>
+            </p>
+          </div>
+
+          {/* Who this is for */}
+          <div style={{ marginBottom: 8 }}>
+            <div style={{
+              fontFamily: 'system-ui', fontSize: 11, fontWeight: 700,
+              letterSpacing: '3px', textTransform: 'uppercase', color: '#c45a3b', marginBottom: 24,
+            }}>
+              Who This Is For
+            </div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+              gap: 16,
+            }}>
+              {[
+                { icon: '❤', label: 'Patients & Families', desc: 'Understand what\'s shaping your health — and find resources near you.' },
+                { icon: '⚕', label: 'Clinicians', desc: 'Screen for structural barriers. See what your patients are actually dealing with.' },
+                { icon: '◎', label: 'Researchers', desc: 'Explore place-based signals alongside clinical data.' },
+                { icon: '◆', label: 'Policymakers', desc: 'Identify where investment would reduce structural barriers most.' },
+              ].map((card, i) => (
+                <div key={i} style={{
+                  padding: '20px', background: '#faf7f3', borderRadius: 8,
+                  border: '1px solid #e8e4df',
+                }}>
+                  <div style={{ fontSize: 20, marginBottom: 8 }}>{card.icon}</div>
+                  <div style={{ fontFamily: 'system-ui', fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 6 }}>
+                    {card.label}
+                  </div>
+                  <p style={{ fontFamily: 'system-ui', fontSize: 12, color: '#666', lineHeight: 1.6, margin: 0 }}>
+                    {card.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Mission Statement Section */}
       <section style={{
         padding: isMobile ? '48px 16px' : '80px 32px',

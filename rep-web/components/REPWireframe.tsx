@@ -12,6 +12,7 @@ import { MethodsPage } from './pages/MethodsPage';
 import { KidneyDiseasePage } from './pages/KidneyDiseasePage';
 import { Apol1Page } from './pages/Apol1Page';
 import { FsgsPage } from './pages/FsgsPage';
+import { AdminModerationPage } from './pages/AdminModerationPage';
 
 /**
  * REP - Rare Renal Equity Project
@@ -72,6 +73,7 @@ export const REPWireframe: React.FC = () => {
       {currentPage === 'kidney-disease-overview' && <KidneyDiseasePage onNavigate={handleNavigate} />}
       {currentPage === 'apol1' && <Apol1Page onNavigate={handleNavigate} />}
       {currentPage === 'fsgs' && <FsgsPage onNavigate={handleNavigate} />}
+      {currentPage === 'admin' && <AdminModerationPage />}
 
       {/* Footer */}
       <footer style={{

@@ -56,9 +56,9 @@ export const MAP_LAYER_CONFIG: LayerConfig[] = [
   },
   {
     id: 'diseaseBurden',
-    name: 'Disease Burden',
+    name: 'Structural Risk Proxy',
     description:
-      'Estimated APOL1-mediated kidney disease prevalence by neighborhood. Currently proxied from HUD USPS total tract weight.',
+      'A proxy for neighborhood-level structural risk, derived from HUD USPS total tract weight. This is NOT a direct measure of disease prevalence or clinical outcomes.',
     data_source: '/api/geo/bronx-zips — weight_tot field (HUD USPS ZIP-to-Tract crosswalk)',
     value_type: 'index',
     is_core: true,
@@ -71,9 +71,9 @@ export const MAP_LAYER_CONFIG: LayerConfig[] = [
   },
   {
     id: 'careAccess',
-    name: 'Care Access',
+    name: 'Access Constraint Proxy',
     description:
-      'Proximity to nephrology, dialysis, and transplant care. Currently proxied from HUD USPS residential tract weight.',
+      'A proxy for access constraints, derived from HUD USPS residential tract weight. This is NOT a direct measure of care availability or clinical access.',
     data_source: '/api/geo/bronx-zips — weight_res field (HUD USPS ZIP-to-Tract crosswalk)',
     value_type: 'index',
     is_core: true,
@@ -86,9 +86,9 @@ export const MAP_LAYER_CONFIG: LayerConfig[] = [
   },
   {
     id: 'environmentalExposure',
-    name: 'Environmental Exposure',
+    name: 'Environmental Context (Estimated)',
     description:
-      'Aggregated environmental stressors (pollution, food environment, housing quality). Derived from latitude factor + weight_tot.',
+      'An estimated environmental context score derived from latitude factor and tract weight. This is a modeled approximation, not a measured environmental dataset.',
     data_source: '/api/geo/bronx-zips — exposure_index (derived: 0.7×weight_tot + 0.3×latitude_factor)',
     value_type: 'index',
     is_core: false,
@@ -101,13 +101,13 @@ export const MAP_LAYER_CONFIG: LayerConfig[] = [
   },
   {
     id: 'transit',
-    name: 'Transit',
+    name: 'Transit (Duplicate — Hidden)',
     description:
-      'Public transportation connectivity affecting care access. AUDIT FLAG: uses same weight_tot source as Disease Burden — overlapping signal. Candidate for removal.',
+      'REMOVED FROM UI: uses same weight_tot source as Structural Risk Proxy. Duplicate signal. Hidden pending replacement with real transit data.',
     data_source: '/api/geo/bronx-zips — weight_tot field (same source as diseaseBurden — data overlap)',
     value_type: 'index',
     is_core: false,
-    keep: false, // Flagged — duplicate data source
+    keep: false,
     default_on: false,
     is_approximate: true,
     map_layer_id: 'bronx-transit',

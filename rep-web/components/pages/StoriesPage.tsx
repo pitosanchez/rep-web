@@ -598,7 +598,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
             lineHeight: '1.6',
             maxWidth: '520px'
           }}>
-            S{t('openingHeading')}
+            {t('openingHeading')}
           </p>
         </div>
       </section>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface ShareStoryPageProps {
   selectedZip: string | null;
@@ -102,104 +103,87 @@ const ThemePill: React.FC<{
 
 // ── How Stories Become Evidence ─────────────────────────────────────────────
 
-const EvidenceSection: React.FC = () => (
-  <section style={{
-    background: '#1a1a1a',
-    padding: '64px 48px',
-    marginTop: '0'
-  }}>
-    <div style={{ maxWidth: '760px', margin: '0 auto' }}>
-      <div style={{
-        fontFamily: 'system-ui, sans-serif',
-        fontSize: '11px',
-        fontWeight: '600',
-        letterSpacing: '3px',
-        textTransform: 'uppercase',
-        color: '#c45a3b',
-        marginBottom: '20px'
-      }}>
-        How Your Story Becomes Evidence
-      </div>
-      <h2 style={{
-        fontFamily: 'Georgia, serif',
-        fontSize: 'clamp(24px, 4vw, 36px)',
-        fontWeight: '300',
-        color: '#fff',
-        lineHeight: '1.3',
-        marginBottom: '40px',
-        letterSpacing: '-0.5px'
-      }}>
-        Every story is processed, anonymized,<br />and woven into the data.
-      </h2>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '24px'
-      }}>
-        {[
-          {
-            step: '01',
-            title: 'You write',
-            body: 'Your words arrive exactly as you wrote them. Nothing is changed.'
-          },
-          {
-            step: '02',
-            title: 'AI reads for patterns',
-            body: 'An AI model identifies structural themes — cost, access, travel, dismissal. Not your identity.'
-          },
-          {
-            step: '03',
-            title: 'Signals are mapped',
-            body: 'Themes are linked to your ZIP code and layered into the neighborhood map.'
-          },
-          {
-            step: '04',
-            title: 'Researchers see the pattern',
-            body: 'Your story joins dozens of others. The aggregate is what drives change.'
-          },
-        ].map(({ step, title, body }) => (
-          <div key={step} style={{
-            borderTop: '2px solid #333',
-            paddingTop: '20px'
-          }}>
-            <div style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '11px',
-              fontWeight: '700',
-              letterSpacing: '2px',
-              color: '#c45a3b',
-              marginBottom: '10px'
-            }}>
-              {step}
+const EvidenceSection: React.FC = () => {
+  const t = useTranslations('stories');
+  const steps = [
+    { step: '01', titleKey: 'evidenceStep01Title', bodyKey: 'evidenceStep01Body' },
+    { step: '02', titleKey: 'evidenceStep02Title', bodyKey: 'evidenceStep02Body' },
+    { step: '03', titleKey: 'evidenceStep03Title', bodyKey: 'evidenceStep03Body' },
+    { step: '04', titleKey: 'evidenceStep04Title', bodyKey: 'evidenceStep04Body' },
+  ] as const;
+
+  return (
+    <section style={{ background: '#1a1a1a', padding: '64px 48px', marginTop: '0' }}>
+      <div style={{ maxWidth: '760px', margin: '0 auto' }}>
+        <div style={{
+          fontFamily: 'system-ui, sans-serif',
+          fontSize: '11px',
+          fontWeight: '600',
+          letterSpacing: '3px',
+          textTransform: 'uppercase',
+          color: '#c45a3b',
+          marginBottom: '20px'
+        }}>
+          {t('evidenceTitle')}
+        </div>
+        <h2 style={{
+          fontFamily: 'Georgia, serif',
+          fontSize: 'clamp(24px, 4vw, 36px)',
+          fontWeight: '300',
+          color: '#fff',
+          lineHeight: '1.3',
+          marginBottom: '40px',
+          letterSpacing: '-0.5px'
+        }}>
+          {t('evidenceSubtitle')}
+        </h2>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '24px'
+        }}>
+          {steps.map(({ step, titleKey, bodyKey }) => (
+            <div key={step} style={{ borderTop: '2px solid #333', paddingTop: '20px' }}>
+              <div style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '11px',
+                fontWeight: '700',
+                letterSpacing: '2px',
+                color: '#c45a3b',
+                marginBottom: '10px'
+              }}>
+                {step}
+              </div>
+              <div style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: '17px',
+                fontWeight: '400',
+                color: '#fff',
+                marginBottom: '8px'
+              }}>
+                {t(titleKey)}
+              </div>
+              <p style={{
+                fontFamily: 'system-ui, sans-serif',
+                fontSize: '13px',
+                color: '#888',
+                lineHeight: '1.6',
+                margin: 0
+              }}>
+                {t(bodyKey)}
+              </p>
             </div>
-            <div style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: '17px',
-              fontWeight: '400',
-              color: '#fff',
-              marginBottom: '8px'
-            }}>
-              {title}
-            </div>
-            <p style={{
-              fontFamily: 'system-ui, sans-serif',
-              fontSize: '13px',
-              color: '#888',
-              lineHeight: '1.6',
-              margin: 0
-            }}>
-              {body}
-            </p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 // ── Main Component ──────────────────────────────────────────────────────────
 
 export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) => {
+  const t = useTranslations('stories');
   const [zipInput, setZipInput] = useState(selectedZip || '');
   const [role, setRole] = useState<'patient' | 'caregiver' | 'family member' | 'community member'>('patient');
   const [condition, setCondition] = useState('APOL1-mediated kidney disease');
@@ -266,17 +250,17 @@ export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) =
 
   const handleSubmit = async () => {
     if (!consent) {
-      setSubmitError('Please check the consent box before submitting.');
+      setSubmitError(t('submitErrorConsent'));
       setSubmitStatus('error');
       return;
     }
     if (!zipInput.trim()) {
-      setSubmitError('Please enter your ZIP code.');
+      setSubmitError(t('submitErrorZip'));
       setSubmitStatus('error');
       return;
     }
     if (storyText.trim().length < 20) {
-      setSubmitError('Your story must be at least 20 characters.');
+      setSubmitError(t('submitErrorLength'));
       setSubmitStatus('error');
       return;
     }
@@ -339,7 +323,7 @@ export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) =
               marginBottom: '16px',
               lineHeight: '1.3'
             }}>
-              Thank you for sharing.
+              {t('submitSuccess')}
             </h1>
             <p style={{
               fontFamily: 'system-ui, sans-serif',
@@ -348,9 +332,7 @@ export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) =
               lineHeight: '1.7',
               marginBottom: '40px'
             }}>
-              Your story has been received. After review, it will appear anonymously
-              on the neighborhood page for ZIP <strong>{zipInput}</strong> — adding
-              your experience to the evidence that shapes care.
+              {t('submitSuccessBody', { zip: zipInput })}
             </p>
             <button
               onClick={() => setSubmitStatus('idle')}
@@ -368,7 +350,7 @@ export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) =
                 color: '#1a1a1a'
               }}
             >
-              Share Another Story
+              {t('submitAnother')}
             </button>
           </div>
         </section>
@@ -450,31 +432,31 @@ export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) =
               gap: '20px'
             }}>
               <div>
-                <Label>ZIP Code</Label>
+                <Label>{t('zipCode')}</Label>
                 <input
                   type="text"
                   inputMode="numeric"
-                  placeholder="e.g. 10451"
+                  placeholder={t('zipPlaceholder')}
                   value={zipInput}
                   onChange={e => setZipInput(e.target.value)}
                   style={inputBase}
                 />
               </div>
               <div>
-                <Label>I am a</Label>
+                <Label>{t('iAmA')}</Label>
                 <select
                   value={role}
                   onChange={e => setRole(e.target.value as typeof role)}
                   style={inputBase}
                 >
-                  <option value="patient">Patient</option>
-                  <option value="caregiver">Caregiver</option>
+                  <option value="patient">{t('patient')}</option>
+                  <option value="caregiver">{t('caregiver')}</option>
                   <option value="family member">Family Member</option>
                   <option value="community member">Community Member</option>
                 </select>
               </div>
               <div>
-                <Label>Condition</Label>
+                <Label>{t('condition')}</Label>
                 <select
                   value={condition}
                   onChange={e => setCondition(e.target.value)}
@@ -680,9 +662,7 @@ export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) =
               lineHeight: '1.65',
               cursor: 'pointer'
             }}>
-              I consent to my story being used anonymously for research and advocacy purposes.
-              I understand my name will never be published, only my ZIP code and condition will
-              be linked to my story. I may request removal at any time.
+              {t('consent')}
             </label>
           </div>
 
@@ -722,7 +702,7 @@ export const ShareStoryPage: React.FC<ShareStoryPageProps> = ({ selectedZip }) =
               transition: 'background 0.2s ease'
             }}
           >
-            {submitting ? 'Submitting…' : 'Submit Your Story'}
+            {submitting ? '…' : t('submit')}
           </button>
 
           <p style={{

@@ -22,8 +22,19 @@ import { ShareStoryPage } from './pages/ShareStoryPage';
  * This is the main app component that orchestrates page navigation
  * and state management for the entire platform.
  */
+const VALID_PAGES = new Set([
+  'home','map','neighborhood','stories','about','methods',
+  'kidney-disease-overview','apol1','fsgs','admin','share-story'
+]);
+
 export const REPWireframe: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<string>('home');
+  const [currentPage, setCurrentPage] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const p = new URLSearchParams(window.location.search).get('page');
+      if (p && VALID_PAGES.has(p)) return p;
+    }
+    return 'home';
+  });
   const [selectedZip, setSelectedZip] = useState<string | null>(null);
   const tFooter = useTranslations('footer');
   const tNav = useTranslations('nav');
@@ -68,7 +79,7 @@ export const REPWireframe: React.FC = () => {
           onReturn={handleReturn}
         />
       )}
-      {currentPage === 'stories' && <StoriesPage selectedZip={selectedZip} />}
+      {currentPage === 'stories' && <StoriesPage selectedZip={selectedZip} onNavigate={handleNavigate} />}
       {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
       {currentPage === 'methods' && <MethodsPage />}
       {currentPage === 'kidney-disease-overview' && <KidneyDiseasePage onNavigate={handleNavigate} />}
@@ -124,29 +135,32 @@ export const REPWireframe: React.FC = () => {
                 flexDirection: 'column',
                 gap: '8px'
               }}>
-                {['home', 'map', 'stories', 'about', 'methods', 'kidney-disease-overview', 'apol1', 'fsgs'].map(page => (
-                  <button
-                    key={page}
-                    onClick={() => handleNavigate(page)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#aaa',
-                      fontFamily: 'system-ui, sans-serif',
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.color = '#fff';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.color = '#aaa';
-                    }}
-                  >
-                    {tNav(page === 'kidney-disease-overview' ? 'kidneyDisease' : page === 'home' ? 'home' : page === 'map' ? 'map' : page === 'stories' ? 'stories' : page === 'about' ? 'about' : page === 'methods' ? 'methods' : page === 'apol1' ? 'apol1' : page === 'fsgs' ? 'fsgs' : page)}
-                  </button>
-                ))}
+                {(['home', 'map', 'stories', 'about', 'methods', 'kidney-disease-overview', 'apol1', 'fsgs'] as const).map(page => {
+                  const navKeyMap = {
+                    'home': 'home', 'map': 'map', 'stories': 'stories', 'about': 'about',
+                    'methods': 'methods', 'kidney-disease-overview': 'kidneyDisease',
+                    'apol1': 'apol1', 'fsgs': 'fsgs',
+                  } as const;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => handleNavigate(page)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#aaa',
+                        fontFamily: 'system-ui, sans-serif',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        textAlign: 'left'
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.color = '#fff'; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = '#aaa'; }}
+                    >
+                      {tNav(navKeyMap[page])}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

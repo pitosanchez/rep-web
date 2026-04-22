@@ -36,6 +36,7 @@ const StoryReadingView: React.FC<{
   onBack: () => void;
 }> = ({ story, onBack }) => {
   const t = useTranslations('stories');
+  const tFooter = useTranslations('footer');
 
   return (
     <div style={{ paddingTop: '80px', background: '#fff', minHeight: '100vh' }}>
@@ -63,7 +64,7 @@ const StoryReadingView: React.FC<{
             letterSpacing: '0.5px'
           }}
         >
-          ← Back to all stories
+          {t('backToAllStories')}
         </button>
       </div>
 
@@ -222,7 +223,7 @@ const StoryReadingView: React.FC<{
           {[
             { label: t('wouldChange'), text: story.reflection.wouldChange },
             { label: t('shouldKnow'), text: story.reflection.shouldKnow },
-            { label: 'What ' + story.name + ' wishes:', text: story.reflection.wishes }
+            { label: t('wishesLabel', { name: story.name }), text: story.reflection.wishes }
           ].map(({ label, text }, i) => (
             <div key={i} style={{
               marginBottom: i < 2 ? '40px' : '0',
@@ -281,7 +282,7 @@ const StoryReadingView: React.FC<{
           onMouseEnter={e => { e.currentTarget.style.background = '#c45a3b'; e.currentTarget.style.color = '#fff'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#c45a3b'; }}
         >
-          ← All stories
+          {t('allStories')}
         </button>
         <div style={{
           fontFamily: 'Georgia, serif',
@@ -289,7 +290,7 @@ const StoryReadingView: React.FC<{
           fontStyle: 'italic',
           color: '#888'
         }}>
-          Not genetics. Geography and justice.
+          {tFooter('motto')}
         </div>
       </section>
     </div>
@@ -304,6 +305,7 @@ const StoryCard: React.FC<{
   featured?: boolean;
 }> = ({ story, onClick, featured = false }) => {
   const [hovered, setHovered] = useState(false);
+  const t = useTranslations('stories');
 
   if (featured) {
     return (
@@ -371,7 +373,7 @@ const StoryCard: React.FC<{
             color: 'rgba(255,255,255,0.5)',
             marginTop: '40px'
           }}>
-            Featured story
+            {t('featuredStory')}
           </div>
         </div>
 
@@ -422,7 +424,7 @@ const StoryCard: React.FC<{
             fontWeight: '600',
             letterSpacing: '0.5px'
           }}>
-            Read {story.name}&rsquo;s story
+            {t('readStoryName', { name: story.name })}
             <span style={{
               transform: hovered ? 'translateX(4px)' : 'none',
               transition: 'transform 0.2s ease',
@@ -519,7 +521,7 @@ const StoryCard: React.FC<{
           fontWeight: '600',
           letterSpacing: '0.5px'
         }}>
-          Read their story
+          {t('readTheirStory')}
           <span style={{
             transform: hovered ? 'translateX(4px)' : 'none',
             transition: 'transform 0.2s ease',
@@ -537,6 +539,7 @@ const STORIES_PER_PAGE = 6;
 
 export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selectedZip, onNavigate }) => {
   const t = useTranslations('about');
+  const tStories = useTranslations('stories');
   const [expandedStory, setExpandedStory] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(STORIES_PER_PAGE);
 
@@ -577,7 +580,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
           padding: '80px 64px',
           maxWidth: '780px'
         }}>
-          <ChapterLabel light>The Essay · The People</ChapterLabel>
+          <ChapterLabel light>{tStories('chapterEssayLabel')}</ChapterLabel>
           <h1 style={{
             fontFamily: 'Georgia, serif',
             fontSize: 'clamp(40px, 7vw, 76px)',
@@ -606,7 +609,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
       {/* ── On Stories ───────────────────────────────────────────── */}
       <section style={{ background: '#fff', padding: '100px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <ChapterLabel>On Stories</ChapterLabel>
+          <ChapterLabel>{tStories('chapterOnStories')}</ChapterLabel>
           <Rule />
 
           {[t('universalPara'), t('para1'), t('para2')].map((para, i) => (
@@ -748,7 +751,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
 
           {/* Section intro */}
           <div style={{ maxWidth: '680px', marginBottom: '64px' }}>
-            <ChapterLabel>Voices from the Bronx</ChapterLabel>
+            <ChapterLabel>{tStories('chapterVoices')}</ChapterLabel>
             <h2 style={{
               fontFamily: 'Georgia, serif',
               fontSize: 'clamp(32px, 5vw, 56px)',
@@ -758,8 +761,8 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
               letterSpacing: '-0.5px',
               marginBottom: '24px'
             }}>
-              These are not case studies.<br />
-              <span style={{ color: '#c45a3b' }}>These are people.</span>
+              {tStories('notCaseStudies')}<br />
+              <span style={{ color: '#c45a3b' }}>{tStories('thesePeople')}</span>
             </h2>
             <p style={{
               fontFamily: 'Georgia, serif',
@@ -769,9 +772,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
               lineHeight: '1.7',
               maxWidth: '540px'
             }}>
-              The essay above describes what stories can do. Below are the lives
-              that gave those words weight — Bronx residents navigating kidney
-              disease, and the structural forces that shaped every step.
+              {tStories('voicesDesc')}
             </p>
           </div>
 
@@ -818,7 +819,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
                 onMouseEnter={e => { e.currentTarget.style.background = '#c45a3b'; e.currentTarget.style.color = '#fff'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#c45a3b'; }}
               >
-                Read More Stories ({patientStories.length - visibleCount} remaining)
+                {tStories('loadMore', { count: patientStories.length - visibleCount })}
               </button>
             </div>
           )}
@@ -828,7 +829,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
       {/* ── Stories in Healthcare ─────────────────────────────────── */}
       <section style={{ background: '#fff', padding: '100px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <ChapterLabel>Stories in Healthcare</ChapterLabel>
+          <ChapterLabel>{tStories('chapterStoriesInHealthcare')}</ChapterLabel>
           <Rule />
           <h2 style={{
             fontFamily: 'Georgia, serif',
@@ -902,7 +903,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
       {/* ── Our Mission ───────────────────────────────────────────── */}
       <section style={{ background: '#1a1a1a', padding: '100px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <ChapterLabel light>Our Mission</ChapterLabel>
+          <ChapterLabel light>{tStories('chapterMission')}</ChapterLabel>
           <div style={{ width: '48px', height: '2px', background: '#c45a3b', marginBottom: '32px' }} />
           <h2 style={{
             fontFamily: 'Georgia, serif',
@@ -965,7 +966,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
       {/* ── The Science of Stories ────────────────────────────────── */}
       <section style={{ background: '#fff', padding: '100px 32px' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <ChapterLabel>The Science</ChapterLabel>
+          <ChapterLabel>{tStories('chapterScience')}</ChapterLabel>
           <Rule />
           <h2 style={{
             fontFamily: 'Georgia, serif',
@@ -1013,7 +1014,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
       {/* ── Integration ───────────────────────────────────────────── */}
       <section style={{ background: '#faf7f3', padding: '100px 32px 0' }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
-          <ChapterLabel>Integration</ChapterLabel>
+          <ChapterLabel>{tStories('chapterIntegration')}</ChapterLabel>
           <Rule />
           <h2 style={{
             fontFamily: 'Georgia, serif',
@@ -1088,7 +1089,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
         borderTop: '1px solid #e8e4df'
       }}>
         <div style={{ maxWidth: '680px', margin: '0 auto', textAlign: 'center' }}>
-          <ChapterLabel>Add Your Voice</ChapterLabel>
+          <ChapterLabel>{tStories('chapterAddVoice')}</ChapterLabel>
           <h2 style={{
             fontFamily: 'Georgia, serif',
             fontSize: 'clamp(28px, 4vw, 44px)',
@@ -1129,7 +1130,7 @@ export const StoriesPage: React.FC<StoriesPageProps> = ({ selectedZip: _selected
               onMouseEnter={e => { e.currentTarget.style.background = '#a84830'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#c45a3b'; }}
             >
-              Share Your Story
+              {tStories('shareStoryButton')}
             </button>
           )}
         </div>

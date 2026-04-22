@@ -10,6 +10,9 @@ import pool from '@/lib/db';
 import { statusToScore } from '@/lib/signalUtils';
 
 const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+// Server-side base URL for internal self-calls. Never use NEXT_PUBLIC_ here —
+// that prefix bakes the value into the client bundle.
+const INTERNAL_BASE_URL = process.env.INTERNAL_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 
 interface StorySubmission {
   zip_code: string;
@@ -30,8 +33,18 @@ export async function POST(req: NextRequest) {
 
   const { zip_code, role, condition, story_text, themes } = body;
 
-  if (!zip_code || !role || !story_text || story_text.trim().length < 20) {
-    return NextResponse.json({ error: 'Missing required fields.' }, { status: 422 });
+  const ZIP_RE = /^\d{5}$/;
+  if (!zip_code || !ZIP_RE.test(zip_code.trim())) {
+    return NextResponse.json({ error: 'A valid 5-digit ZIP code is required.' }, { status: 422 });
+  }
+  if (!role || !['patient', 'caregiver'].includes(role)) {
+    return NextResponse.json({ error: 'role must be "patient" or "caregiver".' }, { status: 422 });
+  }
+  if (!story_text || story_text.trim().length < 20) {
+    return NextResponse.json({ error: 'Story must be at least 20 characters.' }, { status: 422 });
+  }
+  if (story_text.length > 10_000) {
+    return NextResponse.json({ error: 'Story must be under 10,000 characters.' }, { status: 422 });
   }
 
   // ── 1. Store raw story ──────────────────────────────────────────────────────
@@ -163,8 +176,7 @@ function autoFilterStory(text: string): { status: string; flags: string[] } {
 }
 
 async function triggerAggregation(zip_code: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  await fetch(`${baseUrl}/api/stories/aggregate`, {
+  await fetch(`${INTERNAL_BASE_URL}/api/stories/aggregate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ zip_code }),

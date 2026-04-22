@@ -11,9 +11,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
+const VALID_STATUSES = new Set(['pending', 'approved', 'rejected', 'flagged']);
+
 function checkAuth(req: NextRequest): boolean {
   const secret = process.env.MODERATION_SECRET;
-  if (!secret) return false; // no secret set = moderation disabled
+  if (!secret) {
+    console.error('MODERATION_SECRET is not set — moderation endpoints are disabled.');
+    return false;
+  }
   const auth = req.headers.get('authorization') ?? '';
   return auth === `Bearer ${secret}`;
 }
@@ -24,7 +29,14 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const statusFilter = searchParams.get('status') ?? 'pending';
+  const rawStatus = searchParams.get('status') ?? 'pending';
+  if (!VALID_STATUSES.has(rawStatus)) {
+    return NextResponse.json(
+      { error: `Invalid status. Must be one of: ${[...VALID_STATUSES].join(', ')}.` },
+      { status: 422 }
+    );
+  }
+  const statusFilter = rawStatus;
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 200);
   const offset = parseInt(searchParams.get('offset') ?? '0');
 

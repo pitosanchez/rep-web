@@ -18,35 +18,45 @@ const MIN_STORIES = 5;
 const MIN_AVG_CONFIDENCE = 0.6;
 
 export async function POST(req: NextRequest) {
-  const { zip_code } = await req.json();
+  let zip_code: string;
+  try {
+    ({ zip_code } = await req.json());
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
+  }
 
   if (!zip_code) {
     return NextResponse.json({ error: 'zip_code required.' }, { status: 400 });
   }
 
   // ── Pull all signals for this ZIP ───────────────────────────────────────────
-  const result = await pool.query(
-    `SELECT
-       ss.economic_instability_score,
-       ss.healthcare_access_score,
-       ss.insurance_instability_score,
-       ss.food_environment_score,
-       ss.environmental_exposure_score,
-       ss.neighborhood_safety_score,
-       ss.education_literacy_score,
-       ss.justice_system_score,
-       ss.mental_health_score,
-       ss.substance_use_score,
-       ss.social_support_score,
-       ss.structural_barriers_score,
-       ss.overall_confidence
-     FROM story_signals ss
-     JOIN stories s ON s.id = ss.story_id
-     WHERE s.zip_code = $1`,
-    [zip_code]
-  );
-
-  const rows = result.rows;
+  let rows: Record<string, number | null>[];
+  try {
+    const result = await pool.query(
+      `SELECT
+         ss.economic_instability_score,
+         ss.healthcare_access_score,
+         ss.insurance_instability_score,
+         ss.food_environment_score,
+         ss.environmental_exposure_score,
+         ss.neighborhood_safety_score,
+         ss.education_literacy_score,
+         ss.justice_system_score,
+         ss.mental_health_score,
+         ss.substance_use_score,
+         ss.social_support_score,
+         ss.structural_barriers_score,
+         ss.overall_confidence
+       FROM story_signals ss
+       JOIN stories s ON s.id = ss.story_id
+       WHERE s.zip_code = $1`,
+      [zip_code]
+    );
+    rows = result.rows;
+  } catch (err) {
+    console.error('Aggregation: failed to fetch signals for ZIP', zip_code, err);
+    return NextResponse.json({ error: 'Failed to fetch signals.' }, { status: 500 });
+  }
 
   // ── Governance check 1: minimum story count ────────────────────────────────
   if (rows.length < MIN_STORIES) {
@@ -102,50 +112,55 @@ export async function POST(req: NextRequest) {
 
   // ── Upsert into aggregated_signals ─────────────────────────────────────────
   // Uses ZIP code as geoid — extend to census_tract when geographies table is populated
-  await pool.query(
-    `INSERT INTO aggregated_signals (
-      geoid,
-      story_count,
-      economic_instability_avg,
-      healthcare_access_avg,
-      insurance_instability_avg,
-      food_environment_avg,
-      environmental_exposure_avg,
-      neighborhood_safety_avg,
-      education_literacy_avg,
-      justice_system_avg,
-      mental_health_avg,
-      substance_use_avg,
-      social_support_avg,
-      structural_barriers_avg,
-      sbi_score,
-      avg_confidence,
-      updated_at
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,NOW())
-    ON CONFLICT (geoid) DO UPDATE SET
-      story_count                 = EXCLUDED.story_count,
-      economic_instability_avg    = EXCLUDED.economic_instability_avg,
-      healthcare_access_avg       = EXCLUDED.healthcare_access_avg,
-      insurance_instability_avg   = EXCLUDED.insurance_instability_avg,
-      food_environment_avg        = EXCLUDED.food_environment_avg,
-      environmental_exposure_avg  = EXCLUDED.environmental_exposure_avg,
-      neighborhood_safety_avg     = EXCLUDED.neighborhood_safety_avg,
-      education_literacy_avg      = EXCLUDED.education_literacy_avg,
-      justice_system_avg          = EXCLUDED.justice_system_avg,
-      mental_health_avg           = EXCLUDED.mental_health_avg,
-      substance_use_avg           = EXCLUDED.substance_use_avg,
-      social_support_avg          = EXCLUDED.social_support_avg,
-      structural_barriers_avg     = EXCLUDED.structural_barriers_avg,
-      sbi_score                   = EXCLUDED.sbi_score,
-      avg_confidence              = EXCLUDED.avg_confidence,
-      updated_at                  = NOW()`,
-    [
-      zip_code, rows.length,
-      economic, healthcare, insurance, food, environment,
-      safety, literacy, justice, mental, substance, support, structural,
-      sbiScore, avgConfidence,
-    ]
-  );
+  try {
+    await pool.query(
+      `INSERT INTO aggregated_signals (
+        geoid,
+        story_count,
+        economic_instability_avg,
+        healthcare_access_avg,
+        insurance_instability_avg,
+        food_environment_avg,
+        environmental_exposure_avg,
+        neighborhood_safety_avg,
+        education_literacy_avg,
+        justice_system_avg,
+        mental_health_avg,
+        substance_use_avg,
+        social_support_avg,
+        structural_barriers_avg,
+        sbi_score,
+        avg_confidence,
+        updated_at
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,NOW())
+      ON CONFLICT (geoid) DO UPDATE SET
+        story_count                 = EXCLUDED.story_count,
+        economic_instability_avg    = EXCLUDED.economic_instability_avg,
+        healthcare_access_avg       = EXCLUDED.healthcare_access_avg,
+        insurance_instability_avg   = EXCLUDED.insurance_instability_avg,
+        food_environment_avg        = EXCLUDED.food_environment_avg,
+        environmental_exposure_avg  = EXCLUDED.environmental_exposure_avg,
+        neighborhood_safety_avg     = EXCLUDED.neighborhood_safety_avg,
+        education_literacy_avg      = EXCLUDED.education_literacy_avg,
+        justice_system_avg          = EXCLUDED.justice_system_avg,
+        mental_health_avg           = EXCLUDED.mental_health_avg,
+        substance_use_avg           = EXCLUDED.substance_use_avg,
+        social_support_avg          = EXCLUDED.social_support_avg,
+        structural_barriers_avg     = EXCLUDED.structural_barriers_avg,
+        sbi_score                   = EXCLUDED.sbi_score,
+        avg_confidence              = EXCLUDED.avg_confidence,
+        updated_at                  = NOW()`,
+      [
+        zip_code, rows.length,
+        economic, healthcare, insurance, food, environment,
+        safety, literacy, justice, mental, substance, support, structural,
+        sbiScore, avgConfidence,
+      ]
+    );
+  } catch (err) {
+    console.error('Aggregation: failed to upsert aggregated_signals for ZIP', zip_code, err);
+    return NextResponse.json({ error: 'Failed to write aggregated signals.' }, { status: 500 });
+  }
 
   return NextResponse.json({
     status: 'aggregated',

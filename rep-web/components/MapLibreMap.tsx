@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import maplibregl from 'maplibre-gl';
 
 interface MapLibreMapProps {
@@ -12,7 +13,6 @@ interface MapLibreMapProps {
     diseaseBurden: boolean;
     careAccess: boolean;
     environmentalExposure: boolean;
-    transit: boolean;
     /** Area Deprivation Index — block-group polygons from /api/adi/blockgroups */
     areaDeprivationIndex: boolean;
   };
@@ -64,6 +64,18 @@ export default function MapLibreMap({
   onZipClick,
   visibleLayers
 }: MapLibreMapProps) {
+  const t = useTranslations('map');
+  // Capture labels outside useEffect so they're stable references (avoids adding t to deps)
+  const mapLabels = {
+    unassigned: t('unassigned'),
+    costBurden: t('popupCostBurden'),
+    resWeight: t('popupResWeight'),
+    totWeight: t('popupTotWeight'),
+    exposure: t('popupExposureIndex'),
+  };
+  const mapLabelsRef = useRef(mapLabels);
+  mapLabelsRef.current = mapLabels;
+
   /** ADI may resolve after `geoData`; ref is read in map `load` to avoid a race. */
   const adiGeojsonRef = useRef<any | null>(null);
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -308,39 +320,8 @@ export default function MapLibreMap({
         }
       });
 
-      // Transit layer - based on weight_tot
-      map.current.addLayer({
-        id: 'bronx-transit',
-        type: 'circle',
-        source: 'bronx-zips',
-        paint: {
-          'circle-radius': [
-            'interpolate',
-            ['linear'],
-            ['get', 'weight_tot'],
-            0, 10,
-            1, 28
-          ],
-          'circle-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'weight_tot'],
-            0, '#b39f00',   // Dark gold (low)
-            0.5, '#d97706',   // Dark orange (medium)
-            1, '#c41e3a'    // Dark red (high)
-          ],
-          'circle-opacity': 0.85,
-          'circle-stroke-color': '#1a1a1a',
-          'circle-stroke-width': 2,
-          'circle-stroke-opacity': 0.9
-        },
-        layout: {
-          visibility: 'none'
-        }
-      });
-
       // Layer IDs for interaction
-      const interactiveLayers = ['bronx-cost-burden', 'bronx-zips-fill', 'bronx-care-access', 'bronx-exposure', 'bronx-transit'];
+      const interactiveLayers = ['bronx-cost-burden', 'bronx-zips-fill', 'bronx-care-access', 'bronx-exposure'];
 
       // Handle clicks on all layers
       interactiveLayers.forEach(layerId => {
@@ -407,15 +388,18 @@ export default function MapLibreMap({
             }
 
             // Update popup content and position
+            const labels = mapLabelsRef.current;
+            const ntaName = String(properties.nta_name || labels.unassigned).replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c] ?? c));
+            const zipLabel = String(properties.zip || '').replace(/[<>&"']/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c] ?? c));
             const popupContent = `
               <div style="font-family: system-ui; font-size: 12px; padding: 8px; max-width: 200px;">
-                <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">${properties.zip}</div>
-                <div style="font-size: 11px; color: #666; margin-bottom: 6px;">${properties.nta_name || 'Unassigned'}</div>
+                <div style="font-weight: 600; margin-bottom: 4px; font-size: 14px;">${zipLabel}</div>
+                <div style="font-size: 11px; color: #666; margin-bottom: 6px;">${ntaName}</div>
                 <div style="border-top: 1px solid #e8e4df; padding-top: 6px; margin-top: 6px; font-size: 11px;">
-                  ${properties.cost_burden_ratio != null ? `<div style="margin-bottom:4px;padding:3px 6px;background:${properties.cost_burden_ratio > 1.5 ? '#fef2f2' : properties.cost_burden_ratio > 1.0 ? '#fffbeb' : '#f0fdf4'};border-radius:3px;">Cost Burden: <strong>${properties.cost_burden_ratio.toFixed(2)}×</strong></div>` : ''}
-                  <div>Residential Weight: <strong>${(properties.weight_res * 100).toFixed(1)}%</strong></div>
-                  <div>Total Weight: <strong>${(properties.weight_tot * 100).toFixed(1)}%</strong></div>
-                  <div>Exposure Index: <strong>${(properties.exposure_index * 100).toFixed(0)}%</strong></div>
+                  ${properties.cost_burden_ratio != null ? `<div style="margin-bottom:4px;padding:3px 6px;background:${properties.cost_burden_ratio > 1.5 ? '#fef2f2' : properties.cost_burden_ratio > 1.0 ? '#fffbeb' : '#f0fdf4'};border-radius:3px;">${labels.costBurden}: <strong>${properties.cost_burden_ratio.toFixed(2)}×</strong></div>` : ''}
+                  <div>${labels.resWeight}: <strong>${(properties.weight_res * 100).toFixed(1)}%</strong></div>
+                  <div>${labels.totWeight}: <strong>${(properties.weight_tot * 100).toFixed(1)}%</strong></div>
+                  <div>${labels.exposure}: <strong>${(properties.exposure_index * 100).toFixed(0)}%</strong></div>
                 </div>
               </div>
             `;
@@ -482,6 +466,7 @@ export default function MapLibreMap({
     };
 
     addAdiWhenReady();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- visibleLayers.areaDeprivationIndex intentionally excluded: initial visibility is set once on layer creation; subsequent toggles handled by the ADI visibility effect below
   }, [adiData, mapReady]);
 
   // Handle ADI visibility separately
@@ -502,19 +487,14 @@ export default function MapLibreMap({
   useEffect(() => {
     if (!map.current || !mapReady) return;
 
-    // Reset all selected states
-    const source = map.current.getSource('bronx-zips') as maplibregl.GeoJSONSource | undefined;
-    if (source && (source.getClusterExpansionZoom === undefined)) {
-      // Get all features from the source
-      const data = (source as any)._data;
-      if (data && data.features) {
-        data.features.forEach((feature: any) => {
-          map.current?.setFeatureState(
-            { source: 'bronx-zips', id: feature.properties.zip },
-            { selected: false }
-          );
-        });
-      }
+    // Reset all selected states using geoData from component state (avoids _data private API)
+    if (geoData?.features) {
+      geoData.features.forEach((feature: { properties: { zip: string } }) => {
+        map.current?.setFeatureState(
+          { source: 'bronx-zips', id: feature.properties.zip },
+          { selected: false }
+        );
+      });
     }
 
     // Set selected state for current zip
@@ -524,7 +504,7 @@ export default function MapLibreMap({
         { selected: true }
       );
     }
-  }, [selectedZip, mapReady]);
+  }, [selectedZip, mapReady, geoData]);
 
   // Toggle layer visibility and adjust opacity for contrast
   useEffect(() => {
@@ -536,7 +516,6 @@ export default function MapLibreMap({
       visibleLayers.diseaseBurden,
       visibleLayers.careAccess,
       visibleLayers.environmentalExposure,
-      visibleLayers.transit
     ].filter(Boolean).length;
 
     // Determine opacity based on number of visible layers
@@ -630,26 +609,6 @@ export default function MapLibreMap({
       );
     }
 
-    // Transit layer
-    const transitLayerId = 'bronx-transit';
-    if (map.current.getLayer(transitLayerId)) {
-      map.current.setLayoutProperty(
-        transitLayerId,
-        'visibility',
-        visibleLayers.transit ? 'visible' : 'none'
-      );
-      map.current.setPaintProperty(
-        transitLayerId,
-        'circle-opacity',
-        ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, layerOpacity]
-      );
-      map.current.setPaintProperty(
-        transitLayerId,
-        'circle-stroke-width',
-        strokeWidth
-      );
-    }
-
     // ADI layer
     const adiFillId = 'adi-blockgroups-fill';
     if (map.current.getLayer(adiFillId)) {
@@ -659,7 +618,7 @@ export default function MapLibreMap({
         visibleLayers.areaDeprivationIndex ? 'visible' : 'none'
       );
       // Adjust ADI opacity when other layers are visible
-      const adiOpacity = (visibleLayers.costBurden || visibleLayers.diseaseBurden || visibleLayers.careAccess || visibleLayers.environmentalExposure || visibleLayers.transit) ? 0.35 : 0.55;
+      const adiOpacity = (visibleLayers.costBurden || visibleLayers.diseaseBurden || visibleLayers.careAccess || visibleLayers.environmentalExposure) ? 0.35 : 0.55;
       map.current.setPaintProperty(
         adiFillId,
         'fill-opacity',
@@ -695,7 +654,7 @@ export default function MapLibreMap({
           }}
         >
           <p style={{ color: '#c45a3b', fontSize: '14px', fontFamily: 'system-ui', margin: 0 }}>
-            Error loading map data
+            {t('errorLoadingMap')}
           </p>
           <p style={{ color: '#999', fontSize: '12px', fontFamily: 'system-ui', margin: '8px 0 0' }}>
             {error}
@@ -714,7 +673,7 @@ export default function MapLibreMap({
           }}
         >
           <p style={{ color: '#666', fontSize: '14px', fontFamily: 'system-ui' }}>
-            {loading ? 'Loading geographic data...' : 'Loading map...'}
+            {loading ? t('loadingGeoData') : t('loadingMap')}
           </p>
         </div>
       )}

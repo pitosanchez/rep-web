@@ -80,12 +80,12 @@ const Panel: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }
 
 export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNavigate }) => {
   const t = useTranslations('map');
+  const tFooter = useTranslations('footer');
   const [visibleLayers, setVisibleLayers] = useState({
     costBurden: true,
     diseaseBurden: false,
     careAccess: false,
     environmentalExposure: false,
-    transit: false,
     areaDeprivationIndex: true
   });
   const [layerPanelOpen, setLayerPanelOpen] = useState(true);
@@ -168,7 +168,7 @@ export const MapPage: React.FC<MapPageProps> = ({ selectedZip, onSelectZip, onNa
             lineHeight: '1.5',
             margin: 0
           }}>
-            Not genetics. Geography and justice.
+            {tFooter('motto')}
           </p>
         </Panel>
 

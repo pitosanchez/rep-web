@@ -193,7 +193,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
             onMouseEnter={e => { e.currentTarget.style.background = '#a84832'; }}
             onMouseLeave={e => { e.currentTarget.style.background = '#c45a3b'; }}
           >
-            Share Your Story
+            {t('shareStory')}
           </button>
           <button
             className="hamburger-btn"

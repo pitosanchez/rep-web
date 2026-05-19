@@ -35,7 +35,7 @@ Everything is anonymous. Everything is aggregated to the neighborhood level. No 
 - **PostgreSQL** via lazy-initialized `pg` Pool (Proxy pattern for Vercel build safety)
 - **Python / FastAPI** — AI signal extraction microservice (`rep-python/`)
 - **Anthropic Claude** — reads community stories and extracts 12 structural signals per story
-- **Next.js API routes** — all in `rep-web/app/api/`
+- **Next.js API routes** — all in `where-we-live-site/app/api/`
 
 ### Infrastructure
 - **Vercel** — auto-deploys from `main` branch
@@ -57,7 +57,7 @@ Everything is anonymous. Everything is aggregated to the neighborhood level. No 
 
 ```
 rep-web/
-├── rep-web/                      # Next.js frontend + API
+├── where-we-live-site/           # Next.js frontend + API
 │   ├── app/
 │   │   ├── [locale]/             # EN/ES locale routing
 │   │   └── api/

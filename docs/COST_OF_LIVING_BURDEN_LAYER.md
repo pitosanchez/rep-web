@@ -13,7 +13,7 @@ A new primary map layer, three API routes, a reusable cost dashboard component, 
 
 ## New Files
 
-### `rep-web/lib/mapLayers.config.ts`
+### `where-we-live-site/lib/mapLayers.config.ts`
 
 Formal audit of all map layers. Each entry contains:
 
@@ -47,7 +47,7 @@ Formal audit of all map layers. Each entry contains:
 
 ---
 
-### `rep-web/app/api/cost-of-living/route.ts`
+### `where-we-live-site/app/api/cost-of-living/route.ts`
 
 **Endpoint:** `GET /api/cost-of-living?geo_id=ZIP`
 
@@ -80,7 +80,7 @@ Returns TCOL-based monthly cost breakdown for a reference household (1 adult + 1
 
 ---
 
-### `rep-web/app/api/adi/route.ts`
+### `where-we-live-site/app/api/adi/route.ts`
 
 **Endpoint:** `GET /api/adi?geo_id=ZIP`
 
@@ -91,7 +91,7 @@ ZIP-level Area Deprivation Index, distinct from the block-group endpoint (`/api/
 
 ---
 
-### `rep-web/app/api/neighborhood-summary/route.ts`
+### `where-we-live-site/app/api/neighborhood-summary/route.ts`
 
 **Endpoint:** `GET /api/neighborhood-summary?geo_id=ZIP`
 
@@ -109,7 +109,7 @@ SSI = (cost_norm × 0.55 + adi_percentile / 100 × 0.45) × 100
 
 ---
 
-### `rep-web/components/NeighborhoodCostDashboard.tsx`
+### `where-we-live-site/components/NeighborhoodCostDashboard.tsx`
 
 Reusable `'use client'` component that fetches `/api/neighborhood-summary` and renders:
 
@@ -142,7 +142,7 @@ import NeighborhoodCostDashboard from '@/components/NeighborhoodCostDashboard';
 
 ## Modified Files
 
-### `rep-web/components/MapLibreMap.tsx`
+### `where-we-live-site/components/MapLibreMap.tsx`
 
 - Added `costBurden: boolean` to `visibleLayers` interface
 - Fetches `/api/cost-of-living` at map load time and merges `cost_burden_ratio` into every GeoJSON feature's properties
@@ -154,13 +154,13 @@ import NeighborhoodCostDashboard from '@/components/NeighborhoodCostDashboard';
 - Hover popup now shows cost burden ratio badge with color-coded background
 - Layer included in opacity adjustment logic alongside other ZIP-level layers
 
-### `rep-web/components/pages/MapPage.tsx`
+### `where-we-live-site/components/pages/MapPage.tsx`
 
 - `costBurden: true` is now the default-on layer (Disease Burden switched to `false`)
 - Cost Burden layer appears first in the layer toggle panel
 - Blue→amber→red gradient shown in layer legend
 
-### `rep-web/messages/en.json` + `rep-web/messages/es.json`
+### `where-we-live-site/messages/en.json` + `where-we-live-site/messages/es.json`
 
 Added:
 - `"costBurden"` — display label

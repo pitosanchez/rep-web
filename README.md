@@ -59,7 +59,7 @@ REP is a **public accountability tool** that:
 - **PostgreSQL** via `pg` Pool (lazy-initialized for Vercel builds)
 - **Python / FastAPI** — AI signal extraction microservice (`rep-python/`)
 - **Anthropic Claude** — extracts 12 structural signals from each story
-- **Node.js API routes** — Next.js App Router (`rep-web/app/api/`)
+- **Node.js API routes** — Next.js App Router (`where-we-live-site/app/api/`)
 
 ### Data Infrastructure
 - **HUD USPS ZIP-to-Tract crosswalk** (26 Bronx ZIP codes)
@@ -78,7 +78,7 @@ REP is a **public accountability tool** that:
 
 ```
 rep-web/
-├── rep-web/                    # Next.js frontend + API
+├── where-we-live-site/         # Next.js frontend + API
 │   ├── app/
 │   │   ├── [locale]/           # EN/ES locale routing
 │   │   └── api/                # API routes
@@ -129,7 +129,7 @@ rep-web/
 
 ```bash
 git clone https://github.com/pitosanchez/rep-web.git
-cd rep-web/rep-web
+cd rep-web/where-we-live-site
 npm install
 ```
 
@@ -204,7 +204,7 @@ Computed from AI-extracted story signals across 12 dimensions:
 - Education/Literacy, Justice System, Mental Health
 - Substance Use, Social Support, Structural Barriers
 
-Weighted formula in `rep-web/lib/signalUtils.ts`.
+Weighted formula in `where-we-live-site/lib/signalUtils.ts`.
 
 ---
 
@@ -230,7 +230,7 @@ All components use inline React styles. No Tailwind, no CSS modules.
 git push origin main
 ```
 
-Vercel reads `rep-web/` as the project root. Build command: `npm run build`. Output: `.next/`.
+Vercel reads `where-we-live-site/` as the project root. Build command: `npm run build`. Output: `.next/`.
 
 GitHub Actions run on every push:
 - **Build & lint** — TypeScript + ESLint

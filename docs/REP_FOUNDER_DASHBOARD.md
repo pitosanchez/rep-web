@@ -83,7 +83,7 @@ Derived from HUD USPS ZIP-to-Tract crosswalk residential and total weights.
 
 ### Structural Burden Index (SBI)
 Weighted average of 12 AI-extracted signal dimensions from community stories.
-Formula in `rep-web/lib/signalUtils.ts`.
+Formula in `where-we-live-site/lib/signalUtils.ts`.
 
 ---
 

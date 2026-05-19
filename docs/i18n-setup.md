@@ -18,7 +18,7 @@ rep-web/
 ├── messages/
 │   ├── en.json                  # English translations
 │   └── es.json                  # Spanish translations
-├── rep-web/
+├── where-we-live-site/
 │   ├── app/
 │   │   ├── layout.tsx           # Root layout (i18n provider)
 │   │   ├── globals.css

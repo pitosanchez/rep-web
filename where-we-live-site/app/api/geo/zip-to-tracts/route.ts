@@ -10,7 +10,7 @@ import { NextResponse } from 'next/server';
 import path from 'path';
 
 const getGeoDataFilePath = (filename: string) => {
-  // Backward compatible: if running from repo root or from `rep-web/`.
+  // Backward compatible: if running from repo root or from `where-we-live-site/`.
   const localCandidate = path.join(process.cwd(), 'data/geo', filename);
   const monorepoCandidateFromRepoRoot = path.join(
     process.cwd(),

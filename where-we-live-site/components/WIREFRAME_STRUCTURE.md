@@ -5,7 +5,7 @@ Where We Live — Rare Renal Equity Project
 ## File Organization
 
 ```
-rep-web/components/
+where-we-live-site/components/
 ├── REPWireframe.tsx              # Root app (page state machine + ZIP state)
 ├── Navigation.tsx                # Fixed top nav + language switcher
 ├── MapLibreMap.tsx               # Interactive MapLibre GL map

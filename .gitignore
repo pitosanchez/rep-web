@@ -2,8 +2,8 @@
 
 # dependencies
 /node_modules
-# Monorepo: Next.js app lives in rep-web/ (root-level /node_modules does not match)
-rep-web/node_modules/
+# Monorepo: Next.js app lives in where-we-live-site/ (root-level /node_modules does not match)
+where-we-live-site/node_modules/
 rep-api/node_modules/
 rep-data/node_modules/
 **/node_modules/
@@ -22,8 +22,8 @@ rep-data/node_modules/
 # next.js
 /.next/
 /out/
-rep-web/.next/
-rep-web/out/
+where-we-live-site/.next/
+where-we-live-site/out/
 **/.next/
 
 # production

@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
 
 // Control turbopack.root pinning safely to avoid workspace-root inference issues when
-// invoking npm from the repository root (for example: `npm --prefix rep-web run dev`).
+// invoking npm from the repository root (for example: `npm --prefix where-we-live-site run dev`).
 // Behavior:
 //  - By default we do not pin turbopack.root (preserve Next/Turbopack default inference).
 //  - To explicitly pin the root when running the package in isolation, set:

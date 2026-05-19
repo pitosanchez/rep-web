@@ -42,7 +42,7 @@ psql $DATABASE_URL -f migrations/003_create_geographies_and_aggregated.sql
 
 ## Environment variables (Next.js side)
 
-Add to `rep-web/.env.local`:
+Add to `where-we-live-site/.env.local`:
 
 ```
 DATABASE_URL=postgresql://user:password@host:5432/rep_db

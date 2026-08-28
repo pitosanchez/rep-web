@@ -1,0 +1,14 @@
+{
+  "name": "rep-web",
+  "private": true,
+  "description": "Delegates to where-we-live-site/ so npm scripts work from the repo root.",
+  "scripts": {
+    "dev": "npm --prefix where-we-live-site run dev",
+    "build": "npm --prefix where-we-live-site run build",
+    "start": "npm --prefix where-we-live-site run start",
+    "lint": "npm --prefix where-we-live-site run lint",
+    "lint:fix": "npm --prefix where-we-live-site run lint:fix",
+    "test": "npm --prefix where-we-live-site run test",
+    "type-check": "npm --prefix where-we-live-site run type-check"
+  }
+}
